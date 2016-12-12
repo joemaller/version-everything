@@ -1,0 +1,34 @@
+{
+  "name": "version-everything",
+  "version": "0.0.0",
+  "description": "Use npm to version all kinds of projects, not just javascript.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "version": "index.js"
+  },
+  "version_files" : [
+    "README.md",
+    "index.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joemaller/version-everything.git"
+  },
+  "keywords": [
+    "npm",
+    "version"
+  ],
+  "author": "Joe Maller <joe@joemaller.com> (http://www.joemaller.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joemaller/version-everything/issues"
+  },
+  "homepage": "https://github.com/joemaller/version-everything#readme",
+  "dependencies": {
+    "jsonfile": "^2.4.0",
+    "shelljs": "^0.7.5"
+  }
+}
