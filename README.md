@@ -8,7 +8,13 @@ Synchronize the version string from package.json into additional text or structu
 ```
 ## How to version everything
 
-There are several ways version-everything can be used, the only requirement is a list of files to synchronize versions into. Files can be text (php, css, markdown, whatever) or structured data (JSON, yaml or xml).
+There are several ways version-everything can be used, the only requirement is an array of files to synchronize versions into. The files can be text (php, css, markdown, whatever) or structured data (JSON, yaml or xml).
+
+The file list is an array specified in one of the following forms, in order or precedence:
+
+1. Command line arguments
+2. `files` key in a **.version-everything.js** file
+3. version_files key in the parent project's package.json file
 
 ### npm lifecycle script in package.json
 
@@ -40,6 +46,8 @@ Note that structured data files will be formatted using default settings.
 ### .version-everything.js dotfile
 
 Following the lead of projects like [Webpack][] and [ESLint][], version-everything can also be configured using a JavaScript dotfile. While this introduces another file to the project, it offers additional configuration options, can be documented in place and keeps package.json cleaner.
+
+A project's .version-everything.js file should be a sibling of the project's package.json file.
 
 The basic schema of the config file should look something like this:
 

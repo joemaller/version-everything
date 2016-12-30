@@ -3,23 +3,21 @@
   "version": "0.0.1",
   "description": "Use npm to version all kinds of projects, not just javascript.",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "bin": {
-    "version": "index.js"
+    "version-everything": "cli.js"
   },
-  "version_files": [
-    "README.md",
-    "index.js"
-  ],
+  "scripts": {
+    "test": "mocha",
+    "test-watch": "mocha -w"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/joemaller/version-everything.git"
   },
   "keywords": [
     "npm",
-    "version"
+    "version",
+    "semver"
   ],
   "author": "Joe Maller <joe@joemaller.com> (http://www.joemaller.com)",
   "license": "MIT",
@@ -28,7 +26,18 @@
   },
   "homepage": "https://github.com/joemaller/version-everything#readme",
   "dependencies": {
+    "find-up": "^2.1.0",
+    "js-yaml": "^3.7.0",
     "jsonfile": "^2.4.0",
-    "shelljs": "^0.7.5"
+    "load-json-file": "^2.0.0",
+    "normalize-package-data": "^2.3.5",
+    "prompt": "^1.0.0",
+    "read-pkg-up": "^2.0.0",
+    "shelljs": "^0.7.5",
+    "xml2js": "^0.4.17"
+  },
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*"
   }
 }

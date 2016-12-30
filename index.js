@@ -1,20 +1,59 @@
-#!/usr/bin/env node
-
 const path = require('path');
+const fs = require('fs');
 const sed = require('shelljs').sed;
 const jsonfile = require('jsonfile');
-const pkg = require('./package.json');
+const yaml = require('js-yaml')
+const xml2js = require('xml2js');
+const builder = new xml2js.Builder();
 
-if (!pkg.version_files) return;
+const readPkgUp = require('read-pkg-up').sync;
 
-pkg.version_files.forEach(f => {
-    console.log('f?', f);
-//   jsonfile.readFile(f, (err, data) => {
-//     if (err) {
-//      sed('-i', /^([# ]*Version: *).*/, `$1${ pkg.version }`, f);
-//     } else  {
-//       data.version = pkg.version;
-//       jsonfile.writeFileSync(f, data, {spaces: 2});
-//     }
-//   });
-});
+const getPackageJson = require('./app/get-package-json');
+const getVersionFiles = require('./app/get-version-files');
+
+// const pkg = require('../package.json');
+console.log('------------------------- index.js ---------------');
+// // console.log('require.main (cli)', require.main);
+// // console.log('module', module);
+// // console.log('pkg', pkg);
+// console.log('__filename', __filename);
+// console.log('process.cwd', process.cwd());
+// // console.log({env: process.env});
+
+// console.log('default readPkgUp', readPkgUp());
+// console.log('__dirname readPkgUp', readPkgUp({cwd: __dirname}));
+
+
+
+/**
+ * Updates the version number in specified files
+ * @param  {array or object} config Arrays of filenames will be loaded
+ *                                  directly.
+ *                                  Objects should contain a files key
+ *                                  and an optional package_json key
+ * @return {[type]}               [description]
+ */
+module.exports = function(config) {
+
+  console.log('------------------ in main function ---------------');
+  console.log('process.argv', process.argv);
+
+  const pkg = getPackageJson(config)
+  const files = getVersionFiles(config, pkg);
+  console.log(pkg, files);
+  return;
+
+  files.forEach(f => {
+    jsonfile.readFile(f, (err, data) => {
+      if (err) {
+       sed('-i', /^([# ]*Version: *).*/, `$1${ pkg.version }`, f);
+      } else  {
+        data.version = pkg.version;
+        // xml2js.write(f + '.xml', data);
+        console.log(builder.buildObject(data));
+        fs.writeFileSync(f + '.xml', data);
+        jsonfile.writeFileSync(f, data, {spaces: 2});
+      }
+    });
+  });
+}
