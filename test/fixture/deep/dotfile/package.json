@@ -1,4 +1,5 @@
 {
   "name": "version-everything-test-fixture",
-  "version": "9.8.7",
+  "description": "Placeholder package.json file for testing",
+  "version": "9.8.7"
 }

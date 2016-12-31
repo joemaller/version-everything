@@ -11,19 +11,6 @@ const readPkgUp = require('read-pkg-up').sync;
 const getPackageJson = require('./app/get-package-json');
 const getVersionFiles = require('./app/get-version-files');
 
-// const pkg = require('../package.json');
-console.log('------------------------- index.js ---------------');
-// // console.log('require.main (cli)', require.main);
-// // console.log('module', module);
-// // console.log('pkg', pkg);
-// console.log('__filename', __filename);
-// console.log('process.cwd', process.cwd());
-// // console.log({env: process.env});
-
-// console.log('default readPkgUp', readPkgUp());
-// console.log('__dirname readPkgUp', readPkgUp({cwd: __dirname}));
-
-
 
 /**
  * Updates the version number in specified files
