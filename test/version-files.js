@@ -1,3 +1,4 @@
+'use strict';
 const path = require('path');
 const should = require('chai').should();
 const getVersionFiles = require('../app/get-version-files');

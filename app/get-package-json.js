@@ -1,3 +1,4 @@
+'use strict';
 const path = require('path');
 const readPkgUp = require('read-pkg-up').sync;
 const loadJsonFile = require('load-json-file');

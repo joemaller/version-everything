@@ -1,3 +1,4 @@
+'use strict';
 const path = require('path');
 const fs = require('fs');
 const sed = require('shelljs').sed;
