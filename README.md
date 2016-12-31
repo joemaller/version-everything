@@ -1,5 +1,8 @@
 # version-everything
+
 Use npm to version all kinds of projects, not just JavaScript
+
+[![Build Status](https://travis-ci.org/joemaller/version-everything.svg?branch=master)](https://travis-ci.org/joemaller/version-everything) [![Coverage Status](https://coveralls.io/repos/github/joemaller/version-everything/badge.svg?branch=master)](https://coveralls.io/github/joemaller/version-everything?branch=master) [![npm](https://img.shields.io/npm/v/version-everything.svg)](https://www.npmjs.com/package/version-everything)
 
 Synchronize the version string from package.json into additional text or structured data files. When called from npm's version script, all versioned files in a project will be updated and committed with a single command. 
 
