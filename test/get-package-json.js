@@ -4,10 +4,17 @@ const getPackageJson = require('../app/get-package-json');
 
 describe('Load a package.json file', function() {
   const cwd = process.cwd();
+  const consoleLog = console.log;
+  const stdoutWrite = process.stdout.write;
 
-    afterEach(function() {
-      process.chdir(cwd);
-    });
+  // ref https://github.com/mochajs/mocha/wiki/Mess-with-globals
+  const cleanup = function() {
+    process.chdir(cwd);
+    console.log = consoleLog;
+    process.stdout.write = stdoutWrite;
+  };
+
+  afterEach(cleanup);
 
   describe('find package.json', function() {
 
@@ -45,6 +52,56 @@ describe('Load a package.json file', function() {
     });
 
   });
+
+
+  describe('test option to quiet output', function() {
+    let output;
+
+
+    beforeEach(function() {
+      output = '';
+      process.stdout.write = console.log = (str) => output += str;
+    });
+
+    afterEach(cleanup);
+
+    it('logs to stdout, quiet == false', function() {
+      try {
+        const pkg = getPackageJson({quiet: false});
+        output.should.not.be.empty;
+        pkg.should.have.deep.property('pkg.version');
+        cleanup();
+      } catch(err) {
+        cleanup();
+        throw err
+      }
+    })
+
+    it('does its thing quietly, quiet == true', function() {
+      try {
+        const pkg = getPackageJson({quiet: true});
+        output.should.be.empty;
+        pkg.should.have.deep.property('pkg.version');
+        cleanup();
+      } catch (err) {
+        cleanup();
+        throw err;
+      }
+    })
+
+    it('is not quiet by default', function() {
+      try {
+        const pkg = getPackageJson();
+        output.should.not.be.empty;
+        pkg.should.have.deep.property('pkg.version');
+        cleanup();
+      } catch (err) {
+        cleanup();
+        throw err;
+      }
+    })
+  });
+
 
   describe('Test invalid file errors', function() {
 

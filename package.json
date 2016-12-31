@@ -7,7 +7,7 @@
     "version-everything": "cli.js"
   },
   "scripts": {
-    "test": "mocha",
+    "test": "nyc mocha",
     "test-watch": "mocha -w"
   },
   "repository": {
@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "chai": "*",
-    "mocha": "*"
+    "mocha": "*",
+    "nyc": "^10.0.0"
   }
 }
