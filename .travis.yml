@@ -1,0 +1,11 @@
+os:
+  - linux
+  - osx
+
+after_success: npm run coverage
+
+language: node_js
+node_js:
+  - 'node'
+  - '6'
+  - '4'

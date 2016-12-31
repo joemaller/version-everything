@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "nyc mocha",
-    "test-watch": "mocha -w"
+    "test-watch": "mocha -w",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -38,6 +39,7 @@
   },
   "devDependencies": {
     "chai": "*",
+    "coveralls": "^2.11.15",
     "mocha": "*",
     "nyc": "^10.0.0"
   }
