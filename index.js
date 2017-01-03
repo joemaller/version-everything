@@ -28,6 +28,7 @@ module.exports = function(config) {
 
   const pkg = getPackageJson(config)
   const files = getVersionFiles(config, pkg);
+
   console.log(pkg, files);
   return;
 
