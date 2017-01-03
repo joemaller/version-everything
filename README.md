@@ -109,7 +109,7 @@ All keys are optional.
 
 ##### json 
 Type: `object`
-Passed directly to [`JSON.stringify`][stringify]. See [JSON docs][stringify] for options.
+Two keys from the `json` object will be passed directly to [`JSON.stringify`][stringify], a `replacer` function and `space` which sets indentation from an integer or string. See the [JSON docs][stringify] for more info.
 
 ##### xml
 Type: `object`
@@ -121,6 +121,10 @@ Type: `object`
 Passed directly to the [js-yaml safeDump method][safedump]. See [js-yml][] docs for available options.
 
 
+
+### Notes
+
+While this module strongly encourages the use of true SemVer versions, these are not enforced. Just about any wacky version string should work.
 
 
 [webpack]: https://webpack.github.io/docs/configuration.html
