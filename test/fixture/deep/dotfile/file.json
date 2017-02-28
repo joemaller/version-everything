@@ -1,3 +1,5 @@
 {
-  "version": "44.33.22"
+  "title": "Test title",
+  "version": "44.33.22",
+  "double_me": 5
 }
