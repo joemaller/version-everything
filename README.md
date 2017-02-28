@@ -4,7 +4,7 @@ Use npm to version all kinds of projects, not just JavaScript
 
 [![Build Status](https://travis-ci.org/joemaller/version-everything.svg?branch=master)](https://travis-ci.org/joemaller/version-everything)   [![Coverage Status](https://coveralls.io/repos/github/joemaller/version-everything/badge.svg?branch=master)](https://coveralls.io/github/joemaller/version-everything?branch=master)   [![npm](https://img.shields.io/npm/v/version-everything.svg)](https://www.npmjs.com/package/version-everything)  [![dependencies Status](https://david-dm.org/joemaller/version-everything/status.svg)](https://david-dm.org/joemaller/version-everything)   [![devDependencies Status](https://david-dm.org/joemaller/version-everything/dev-status.svg)](https://david-dm.org/joemaller/version-everything?type=dev)
 
-Synchronize the version string from package.json into additional text or structured data files. When called from npm's version script, all versioned files in a project will be updated and committed with a single command. 
+Synchronize the version string from package.json into a set of additional text or structured data files. When called from npm's version script, all versioned files in a project will be updated and committed with a single command. 
 
 ```sh
     npm install --save version-everything
@@ -13,11 +13,11 @@ Synchronize the version string from package.json into additional text or structu
 
 There are several ways version-everything can be used, the only requirement is an array of files to synchronize versions into. The files can be text (php, css, markdown, whatever) or structured data (JSON, yaml or xml).
 
-The file list is an array specified in one of the following forms, in order or precedence:
+The file list is an array specified in one of the following forms, in order of precedence:
 
 1. Command line arguments
 2. `files` key in a **.version-everything.js** file
-3. version_files key in the parent project's package.json file
+3. `version_files` key in the parent project's **package.json** file
 
 ### npm lifecycle script in package.json
 
@@ -89,6 +89,13 @@ When run from the command line, all arguments following the command are assumed 
 $ version-everything readme.md manifest.json
 ```
 
+### Recognized File Extensions
+Files with the following extensions will be recognized as structured text and parsed accordingly.
+
+* **JSON** - `.json`
+* **XML** - `.xml`, `.plist`
+* **YAML** - `.yml`, `.yaml`
+
 
 ## API
 
@@ -104,12 +111,11 @@ An array containing the files which will be versioned.
 #### options
 
 Type: `object`
-
 All keys are optional.
 
 ##### json 
 Type: `object`
-Two keys from the `json` object will be passed directly to [`JSON.stringify`][stringify], a `replacer` function and `space` which sets indentation from an integer or string. See the [JSON docs][stringify] for more info.
+Three keys from the `json` object will be passed directly to [`JSON.parse`][jsonparse] or [`JSON.stringify`][stringify]: **`space`** which sets indentation from an integer or string, a **[`reviver`][reviver]** function and a **[`replacer`][replacer]** function/array. See the [JSON docs][stringify] for more info.
 
 ##### xml
 Type: `object`
@@ -118,7 +124,7 @@ Passed directly to the [xml2js Builder class][xml2js-builder]. See [xml2js][] do
 
 ##### yaml
 Type: `object`
-Passed directly to the [js-yaml safeDump method][safedump]. See [js-yml][] docs for available options.
+Passed directly to the [js-yaml safeDump method][safedump]. See [js-yaml][] docs for available options.
 
 
 
@@ -131,7 +137,11 @@ While this module strongly encourages the use of true SemVer versions, these are
 [eslint]: http://eslint.org/docs/user-guide/configuring#configuration-file-formats
 [xml2js]: https://www.npmjs.com/package/xml2js
 [xml2js-builder]: https://www.npmjs.com/package/xml2js#options-for-the-builder-class
+[jsondocs]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON
+[jsonparse]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
 [stringify]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
+[reviver]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse#Using_the_reviver_parameter
+[replacer]: 
 [js-yaml]: https://www.npmjs.com/package/js-yaml
 [safedump]: https://www.npmjs.com/package/js-yaml#safedump-object---options-
 
