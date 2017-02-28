@@ -38,6 +38,6 @@ var config = {
 }
 if (argv.package_json) config.package_json = argv.package_json;
 
-console.log(argv, argv._)
+console.log(argv, argv._);
 console.log(config);
 // versionEverything(config);

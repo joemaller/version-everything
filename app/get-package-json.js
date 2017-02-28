@@ -12,8 +12,8 @@ const semver = require('semver');
  *                         quiet - suppress console.log output
  * @return {object}        The loaded, normalized representation of package.json
  */
-module.exports = function(config) {
-  config = config || {};
+module.exports = function(args) {
+  const config = args || {};
   let data;
 
   if (config.package_json) {
@@ -22,7 +22,7 @@ module.exports = function(config) {
       data = {
         path: config.package_json,
         pkg: jsonFile
-      }
+      };
     } catch ( err ) {
       throw new Error(`Unable to load ${ config.package_json }  ${ err }`);
     }
@@ -40,4 +40,4 @@ module.exports = function(config) {
     console.log(`Current version is "${ data.pkg.version }"`);
   }
   return data;
-}
+};
