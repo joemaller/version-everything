@@ -1,3 +1,6 @@
+/* eslint-env node,mocha,chai */
+/* eslint no-unused-vars: "should"*/
+
 'use strict';
 const path = require('path');
 const should = require('chai').should();
@@ -26,7 +29,7 @@ describe('Load a package.json file', function() {
       pkg.should.have.deep.property('pkg.version', '9.8.7');
     });
 
-    it('Finds package.json from a subdir', function() {
+    it('Finds package.json climbing up from a subdir', function() {
       process.chdir('./test/fixture/deep/dotfile/deeper/and_deeper');
       const pkg = getPackageJson({quiet: true});
       pkg.should.have.deep.property('pkg.name', 'version-everything-test-fixture');
@@ -106,7 +109,7 @@ describe('Load a package.json file', function() {
 
   describe('Test invalid file errors', function() {
 
-    it('Errors trying to load an version-less package.json file', function() {
+    it('Errors trying to load a version-less package.json file', function() {
       const pkg = function() {
         getPackageJson({
           package_json: './test/fixture/no-version.json'

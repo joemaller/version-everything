@@ -1,3 +1,6 @@
+/* eslint-env node,mocha,chai */
+/* eslint no-unused-vars: "should"*/
+
 'use strict';
 const path = require('path');
 const should = require('chai').should();
