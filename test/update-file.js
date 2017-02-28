@@ -73,7 +73,7 @@ describe('Update a file', function() {
   it('should increment a json file, also using a replacer array', function(done) {
     const file = 'file.json';
     const replacer = ['title', 'version'];
-    updateFile(file, newVersion, {json: {replacer: replacer}}, (err) => {
+    updateFile(file, newVersion, {json: {replacer: replacer}, quiet: true}, (err) => {
       assert.ifError(err);
       fs.readJson(file, (err, json) => {
         assert.ifError(err);
@@ -89,7 +89,7 @@ describe('Update a file', function() {
   it('should increment a json file, also using a replacer function', function(done) {
     const file = 'file.json';
     const replacer = (key, value) => (key === 'double_me') ? value * 2 : value;
-    updateFile(file, newVersion, {json: {replacer: replacer}}, (err) => {
+    updateFile(file, newVersion, {json: {replacer: replacer}, quiet: true}, (err) => {
       assert.ifError(err);
       fs.readJson(file, (err, json) => {
         json.should.have.property('version', newVersion);
@@ -104,7 +104,7 @@ describe('Update a file', function() {
   it('should increment a json file, also using a reviver function', function(done) {
     const file = 'file.json';
     const reviver = (key, value) => (key === 'double_me') ? value * 2 : value;
-    updateFile(file, newVersion, {json: {reviver: reviver}}, (err, result) => {
+    updateFile(file, newVersion, {json: {reviver: reviver}, quiet: true}, (err, result) => {
       assert.ifError(err);
       fs.readJson(file, (err, json) => {
         json.should.have.property('version', newVersion);
@@ -120,7 +120,7 @@ describe('Update a file', function() {
     const file = 'file.json';
     const spaces = 4;
     const regex = new RegExp('^ {' + spaces + '}"version":', 'm');
-    updateFile(file, newVersion, {json:{space: spaces}}, (err, result) => {
+    updateFile(file, newVersion, {json:{space: spaces}, quiet: true}, (err, result) => {
       assert.ifError(err);
       fs.readFile(file, (err, data) => {
         data.toString().should.match(regex);
@@ -154,7 +154,7 @@ describe('Update a file', function() {
 
   it('should increment a json file without a file extension', function(done) {
     const file = 'naked-json';
-    updateFile(file, newVersion, {}, (err) => {
+    updateFile(file, newVersion, {quiet: true}, (err) => {
       assert.ifError(err);
       fs.readJson(file, (err, json) => {
         json.should.have.property('version', newVersion);
@@ -170,7 +170,7 @@ describe('Update a file', function() {
 
   it('adds version to version-less json file', function(done) {
     const file = 'no-version.json';
-    updateFile(file, newVersion, {}, (err) => {
+    updateFile(file, newVersion, {quiet: true}, (err) => {
       assert.ifError(err);
       fs.readJson(file, (err, json) => {
         json.should.have.property('version', newVersion);
