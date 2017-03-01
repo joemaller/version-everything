@@ -54,7 +54,45 @@ describe('Update a file', function() {
 
   it('accepts a string file path');
   it('accepts a filestream');
-  it('should increment a plain text file (regex)');
+
+
+  it('should increment a plain text file (css block comment)', function(done) {
+    const file = 'file.css';
+    const regex = new RegExp('^\\s*(?:\\/\\/|#|\\*)*\\s*Version: ' + newVersion.replace(/\./g, '\\.'), 'im');
+    updateFile(file, newVersion, {quiet: true}, (err) => {
+      assert.ifError(err);
+      fs.readFile(file, (err, data) => {
+        data.toString().should.match(regex);
+        done();
+      });
+    });
+  });
+
+
+  it('should increment a plain text file (php docblock comment)', function(done) {
+    const file = 'file.php';
+    const regex = new RegExp('^\\s*(?:\\/\\/|#|\\*)*\\s*Version: ' + newVersion.replace(/\./g, '\\.'), 'im');
+    updateFile(file, newVersion, {quiet: true}, (err) => {
+      assert.ifError(err);
+      fs.readFile(file, (err, data) => {
+        data.toString().should.match(regex);
+        done();
+      });
+    });
+  });
+
+
+  it('should increment a plain text file (markdown heading)', function(done) {
+    const file = 'file.md';
+    const regex = new RegExp('^\\s*(?:\\/\\/|#|\\*)*\\s*Version: ' + newVersion.replace(/\./g, '\\.'), 'im');
+    updateFile(file, newVersion, {quiet: true}, (err) => {
+      assert.ifError(err);
+      fs.readFile(file, (err, data) => {
+        data.toString().should.match(regex);
+        done();
+      });
+    });
+  });
 
 
   it('should increment a json file', function(done) {
@@ -147,7 +185,7 @@ describe('Update a file', function() {
   //   });
   // });
 
-
+  it('should increment yaml frontmatter in a markdown file');
   it('should increment an xml file');
   it('should increment an xml plist file');
 

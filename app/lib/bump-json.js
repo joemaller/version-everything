@@ -10,7 +10,7 @@ module.exports = function(data, version, config) {
       data: JSON.stringify(json, config.replacer, config.space)
     };
   } catch (err) {
-    console.log('bumpJSON Error:', err);
+    // console.log('bumpJSON Error:', err);
     throw err;
   }
 };

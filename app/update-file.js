@@ -20,12 +20,12 @@ const logInit = function(quiet) {
   return (quiet) ? ()=>{} : console.log;
 };
 
-const bumpPlainText = function(data) {
-  console.log(data);
-};
+// const bumpPlainText = function(data) {
+//   console.log(data);
+// };
 
-
-const bumpJSON = require('./lib/bumpJSON');
+const bumpPlainText = require('./lib/bump-plain-text');
+const bumpJSON = require('./lib/bump-json');
 
 /**
  * Sends files to the correct bumping function, writes the result
@@ -70,7 +70,11 @@ module.exports = function(file, version, options, cb) {
     default:
       // no extension match
       // trying file as unmarked JSON
-      result = bumpJSON(data, version, config.json);
+      try {
+        result = bumpJSON(data, version, config.json);
+      } catch (err) {
+        // not JSON
+      }
       if (!result) {
         // No result, trying file as XML
       }
@@ -79,6 +83,7 @@ module.exports = function(file, version, options, cb) {
       }
       if (!result) {
         // No result, trying file as plain text (RegExp)
+        result = bumpPlainText(data, version);
       }
     }
     if (result) {
