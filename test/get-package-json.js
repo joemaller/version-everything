@@ -110,21 +110,13 @@ describe('Load a package.json file', function() {
   describe('Test invalid file errors', function() {
 
     it('Errors trying to load a version-less package.json file', function() {
-      const pkg = function() {
-        getPackageJson({
-          package_json: './test/fixture/no-version.json'
-        });
-      };
-      pkg.should.throw(Error);
+      process.chdir('./test/fixture/deep/dotfile/');
+      getPackageJson.bind(null, {package_json: 'no-version.json'}).should.throw(Error);
     });
 
     it('Errors trying to load a non-json text file', function() {
-      const pkg = function() {
-        getPackageJson({
-          package_json: './test/fixture/not-really-data.txt'
-        });
-      };
-      pkg.should.throw();
+      process.chdir('./test/fixture/deep/dotfile/');
+      getPackageJson.bind(null, {package_json: 'not-really-data.txt'}).should.throw(Error);
     });
 
   });

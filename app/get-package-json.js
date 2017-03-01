@@ -1,7 +1,7 @@
 'use strict';
 const path = require('path');
+const fs = require('fs-extra');
 const readPkgUp = require('read-pkg-up').sync;
-const loadJsonFile = require('load-json-file');
 const semver = require('semver');
 
 /**
@@ -18,7 +18,7 @@ module.exports = function(args) {
 
   if (config.package_json) {
     try {
-      let jsonFile = loadJsonFile.sync(config.package_json);
+      let jsonFile = fs.readJsonSync(config.package_json);
       data = {
         path: config.package_json,
         pkg: jsonFile
