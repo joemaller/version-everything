@@ -173,6 +173,13 @@ describe('Update a file', function() {
 
   });
 
+  describe('XML files', function() {
+
+    it('should increment an xml file');
+    it('should increment an xml plist file');
+
+  });
+
   describe('YAML files', function() {
 
     it('should increment a yaml file');
@@ -196,13 +203,6 @@ describe('Update a file', function() {
 
   });
 
-  describe('XML files', function() {
-
-    it('should increment an xml file');
-    it('should increment an xml plist file');
-
-  });
-
   describe('Files without extensions', function() {
 
     it('should increment a json file without a file extension', function(done) {
@@ -222,7 +222,7 @@ describe('Update a file', function() {
 
   });
 
-  describe('Files without extensions', function() {
+  describe('Files without versions', function() {
 
     it('adds version to version-less json file', function(done) {
       const file = 'no-version.json';
@@ -234,7 +234,28 @@ describe('Update a file', function() {
         });
       });
     });
-    it('passes version-less plain files through unchanged');
+
+    it('adds version to version-less xml file');
+    it('adds version to version-less yaml file');
+
+    it('passes version-less plain files through unchanged', function(done) {
+      const file = 'not-really-data.txt';
+      const stats = fs.statSync(file);
+      const content = fs.readFileSync(file, {encoding: 'utf8'});
+      // const regex = new RegExp('^\\s*(?:\\/\\/|#|\\*)*\\s*Version: ' + newVersion.replace(/\./g, '\\.'), 'im');
+      updateFile(file, newVersion, {quiet: true}, (err) => {
+        assert.ifError(err);
+        fs.readFile(file, (err, data) => {
+          const newStats = fs.statSync(file);
+          // console.log(stats, newStats);
+          newStats.should.deep.equal(stats);
+          data.toString().should.equal(content);
+          done();
+        });
+      });
+    });
+
+
   });
 
   describe('Test output (console.log)', function() {

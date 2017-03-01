@@ -53,7 +53,7 @@ module.exports = function(file, version, options, cb) {
 
   fs.readFile(file, 'utf8', (err, data) => {
     if (err) throw err;
-    let result = false;
+    let result;
 
     switch (path.extname(file).toLowerCase()) {
     case '.json':
