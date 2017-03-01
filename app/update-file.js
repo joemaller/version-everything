@@ -88,8 +88,6 @@ module.exports = function(file, version, options, cb) {
     }
     if (result) {
       fs.writeFile(file, result.data, (err) => {
-        // const cwdfix = process.cwd().replace(/\/private\/var\//, '/var/');
-        // const relFile = path.relative(cwdfix, file);
         log(`Updated ${chalk.yellow(file)} from ${chalk.gray(result.oldVersion)} to ${chalk.green(version)}`);
         cb(err, result);
       });
