@@ -49,11 +49,11 @@ module.exports = function(file, version, options, cb) {
     case '.xml':
     case '.plist':
       // XML or PLIST FILE!
-      break;
+      // break;
     case '.yml':
     case '.yaml':
       // YAML FILE!
-      break;
+      // break;
     default:
       // no extension match
       try {
