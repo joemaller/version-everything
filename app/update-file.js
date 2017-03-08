@@ -5,24 +5,11 @@ const path = require('path');
 // const Promise = require("bluebird");
 // const readFile = Promise.promisify(fs.readFile);
 const chalk = require('chalk');
-const sed = require('shelljs').sed;
+// const sed = require('shelljs').sed;
 const yaml = require('js-yaml');
 const xml2js = require('xml2js');
 const builder = new xml2js.Builder();
-
-/**
- * Simple conditional wrapper for console.log
- * Honest question. Did I just curry console.log?
- * @param  {boolean} quiet  switch to enable logging
- * @return {function}       console.log or a noop
- */
-const logInit = function(quiet) {
-  return (quiet) ? ()=>{} : console.log;
-};
-
-// const bumpPlainText = function(data) {
-//   console.log(data);
-// };
+const logInit = require('./lib/log-init');
 
 const bumpPlainText = require('./lib/bump-plain-text');
 const bumpJSON = require('./lib/bump-json');
@@ -88,13 +75,12 @@ module.exports = function(file, version, options, cb) {
     }
     if (result) {
       fs.writeFile(file, result.data, (err) => {
-        log(`Updated ${chalk.yellow(file)} from ${chalk.gray(result.oldVersion)} to ${chalk.green(version)}`);
-        cb(err, result);
+        log(`Updated ${chalk.magenta(file)} from ${chalk.gray(result.oldVersion)} to ${chalk.cyan(version)}`);
+        // cb(err, result);
+        if (cb && typeof cb === 'function') cb(err, result);
       });
     } else {
-      if (cb && typeof cb === 'function') {
-        cb(err);
-      }
+      if (cb && typeof cb === 'function') cb(err);
     }
   });
 };
