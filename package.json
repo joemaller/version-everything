@@ -10,7 +10,7 @@
     "test": "nyc mocha",
     "test-watch": "mocha -w",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "version": "node cli.js && git add -u"
+    "version": "version-everything README.md && git add -u"
   },
   "repository": {
     "type": "git",
