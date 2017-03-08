@@ -266,11 +266,12 @@ describe('Update a file', function() {
       const file = 'not-really-data.txt';
       const stats = fs.statSync(file);
       const content = fs.readFileSync(file, {encoding: 'utf8'});
-      // const regex = new RegExp('^\\s*(?:\\/\\/|#|\\*)*\\s*Version: ' + newVersion.replace(/\./g, '\\.'), 'im');
       updateFile(file, newVersion, {quiet: true}, (err) => {
         assert.ifError(err);
         fs.readFile(file, (err, data) => {
           const newStats = fs.statSync(file);
+          delete stats.atime;
+          delete newStats.atime;
           // console.log(stats, newStats);
           newStats.should.deep.equal(stats);
           data.toString().should.equal(content);
