@@ -1,6 +1,6 @@
 {
   "name": "version-everything",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Use npm to version all kinds of projects, not just javascript.",
   "main": "index.js",
   "bin": {
@@ -9,7 +9,8 @@
   "scripts": {
     "test": "nyc mocha",
     "test-watch": "mocha -w",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "version": "node cli.js && git add -u"
   },
   "repository": {
     "type": "git",
