@@ -24,22 +24,22 @@ describe('Load a package.json file', function() {
 
     it('Finds package.json in same dir', function() {
       process.chdir('./test/fixture/deep/dotfile/');
-      const pkg = getPackageJson({quiet: true});
-      pkg.should.have.deep.property('pkg.name', 'version-everything-test-fixture');
-      pkg.should.have.deep.property('pkg.version', '9.8.7');
+      const packageJson = getPackageJson({quiet: true});
+      packageJson.should.have.deep.property('pkg.name', 'version-everything-test-fixture');
+      packageJson.should.have.deep.property('pkg.version', '9.8.7');
     });
 
     it('Finds package.json climbing up from a subdir', function() {
       process.chdir('./test/fixture/deep/dotfile/deeper/and_deeper');
-      const pkg = getPackageJson({quiet: true});
-      pkg.should.have.deep.property('pkg.name', 'version-everything-test-fixture');
-      pkg.should.have.deep.property('pkg.version', '9.8.7');
+      const packageJson = getPackageJson({quiet: true});
+      packageJson.should.have.deep.property('pkg.name', 'version-everything-test-fixture');
+      packageJson.should.have.deep.property('pkg.version', '9.8.7');
     });
 
     it('Errors trying to find an ancestor package.json file', function() {
       process.chdir('/');
-      const pkg = function() { getPackageJson({quiet: true}); };
-      pkg.should.throw();
+      const packageJson = function() { getPackageJson({quiet: true}); };
+      packageJson.should.throw();
     });
 
   });
@@ -47,12 +47,12 @@ describe('Load a package.json file', function() {
   describe('load specific package.json file', function() {
 
     it('Load a specific package.json file', function() {
-      const pkg = getPackageJson({
+      const packageJson = getPackageJson({
         package_json: './test/fixture/deep/dotfile/package.json',
         quiet: true
       });
-      pkg.should.have.deep.property('pkg.name', 'version-everything-test-fixture');
-      pkg.should.have.deep.property('pkg.version', '9.8.7');
+      packageJson.should.have.deep.property('pkg.name', 'version-everything-test-fixture');
+      packageJson.should.have.deep.property('pkg.version', '9.8.7');
     });
 
   });
