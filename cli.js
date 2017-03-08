@@ -35,9 +35,9 @@ var config = {
   // files: process.argv.slice(2)
   files: argv._,
   quiet: argv.quiet
-}
+};
 if (argv.package_json) config.package_json = argv.package_json;
 
-console.log(argv, argv._);
-console.log(config);
-// versionEverything(config);
+// console.log(argv, argv._);
+// console.log(config);
+versionEverything(config);

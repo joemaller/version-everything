@@ -56,8 +56,8 @@ module.exports = function(file, version, options, cb) {
       break;
     default:
       // no extension match
-      // trying file as unmarked JSON
       try {
+        // trying file as unmarked JSON
         result = bumpJSON(data, version, config.json);
       } catch (err) {
         // not JSON
