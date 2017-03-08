@@ -95,6 +95,30 @@ describe('Update a file', function() {
       });
     });
 
+    it('should update yaml frontmatter versions and text version strings in markdown documents');
+    it('should update several version strings in the same file', function(done) {
+      const file = 'decoy-version.md';
+      updateFile(file, newVersion, {quiet: true}, (err) => {
+        assert.ifError(err);
+        fs.readFile(file, (err, data) => {
+          data.toString().should.have.string('## Version: ' + newVersion);
+          data.toString().should.have.string('### Version ' + newVersion);
+          done();
+        });
+      });
+    });
+
+    it('should not update non-version titles that look like versions', function(done) {
+      const file = 'decoy-version.md';
+      updateFile(file, newVersion, {quiet: true}, (err) => {
+        assert.ifError(err);
+        fs.readFile(file, (err, data) => {
+          data.toString().should.have.string('# Version decoy file');
+          done();
+        });
+      });
+    });
+
   });
 
   describe('JSON files', function() {
