@@ -7,18 +7,10 @@ const should = require('chai').should();
 const assert = require('chai').assert;
 
 const fs = require('fs-extra');
-const tmp = require('tmp');
 const semver = require('semver');
 
-tmp.setGracefulCleanup();
-
+const tmpFixture = require('../app/lib/tmp-fixture');
 const updateFile = require('../app/update-file');
-
-const copyFixture = function(fixtureDir) {
-  const tmpDir = tmp.dirSync({unsafeCleanup: true}).name;
-  fs.copySync(fixtureDir, tmpDir);
-  process.chdir(tmpDir);
-};
 
 
 describe('Update a file', function() {
@@ -28,7 +20,7 @@ describe('Update a file', function() {
 
   beforeEach('refresh fixtures to tempfile', function() {
     newVersion = semver.inc(newVersion, 'patch');
-    copyFixture(fixtureDir);
+    process.chdir(tmpFixture(fixtureDir));
   });
 
 

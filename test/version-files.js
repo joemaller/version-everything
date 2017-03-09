@@ -2,8 +2,13 @@
 /* eslint no-unused-vars: "should"*/
 
 'use strict';
-const path = require('path');
+
 const should = require('chai').should();
+
+const path = require('path');
+
+const tmpFixture = require('../app/lib/tmp-fixture');
+
 const getVersionFiles = require('../app/get-version-files');
 
 const fakePackageJson = {
@@ -16,6 +21,9 @@ const fakePackageJson = {
   path: './test/fixture/deep/'
 };
 
+const cwd = process.cwd();
+const fixtureDir = './test/fixture/';
+
 /**
  * for version_files testing:
  *   strings:       1 file
@@ -26,6 +34,14 @@ const fakePackageJson = {
  */
 
 describe('Get a list of files to version', function() {
+  beforeEach('refresh fixtures to tempfile', function() {
+    process.chdir(tmpFixture(fixtureDir));
+  });
+
+  afterEach('clean up tmpDir', function() {
+    process.chdir(cwd);
+  });
+
   describe('accepts a variety of config arguments', function() {
     it('Handles a single file as a string', function() {
       let files = getVersionFiles('file1.js');
@@ -56,25 +72,28 @@ describe('Get a list of files to version', function() {
     });
   });
 
+
   describe('gets files from a .version-everything.js file', function() {
+
     it('loads a .version-everything.js as sibilng of specified package.json file', function() {
-      let files = getVersionFiles([], {path: './test/fixture/deep/dotfile/package.json'});
+      let files = getVersionFiles([], {path: './deep/dotfile/package.json'});
       files.should.be.an('array');
       files.should.have.a.lengthOf(4);
     });
 
-    it('find .version-everything in nested dir', function() {
-      let files = getVersionFiles([], {path: './test/fixture/deep/dotfile/deeper/and_deeper'});
+    it('find .version-everything.js in nested dir', function() {
+      let files = getVersionFiles([], {path: './deep/dotfile/deeper/and_deeper'});
       files.should.be.an('array');
       files.should.have.a.lengthOf(4);
     })
 
-    it('finds .version-everything in parent dir', function() {
-      let files = getVersionFiles([], {path: './test/fixture/deep/dotfile/deeper'});
+    it('finds .version-everything.js in parent dir', function() {
+      let files = getVersionFiles([], {path: './deep/dotfile/deeper'});
       files.should.be.an('array');
       files.should.have.a.lengthOf(4);
     })
   });
+
 
   describe('gets files from package.json', function() {
     it('uses version_files from specified package.json file', function() {
@@ -83,6 +102,7 @@ describe('Get a list of files to version', function() {
       files.should.have.a.lengthOf(5);
     });
   });
+
 
   describe('handles various false values', function() {
     it('version_files is empty array', function() {
