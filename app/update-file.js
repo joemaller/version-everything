@@ -39,7 +39,7 @@ module.exports = function(file, version, options, cb) {
   // console.log(path.extname(file).toLowerCase())
 
   fs.readFile(file, 'utf8', (err, data) => {
-    if (err) throw err;
+    if (err && cb && typeof cb === 'function') return cb(err);
     let result;
 
     switch (path.extname(file).toLowerCase()) {

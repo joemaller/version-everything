@@ -49,6 +49,16 @@ describe('Update a file', function() {
   it('accepts a filestream');
 
   describe('plain text files', function() {
+    it('should report the previous version (css block comment)', function(done) {
+      const file = 'file.css';
+      updateFile(file, newVersion, {quiet: true}, (err, result) => {
+        result.should.have.property('oldVersion');
+        result.should.have.property('oldVersion').that.is.not.string(newVersion);
+        result.should.have.property('oldVersion').that.is.not.undefined;
+        done();
+      });
+    });
+
     it('should increment a plain text file (css block comment)', function(done) {
       const file = 'file.css';
       const regex = new RegExp('^\\s*(?:\\/\\/|#|\\*)*\\s*Version: ' + newVersion.replace(/\./g, '\\.'), 'im');
@@ -61,6 +71,7 @@ describe('Update a file', function() {
       });
     });
 
+    it('should report the previous version (php docblock comment)');
 
     it('should increment a plain text file (php docblock comment)', function(done) {
       const file = 'file.php';
@@ -74,6 +85,7 @@ describe('Update a file', function() {
       });
     });
 
+    it('should report the previous version (markdown heading)');
 
     it('should increment a plain text file (markdown heading)', function(done) {
       const file = 'file.md';
@@ -114,6 +126,8 @@ describe('Update a file', function() {
   });
 
   describe('JSON files', function() {
+
+    it('should report the previous version (json file)');
 
     it('should increment a json file', function(done) {
       const file = 'file.json';
@@ -191,6 +205,7 @@ describe('Update a file', function() {
 
   describe('XML files', function() {
 
+    it('should report the previous version (xml file)');
     it('should increment an xml file');
     it('should increment an xml plist file');
 
@@ -198,6 +213,7 @@ describe('Update a file', function() {
 
   describe('YAML files', function() {
 
+    it('should report the previous version (yaml file)');
     it('should increment a yaml file');
     // it('should increment a yaml file', function(done) {
     //   const file = 'file.yml';
@@ -240,6 +256,20 @@ describe('Update a file', function() {
 
   describe('Files without versions', function() {
 
+    it('should report the file was unversioned', function(done) {
+      const file = 'no-version.json';
+      try {
+        updateFile(file, newVersion, {quiet: true}, (err, result) => {
+          result.should.have.property('oldVersion');
+          result.should.have.property('oldVersion').that.is.undefined;
+          done();
+        });
+      } catch (err) {
+        assert.ifError(err);
+      }
+    });
+
+
     it('adds version to version-less json file', function(done) {
       const file = 'no-version.json';
       updateFile(file, newVersion, {quiet: true}, (err) => {
@@ -272,7 +302,40 @@ describe('Update a file', function() {
       });
     });
 
+  });
 
+
+  describe('Errors and Callbacks', function() {
+    it('Throws an error on missing files', function(done) {
+      const file = 'not-a-file.txt';
+      updateFile(file, newVersion, {}, (err, result) => {
+        err.should.be.instanceOf(Error);
+        err.code.should.be.string('ENOENT');
+        done();
+      });
+    });
+
+    it('Throws an error when unable to read files (permissions)', function(done) {
+      const file = 'file.json';
+      fs.chmodSync(file, '0377');
+      updateFile(file, newVersion, {quiet: true}, (err, result) => {
+        err.should.be.instanceOf(Error);
+        err.code.should.be.string('EACCES');
+        done();
+      });
+    });
+
+    it('Calls the callback when nothing happens', function(done) {
+      const file = 'not-really-data.txt';
+      try {
+        updateFile(file, newVersion, {quiet: false}, (err, result) => {
+          arguments.should.have.lengthOf(1);
+          done();
+        });
+      } catch (err) {
+        assert.ifError(err);
+      }
+    });
   });
 
   describe('Test output (console.log)', function() {
