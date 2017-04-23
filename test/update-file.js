@@ -206,7 +206,11 @@ describe('Update a file', function() {
   describe('XML files', function() {
 
     it('should report the previous version (xml file)');
-    it('should increment an xml file');
+    it('should increment the top-level version attribute in an xml file');
+    it('should increment a top-level custom attribute in an xml file');
+    it('should increment a nested custom attribute in an xml file');
+    // TODO: Something like {key: 'project_version'} to update that key with the version
+
     it('should increment an xml plist file');
 
   });
@@ -214,7 +218,8 @@ describe('Update a file', function() {
   describe('YAML files', function() {
 
     it('should report the previous version (yaml file)');
-    it('should increment a yaml file');
+
+    it('should increment a top-level attribute in a yaml file');
     // it('should increment a yaml file', function(done) {
     //   const file = 'file.yml';
     //   const regex = new RegExp('^version: ["\']' + newVersion, 'm');
@@ -230,6 +235,11 @@ describe('Update a file', function() {
     //     });
     //   });
     // });
+    it('should increment a top-level custom attribute in a yaml file');
+    // TODO:  should be able to specify something like {key: '_playbook_version'} to update that key with the version
+    it('should increment a nested custom attribute in a yaml file');
+
+    it('should increment a plain-text coment in a yaml file');
 
     it('should increment yaml frontmatter in a markdown file');
 
