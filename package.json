@@ -1,6 +1,6 @@
 {
   "name": "version-everything",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Use npm to version all kinds of projects, not just javascript.",
   "main": "index.js",
   "bin": {
