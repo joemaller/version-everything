@@ -304,7 +304,8 @@ describe('Update a file', function() {
           const newStats = fs.statSync(file);
           delete stats.atime;
           delete newStats.atime;
-          // console.log(stats, newStats);
+          delete stats.atimeMs;
+          delete newStats.atimeMs;
           newStats.should.deep.equal(stats);
           data.toString().should.equal(content);
           done();
