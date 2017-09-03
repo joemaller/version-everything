@@ -9,13 +9,12 @@ module.exports = {
     sourceType: "module"
   },
   rules: {
-    'no-param-reassign': 'error',
-    'space-before-function-paren': 'off',
-    'vars-on-top': 'off',
-    'no-console': 'warn',
-    'indent': ['error', 2 ],
-    'linebreak-style': ['error', 'unix'],
-    'quotes': ['error', 'single', { allowTemplateLiterals: true }],
-    'semi': ['error', 'always']
+    "no-param-reassign": "error",
+    "space-before-function-paren": "off",
+    "vars-on-top": "off",
+    "no-console": "warn",
+    indent: ["error", 2],
+    "linebreak-style": ["error", "unix"],
+    semi: ["error", "always"]
   }
 };

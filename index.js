@@ -1,8 +1,7 @@
-'use strict';
-const getPackageJson = require('./app/get-package-json');
-const getVersionFiles = require('./app/get-version-files');
-const updateFile = require('./app/update-file');
-
+"use strict";
+const getPackageJson = require("./app/get-package-json");
+const getVersionFiles = require("./app/get-version-files");
+const updateFile = require("./app/update-file");
 
 /**
  * Updates the version number in specified files
@@ -14,6 +13,7 @@ const updateFile = require('./app/update-file');
  */
 module.exports = function(config) {
   const packageJson = getPackageJson(config);
-  getVersionFiles(config, packageJson)
-    .forEach(f => updateFile(f, packageJson.pkg.version, config));
+  getVersionFiles(config, packageJson).forEach(f =>
+    updateFile(f, packageJson.pkg.version, config)
+  );
 };

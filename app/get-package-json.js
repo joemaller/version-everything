@@ -1,9 +1,9 @@
-'use strict';
-const path = require('path');
-const fs = require('fs-extra');
-const readPkgUp = require('read-pkg-up').sync;
-const semver = require('semver');
-const logInit = require('./lib/log-init');
+"use strict";
+const path = require("path");
+const fs = require("fs-extra");
+const readPkgUp = require("read-pkg-up").sync;
+const semver = require("semver");
+const logInit = require("./lib/log-init");
 
 /**
  * Mostly just a reporting wrapper for readPkgUp
@@ -25,22 +25,26 @@ module.exports = function(args) {
         path: config.package_json,
         pkg: jsonFile
       };
-    } catch ( err ) {
-      throw new Error(`Unable to load ${ config.package_json }  ${ err }`);
+    } catch (err) {
+      throw new Error(`Unable to load ${config.package_json}  ${err}`);
     }
   } else {
-    data = readPkgUp({normalize: false});
-    if (!Object.keys(data).length) throw new Error('Unable to find a package.json file.');
+    data = readPkgUp({ normalize: false });
+    if (!Object.keys(data).length)
+      throw new Error("Unable to find a package.json file.");
   }
 
-  if (data.pkg && data.pkg.version) data.pkg.version = semver.clean(data.pkg.version);
+  if (data.pkg && data.pkg.version)
+    data.pkg.version = semver.clean(data.pkg.version);
   if (!data.pkg.version) {
     let relPath = path.relative(process.cwd(), data.path);
-    throw new Error(`${relPath} does not contain a valid SemVer version string.`);
+    throw new Error(
+      `${relPath} does not contain a valid SemVer version string.`
+    );
   }
 
-  log(`Loading ${ path.relative(process.cwd(), data.path)}`);
-  log(`Current version is "${ data.pkg.version }"`);
+  log(`Loading ${path.relative(process.cwd(), data.path)}`);
+  log(`Current version is "${data.pkg.version}"`);
 
   return data;
 };

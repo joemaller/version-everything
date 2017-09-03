@@ -1,3 +1,1 @@
-module.exports.files = [
-  'README.md'
-];
+module.exports.files = ["README.md"];

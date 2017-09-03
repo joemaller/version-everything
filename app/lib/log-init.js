@@ -1,5 +1,5 @@
 /* eslint no-console: false */
-'use strict';
+"use strict";
 
 /**
  * Simple conditional wrapper for console.log
@@ -8,5 +8,5 @@
  * @return {function}       console.log or a noop
  */
 module.exports = function(quiet) {
-  return (quiet) ? ()=>{} : console.log;
+  return quiet ? () => {} : console.log;
 };

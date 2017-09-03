@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const fs = require('fs-extra');
-const tmp = require('tmp');
+const fs = require("fs-extra");
+const tmp = require("tmp");
 
 tmp.setGracefulCleanup();
 
@@ -12,7 +12,7 @@ tmp.setGracefulCleanup();
  * @return {[type]}            [description]
  */
 module.exports = function(fixtureDir) {
-  const tmpDir = tmp.dirSync({unsafeCleanup: true}).name;
+  const tmpDir = tmp.dirSync({ unsafeCleanup: true }).name;
   fs.copySync(fixtureDir, tmpDir);
   return tmpDir;
 };

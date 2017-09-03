@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const findUp = require('find-up').sync;
+const findUp = require("find-up").sync;
 
 /**
  * Returns an array of files to version
@@ -13,12 +13,12 @@ const findUp = require('find-up').sync;
  */
 module.exports = function(config, pkg) {
   const packageJson = pkg || { path: process.cwd() };
-  let files = (config && config.files) ? config.files : config;
+  let files = config && config.files ? config.files : config;
   if (Array.isArray(files) && files.length) return files;
-  if (typeof files === 'string') return [files];
+  if (typeof files === "string") return [files];
 
   try {
-    let pkgdir = findUp('.version-everything.js', { cwd: packageJson.path });
+    let pkgdir = findUp(".version-everything.js", { cwd: packageJson.path });
     return require(pkgdir).files;
   } catch (err) {
     if (packageJson.pkg) {
