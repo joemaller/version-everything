@@ -25,15 +25,15 @@ describe('Load a package.json file', function() {
     it('Finds package.json in same dir', function() {
       process.chdir('./test/fixture/deep/dotfile/');
       const packageJson = getPackageJson({quiet: true});
-      packageJson.should.have.deep.property('pkg.name', 'version-everything-test-fixture');
-      packageJson.should.have.deep.property('pkg.version', '9.8.7');
+      packageJson.should.have.nested.property('pkg.name', 'version-everything-test-fixture');
+      packageJson.should.have.nested.property('pkg.version', '9.8.7');
     });
 
     it('Finds package.json climbing up from a subdir', function() {
       process.chdir('./test/fixture/deep/dotfile/deeper/and_deeper');
       const packageJson = getPackageJson({quiet: true});
-      packageJson.should.have.deep.property('pkg.name', 'version-everything-test-fixture');
-      packageJson.should.have.deep.property('pkg.version', '9.8.7');
+      packageJson.should.have.nested.property('pkg.name', 'version-everything-test-fixture');
+      packageJson.should.have.nested.property('pkg.version', '9.8.7');
     });
 
     it('Errors trying to find an ancestor package.json file', function() {
@@ -51,8 +51,8 @@ describe('Load a package.json file', function() {
         package_json: './test/fixture/deep/dotfile/package.json',
         quiet: true
       });
-      packageJson.should.have.deep.property('pkg.name', 'version-everything-test-fixture');
-      packageJson.should.have.deep.property('pkg.version', '9.8.7');
+      packageJson.should.have.nested.property('pkg.name', 'version-everything-test-fixture');
+      packageJson.should.have.nested.property('pkg.version', '9.8.7');
     });
 
   });
@@ -73,7 +73,7 @@ describe('Load a package.json file', function() {
       try {
         const pkg = getPackageJson({quiet: false});
         output.should.not.be.empty;
-        pkg.should.have.deep.property('pkg.version');
+        pkg.should.have.nested.property('pkg.version');
         cleanup();
       } catch(err) {
         cleanup();
@@ -85,7 +85,7 @@ describe('Load a package.json file', function() {
       try {
         const pkg = getPackageJson({quiet: true});
         output.should.be.empty;
-        pkg.should.have.deep.property('pkg.version');
+        pkg.should.have.nested.property('pkg.version');
         cleanup();
       } catch (err) {
         cleanup();
@@ -97,7 +97,7 @@ describe('Load a package.json file', function() {
       try {
         const pkg = getPackageJson();
         output.should.not.be.empty;
-        pkg.should.have.deep.property('pkg.version');
+        pkg.should.have.nested.property('pkg.version');
         cleanup();
       } catch (err) {
         cleanup();
