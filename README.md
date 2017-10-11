@@ -139,6 +139,8 @@ Passed directly to the [js-yaml safeDump method][safedump]. See [js-yaml][] docs
 
 ### Notes
 
+**npm** may fail to commit/tag files when `package.json` is nested below the git repository root. Ref: [npm#18795][npm18795]
+
 While this module strongly encourages the use of true SemVer versions, these are not enforced. Just about any wacky version string should work.
 
 
@@ -150,7 +152,8 @@ While this module strongly encourages the use of true SemVer versions, these are
 [jsonparse]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
 [stringify]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
 [reviver]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse#Using_the_reviver_parameter
-[replacer]: 
+[replacer]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter
 [js-yaml]: https://www.npmjs.com/package/js-yaml
 [safedump]: https://www.npmjs.com/package/js-yaml#safedump-object---options-
 
+[npm18795]: https://github.com/npm/npm/issues/18795
