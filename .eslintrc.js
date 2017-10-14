@@ -1,3 +1,7 @@
+/**
+ * iop-web-tooling-starter-pack
+ * Version: 0.1.3
+ */
 module.exports = {
   env: {
     commonjs: true,
@@ -9,12 +13,10 @@ module.exports = {
     sourceType: "module"
   },
   rules: {
+    "linebreak-style": ["error", "unix"],
+    "no-console": "warn",
     "no-param-reassign": "error",
     "space-before-function-paren": "off",
-    "vars-on-top": "off",
-    "no-console": "warn",
-    indent: ["error", 2],
-    "linebreak-style": ["error", "unix"],
-    semi: ["error", "always"]
+    "vars-on-top": "off"
   }
 };
