@@ -7,6 +7,7 @@ const should = require("chai").should();
 const assert = require("chai").assert;
 
 const fs = require("fs-extra");
+const yaml = require("js-yaml");
 const semver = require("semver");
 
 const tmpFixture = require("../app/lib/tmp-fixture");
@@ -146,7 +147,15 @@ describe("Update a file", function() {
   });
 
   describe("JSON files", function() {
-    it("should report the previous version (json file)");
+    it("should report the previous version (json file)", function(done) {
+      const file = "file.json";
+      updateFile(file, newVersion, { quiet: true }, (err, result) => {
+        assert.ifError(err);
+
+        result.should.have.property("oldVersion");
+        done();
+      });
+    });
 
     it("should increment a json file", function(done) {
       const file = "file.json";
@@ -257,7 +266,21 @@ describe("Update a file", function() {
   });
 
   describe("YAML files", function() {
-    it("should report the previous version (yaml file)");
+    it("should report the previous version (yaml file)", function(done) {
+      const file = "file.yml";
+      updateFile(file, newVersion, { quiet: true }, (err, result) => {
+        assert.ifError(err);
+        result.should.have.property("oldVersion");
+        done();
+
+        // fs.readFile(file, (err, data) => {
+        //   const yamlData = yaml.safeLoad(data);
+        //   console.log(yamlData);
+        //   json.should.have.property("version", newVersion);
+
+        // })
+      });
+    });
 
     it("should increment a top-level attribute in a yaml file");
     // it('should increment a yaml file', function(done) {

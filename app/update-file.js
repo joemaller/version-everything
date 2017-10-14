@@ -6,14 +6,14 @@ const path = require("path");
 // const readFile = Promise.promisify(fs.readFile);
 const chalk = require("chalk");
 // const sed = require('shelljs').sed;
-const yaml = require("js-yaml");
+// const yaml = require("js-yaml");
 const xml2js = require("xml2js");
 const builder = new xml2js.Builder();
 const logInit = require("./lib/log-init");
 
 const bumpPlainText = require("./lib/bump-plain-text");
 const bumpJSON = require("./lib/bump-json");
-
+const bumpYAML = require("./lib/bump-yaml");
 /**
  * Sends files to the correct bumping function, writes the result
  * @param  {[type]} file    [description]
@@ -52,6 +52,9 @@ module.exports = function(file, version, options, cb) {
       // break;
       case ".yml":
       case ".yaml":
+        result = bumpYAML(data, version, config.yaml);
+        break;
+
       // YAML FILE!
       // break;
       default:
