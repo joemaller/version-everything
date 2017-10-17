@@ -141,7 +141,9 @@ Passed directly to the [js-yaml safeDump method][safedump]. See [js-yaml][] docs
 
 **npm** may fail to commit/tag files when `package.json` is nested below the git repository root. Ref: [npm#18795][npm18795]
 
-While this module strongly encourages the use of true SemVer versions, these are not enforced. Just about any wacky version string should work.
+While this module strongly encourages the use of true SemVer versions, these are not enforced. Just about any wacky version string without a whitespace character should work.
+
+[phpDocumentor @version tag][phpdoc-version] vcs-prefixes and version-descriptions will be dropped.
 
 
 [webpack]: https://webpack.github.io/docs/configuration.html
@@ -155,5 +157,6 @@ While this module strongly encourages the use of true SemVer versions, these are
 [replacer]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter
 [js-yaml]: https://www.npmjs.com/package/js-yaml
 [safedump]: https://www.npmjs.com/package/js-yaml#safedump-object---options-
+[phpdoc-version]: https://docs.phpdoc.org/references/phpdoc/tags/version.html
 
 [npm18795]: https://github.com/npm/npm/issues/18795

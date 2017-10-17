@@ -106,6 +106,34 @@ describe("Update a file", function() {
       });
     });
 
+    it("should report the previous version (php docblock version tag)", function(
+      done
+    ) {
+      const file = "php-docblock-version-tag.php";
+      updateFile(file, newVersion, { quiet: true }, (err, result) => {
+        assert.ifError(err);
+        result.should.have.property("oldVersion").that.is.not.undefined;
+        done();
+      });
+    });
+
+    it("should increment a plain text file (php docblock version tag)", function(
+      done
+    ) {
+      const file = "php-docblock-version-tag.php";
+      const regex = new RegExp(
+        "^\\s+\\*\\s+@version\\s+([^:]+:)?" + newVersion.replace(/\./g, "\\."),
+        "im"
+      );
+      updateFile(file, newVersion, { quiet: true }, err => {
+        assert.ifError(err);
+        fs.readFile(file, (err, data) => {
+          data.toString().should.match(regex);
+          done();
+        });
+      });
+    });
+
     it("should report the previous version (markdown heading)", function(done) {
       const file = "file.md";
       updateFile(file, newVersion, { quiet: true }, (err, result) => {
