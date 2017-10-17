@@ -77,7 +77,16 @@ describe("Update a file", function() {
       });
     });
 
-    it("should report the previous version (php docblock comment)");
+    it("should report the previous version (php docblock comment)", function(
+      done
+    ) {
+      const file = "file.php";
+      updateFile(file, newVersion, { quiet: true }, (err, result) => {
+        assert.ifError(err);
+        result.should.have.property("oldVersion");
+        done();
+      });
+    });
 
     it("should increment a plain text file (php docblock comment)", function(
       done
@@ -97,7 +106,14 @@ describe("Update a file", function() {
       });
     });
 
-    it("should report the previous version (markdown heading)");
+    it("should report the previous version (markdown heading)", function(done) {
+      const file = "file.md";
+      updateFile(file, newVersion, { quiet: true }, (err, result) => {
+        assert.ifError(err);
+        result.should.have.property("oldVersion");
+        done();
+      });
+    });
 
     it("should increment a plain text file (markdown heading)", function(done) {
       const file = "file.md";
@@ -151,7 +167,6 @@ describe("Update a file", function() {
       const file = "file.json";
       updateFile(file, newVersion, { quiet: true }, (err, result) => {
         assert.ifError(err);
-
         result.should.have.property("oldVersion");
         done();
       });
@@ -168,6 +183,9 @@ describe("Update a file", function() {
         });
       });
     });
+
+    it("should increment a top-level custom attribute in a json file");
+    it("should increment a nested custom attribute in a json file");
 
     it("should increment a json file, also using a replacer array", function(
       done
@@ -258,9 +276,12 @@ describe("Update a file", function() {
   describe("XML files", function() {
     it("should report the previous version (xml file)");
     it("should increment the top-level version attribute in an xml file");
+
+    // TODO: specify something like {key: 'project_version'} to update that key with the version
     it("should increment a top-level custom attribute in an xml file");
+
+    // TODO: specify something like {key: 'config.project_version'} to update that key with the version
     it("should increment a nested custom attribute in an xml file");
-    // TODO: Something like {key: 'project_version'} to update that key with the version
 
     it("should increment an xml plist file");
   });
@@ -272,37 +293,29 @@ describe("Update a file", function() {
         assert.ifError(err);
         result.should.have.property("oldVersion");
         done();
-
-        // fs.readFile(file, (err, data) => {
-        //   const yamlData = yaml.safeLoad(data);
-        //   console.log(yamlData);
-        //   json.should.have.property("version", newVersion);
-
-        // })
       });
     });
 
-    it("should increment a top-level attribute in a yaml file");
-    // it('should increment a yaml file', function(done) {
-    //   const file = 'file.yml';
-    //   const regex = new RegExp('^version: ["\']' + newVersion, 'm');
-    //   console.log('*&***************&*&*&*&*&*&    ' + regex );
-    //   updateFile(file, newVersion, {}, (err, result) => {
-    //     assert.ifError(err);
-    //     fs.readFile(file, (err, data) => {
-    //       // console.log(data.toString());
-    //       data.toString().should.match(regex);
-    //       // data.toString().should.match(/^     "version"/m);
-    //       // assert.fail();
-    //       done();
-    //     });
-    //   });
-    // });
+    it("should increment a top-level attribute in a yaml file", function(done) {
+      const file = "file.yml";
+      updateFile(file, newVersion, { quiet: true }, err => {
+        assert.ifError(err);
+        fs.readFile(file, (err, data) => {
+          assert.ifError(err);
+          const yamlData = yaml.safeLoad(data);
+          yamlData.should.have.property("version", newVersion);
+          done();
+        });
+      });
+    });
+
+    // TODO: specify something like {key: '_playbook_version'} to update that key with the version
     it("should increment a top-level custom attribute in a yaml file");
-    // TODO:  should be able to specify something like {key: '_playbook_version'} to update that key with the version
+
+    // TODO: specify something like {key: 'config.version'} to update that nested key with the version
     it("should increment a nested custom attribute in a yaml file");
 
-    it("should increment a plain-text coment in a yaml file");
+    // it("should increment a plain-text comment in a yaml file");  // Is this really doable or necessary?
 
     it("should increment yaml frontmatter in a markdown file");
   });
@@ -320,7 +333,18 @@ describe("Update a file", function() {
     });
 
     it("should increment an xml file without a file extension");
-    it("should increment a yaml file without a file extension");
+    it("should increment a yaml file without a file extension", function(done) {
+      const file = "naked-yaml";
+      updateFile(file, newVersion, { quiet: true }, (err, result) => {
+        assert.ifError(err);
+        fs.readFile(file, (err, data) => {
+          assert.ifError(err);
+          const yamlData = yaml.safeLoad(data);
+          yamlData.should.have.property("version", newVersion);
+          done();
+        });
+      });
+    });
   });
 
   describe("Files without versions", function() {
@@ -349,7 +373,18 @@ describe("Update a file", function() {
     });
 
     it("adds version to version-less xml file");
-    it("adds version to version-less yaml file");
+    it("adds version to version-less yaml file", function(done) {
+      const file = "no-version.yml";
+      updateFile(file, newVersion, { quiet: true }, err => {
+        assert.ifError(err);
+        fs.readFile(file, (err, data) => {
+          assert.ifError(err);
+          const yamlData = yaml.safeLoad(data);
+          yamlData.should.have.property("version", newVersion);
+          done();
+        });
+      });
+    });
 
     it("passes version-less plain files through unchanged", function(done) {
       const file = "not-really-data.txt";

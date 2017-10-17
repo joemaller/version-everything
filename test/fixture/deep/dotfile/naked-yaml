@@ -1,0 +1,7 @@
+---
+version: 77.88.99
+# a comment which will be nuked
+arr: 
+  - dog
+  - cat
+  - bird

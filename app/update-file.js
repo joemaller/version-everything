@@ -46,17 +46,17 @@ module.exports = function(file, version, options, cb) {
       case ".json":
         result = bumpJSON(data, version, config.json);
         break;
+
       case ".xml":
       case ".plist":
       // XML or PLIST FILE!
       // break;
+
       case ".yml":
       case ".yaml":
         result = bumpYAML(data, version, config.yaml);
         break;
 
-      // YAML FILE!
-      // break;
       default:
         // no extension match
         try {
@@ -70,6 +70,11 @@ module.exports = function(file, version, options, cb) {
         }
         if (!result) {
           // No result, trying file as YAML
+          try {
+            result = bumpYAML(data, version, config.yaml);
+          } catch (err) {
+            // not YAML
+          }
         }
         if (!result) {
           // No result, trying file as plain text (RegExp)
