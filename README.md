@@ -1,5 +1,5 @@
 # version-everything
-#### Version: 0.2.2
+#### Version: 0.2.3
 
 Use npm to version all kinds of projects, not just JavaScript
 
