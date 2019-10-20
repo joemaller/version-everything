@@ -1,23 +1,25 @@
 # version-everything
+
 #### Version: 0.2.3
 
 Use npm to version all kinds of projects, not just JavaScript
 
-[![Build Status](https://travis-ci.org/joemaller/version-everything.svg?branch=master)](https://travis-ci.org/joemaller/version-everything) 
-[![Coverage Status](https://coveralls.io/repos/github/joemaller/version-everything/badge.svg?branch=master)](https://coveralls.io/github/joemaller/version-everything?branch=master) 
+[![Build Status](https://travis-ci.org/joemaller/version-everything.svg?branch=master)](https://travis-ci.org/joemaller/version-everything)
+[![Coverage Status](https://coveralls.io/repos/github/joemaller/version-everything/badge.svg?branch=master)](https://coveralls.io/github/joemaller/version-everything?branch=master)
 [![npm](https://img.shields.io/npm/v/version-everything.svg)](https://www.npmjs.com/package/version-everything)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 <br>
 [![dependencies Status](https://david-dm.org/joemaller/version-everything/status.svg)](https://david-dm.org/joemaller/version-everything)
 [![devDependencies Status](https://david-dm.org/joemaller/version-everything/dev-status.svg)](https://david-dm.org/joemaller/version-everything?type=dev)
+
 <!-- [![libhive - Open source examples](https://www.libhive.com/providers/npm/packages/version-everything/examples/badge.svg)](https://www.libhive.com/providers/npm/packages/version-everything)  -->
 
-
-Synchronize the version string from package.json into a set of additional text or structured data files. When called from npm's version script, all versioned files in a project will be updated and committed with a single command. 
+Synchronize the version string from package.json into a set of additional text or structured data files. When called from npm's version script, all versioned files in a project will be updated and committed with a single command.
 
 ```sh
     npm install --save version-everything
 ```
+
 ## How to version everything
 
 There are several ways version-everything can be used, the only requirement is an array of files to synchronize versions into. The files can be text (php, css, markdown, whatever) or structured data (JSON, yaml or xml).
@@ -26,34 +28,33 @@ The file list is an array specified in one of the following forms, in order of p
 
 1. Command line arguments
 2. `files` key in a **.version-everything.js** file
-3. `version_files` key in the parent project's **package.json** file
+3. `versionFiles` key in the parent project's **package.json** file
 
 ### npm lifecycle script in package.json
 
-The simplest way to use *version-everything* is to hook into npm's version event. Once set up, a single `npm` command will update, commit and tag all versioned files in a project. 
+The simplest way to use _version-everything_ is to hook into npm's version event. Once set up, a single `npm` command will update, commit and tag all versioned files in a project.
 
 Add something like the following to your project's package.json file:
 
 ```json
 {
-    "version": "1.3.6",
-    "scripts": {
-        "version": "version-everything && git add -u"
-    },
-    "version_files": [
-        "README.md",
-        "example_wordpress_plugin.php",
-        "styles.css",
-        "manifest.json",
-        "sadness.xml"
-    ]
+  "version": "1.3.6",
+  "scripts": {
+    "version": "version-everything && git add -u"
+  },
+  "versionFiles": [
+    "README.md",
+    "example_wordpress_plugin.php",
+    "styles.css",
+    "manifest.json",
+    "sadness.xml"
+  ]
 }
 ```
 
-Then run a command like `npm version minor` to bump the version in all the files. It's that easy. 
+Then run a command like `npm version minor` to bump the version in all the files. It's that easy.
 
-Note that structured data files will be formatted using default settings. 
-
+Note that structured data files will be formatted using default settings.
 
 ### .version-everything.js dotfile
 
@@ -65,29 +66,29 @@ The basic schema of the config file should look something like this:
 
 ```js
 module.exports = {
-    files: [
-        "README.md",
-        "example_wordpress_plugin.php",
-        "styles.css"
-    ],
-    json: { /* optional json config object, keys pass directly to JSON.stringify */ },
-    yaml: { /* optional yaml config object, passes directly to js-yaml */ },
-    xml: { /* optional xml config object, passes directly to xml2js */ }
-}
+  files: ["README.md", "example_wordpress_plugin.php", "styles.css"],
+  json: {
+    /* optional json config object, keys pass directly to JSON.stringify */
+  },
+  yaml: {
+    /* optional yaml config object, passes directly to js-yaml */
+  },
+  xml: {
+    /* optional xml config object, passes directly to xml2js */
+  }
+};
 ```
 
 Calling the `version-everything` binary prefers this file over settings in package.json.
 
-
 ### CommonJS module requires
-Version-everything can also be used like any other Node module. The version string will be pulled from package.json and should be treated as a global constant or envvar. 
 
+Version-everything can also be used like any other Node module. The version string will be pulled from package.json and should be treated as a global constant or envvar.
 
 ```js
-const version = require('version-everything');
+const version = require("version-everything");
 
-version(["README.md", "manifest.json"], { json: {space: 4} });
-
+version(["README.md", "manifest.json"], { json: { space: 4 } });
 ```
 
 ### Command Line Interface
@@ -99,12 +100,12 @@ $ version-everything readme.md manifest.json
 ```
 
 ### Recognized File Extensions
+
 Files with the following extensions will be recognized as structured text and parsed accordingly.
 
-* **JSON** - `.json`
-* **XML** - `.xml`, `.plist`
-* **YAML** - `.yml`, `.yaml`
-
+- **JSON** - `.json`
+- **XML** - `.xml`, `.plist`
+- **YAML** - `.yml`, `.yaml`
 
 ## API
 
@@ -114,28 +115,27 @@ Files with the following extensions will be recognized as structured text and pa
 
 Type: `array`
 
-An array containing the files which will be versioned. 
-
+An array containing the files which will be versioned.
 
 #### options
 
 Type: `object`
 All keys are optional.
 
-##### json 
+##### json
+
 Type: `object`
 Three keys from the `json` object will be passed directly to [`JSON.parse`][jsonparse] or [`JSON.stringify`][stringify]: **`space`** which sets indentation from an integer or string, a **[`reviver`][reviver]** function and a **[`replacer`][replacer]** function/array. See the [JSON docs][stringify] for more info.
 
 ##### xml
+
 Type: `object`
 Passed directly to the [xml2js Builder class][xml2js-builder]. See [xml2js][] docs for available options.
 
-
 ##### yaml
+
 Type: `object`
 Passed directly to the [js-yaml safeDump method][safedump]. See [js-yaml][] docs for available options.
-
-
 
 ### Notes
 
@@ -144,7 +144,6 @@ Passed directly to the [js-yaml safeDump method][safedump]. See [js-yaml][] docs
 While this module strongly encourages the use of true SemVer versions, these are not enforced. Just about any wacky version string without a whitespace character should work.
 
 [phpDocumentor @version tag][phpdoc-version] vcs-prefixes and version-descriptions will be dropped.
-
 
 [webpack]: https://webpack.github.io/docs/configuration.html
 [eslint]: http://eslint.org/docs/user-guide/configuring#configuration-file-formats
@@ -158,5 +157,4 @@ While this module strongly encourages the use of true SemVer versions, these are
 [js-yaml]: https://www.npmjs.com/package/js-yaml
 [safedump]: https://www.npmjs.com/package/js-yaml#safedump-object---options-
 [phpdoc-version]: https://docs.phpdoc.org/references/phpdoc/tags/version.html
-
 [npm18795]: https://github.com/npm/npm/issues/18795
