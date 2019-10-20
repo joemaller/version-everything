@@ -1,0 +1,6 @@
+.circleci/
+.eslintrc.js
+.gitattributes
+.nyc_output/
+coverage/
+test/
