@@ -11,8 +11,30 @@ const tmpFixture = require("../app/lib/tmp-fixture");
 
 const getVersionFiles = require("../app/get-version-files");
 
+/**
+ * Uses 'versionFiles' property instead of 'version_files'
+ */
 const fakePackageJson = {
-  pkg: {
+  packageJson: {
+    name: "fake-package-json",
+    version: "11.22.33",
+    description: "Fake package.json for testing",
+    versionFiles: [
+      "file1.js",
+      "file2.json",
+      "file3.yml",
+      "file4.xml",
+      "file5.php"
+    ]
+  },
+  path: "./test/fixture/deep/"
+};
+
+/**
+ * uses old 'version_files' property
+ */
+const fakePackageJsonOld = {
+  packageJson: {
     name: "fake-package-json",
     version: "11.22.33",
     description: "Fake package.json for testing",
@@ -21,7 +43,35 @@ const fakePackageJson = {
       "file2.json",
       "file3.yml",
       "file4.xml",
+      "file5.php",
+      "file6"
+    ]
+  },
+  path: "./test/fixture/deep/"
+};
+
+/**
+ * Includes both 'versionFiles' and 'version_files' properties
+ */
+const fakePackageJsonBoth = {
+  packageJson: {
+    name: "fake-package-json",
+    version: "11.22.33",
+    description: "Fake package.json for testing",
+    versionFiles: [
+      "file1.js",
+      "file2.json",
+      "file3.yml",
+      "file4.xml",
       "file5.php"
+    ],
+    version_files: [
+      "file1.js",
+      "file2.json",
+      "file3.yml",
+      "file4.xml",
+      "file5.php",
+      "file6"
     ]
   },
   path: "./test/fixture/deep/"
@@ -37,6 +87,7 @@ const fixtureDir = "./test/fixture/";
  *   objects:       3 files
  *   dotfiles:      4 files
  *   fake package.json:  5 files
+ *   fake package.json old: 6 files
  */
 
 describe("Get a list of files to version", function() {
@@ -101,7 +152,19 @@ describe("Get a list of files to version", function() {
   });
 
   describe("gets files from package.json", function() {
-    it("uses version_files from specified package.json file", function() {
+    it("uses 'versionFiles' from specified package.json file", function() {
+      let files = getVersionFiles([], fakePackageJson);
+      files.should.be.an("array");
+      files.should.have.a.lengthOf(5);
+    });
+
+    it("uses old 'version_files' from specified package.json file", function() {
+      let files = getVersionFiles([], fakePackageJsonOld);
+      files.should.be.an("array");
+      files.should.have.a.lengthOf(6);
+    });
+
+    it("uses 'versionFiles' before 'version_files' both are defined", function() {
       let files = getVersionFiles([], fakePackageJson);
       files.should.be.an("array");
       files.should.have.a.lengthOf(5);

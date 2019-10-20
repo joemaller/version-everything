@@ -12,17 +12,17 @@ const findUp = require("find-up").sync;
  * @return {array}        List of files to version
  */
 module.exports = function(config, pkg) {
-  const packageJson = pkg || { path: process.cwd() };
+  const { packageJson, path: pkgPath } = pkg || { path: process.cwd() };
   let files = config && config.files ? config.files : config;
   if (Array.isArray(files) && files.length) return files;
   if (typeof files === "string") return [files];
 
   try {
-    let pkgdir = findUp(".version-everything.js", { cwd: packageJson.path });
+    let pkgdir = findUp(".version-everything.js", { cwd: pkgPath });
     return require(pkgdir).files;
   } catch (err) {
-    if (packageJson.pkg) {
-      return packageJson.pkg.version_files || [];
+    if (packageJson) {
+      return packageJson.versionFiles || packageJson.version_files || [];
     }
     return [];
   }
