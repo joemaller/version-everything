@@ -14,6 +14,6 @@ const updateFile = require("./app/update-file");
 module.exports = function(config) {
   const packageJson = getPackageJson(config);
   getVersionFiles(config, packageJson).forEach(f =>
-    updateFile(f, packageJson.pkg.version, config)
+    updateFile(f, packageJson.packageJson.version, config)
   );
 };
