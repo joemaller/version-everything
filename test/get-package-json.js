@@ -25,20 +25,20 @@ describe("Load a package.json file", function() {
       process.chdir("./test/fixture/deep/dotfile/");
       const packageJson = getPackageJson({ quiet: true });
       packageJson.should.have.nested.property(
-        "pkg.name",
+        "packageJson.name",
         "version-everything-test-fixture"
       );
-      packageJson.should.have.nested.property("pkg.version", "9.8.7");
+      packageJson.should.have.nested.property("packageJson.version", "9.8.7");
     });
 
     it("Finds package.json climbing up from a subdir", function() {
       process.chdir("./test/fixture/deep/dotfile/deeper/and_deeper");
       const packageJson = getPackageJson({ quiet: true });
       packageJson.should.have.nested.property(
-        "pkg.name",
+        "packageJson.name",
         "version-everything-test-fixture"
       );
-      packageJson.should.have.nested.property("pkg.version", "9.8.7");
+      packageJson.should.have.nested.property("packageJson.version", "9.8.7");
     });
 
     it("Errors trying to find an ancestor package.json file", function() {
@@ -57,10 +57,10 @@ describe("Load a package.json file", function() {
         quiet: true
       });
       packageJson.should.have.nested.property(
-        "pkg.name",
+        "packageJson.name",
         "version-everything-test-fixture"
       );
-      packageJson.should.have.nested.property("pkg.version", "9.8.7");
+      packageJson.should.have.nested.property("packageJson.version", "9.8.7");
     });
   });
 
@@ -76,9 +76,9 @@ describe("Load a package.json file", function() {
 
     it("logs to stdout, quiet == false", function() {
       try {
-        const pkg = getPackageJson({ quiet: false });
+        const packageJson = getPackageJson({ quiet: false });
         output.should.not.be.empty;
-        pkg.should.have.nested.property("pkg.version");
+        packageJson.should.have.nested.property("packageJson.version");
         cleanup();
       } catch (err) {
         cleanup();
@@ -88,9 +88,9 @@ describe("Load a package.json file", function() {
 
     it("does its thing quietly, quiet == true", function() {
       try {
-        const pkg = getPackageJson({ quiet: true });
+        const packageJson = getPackageJson({ quiet: true });
         output.should.be.empty;
-        pkg.should.have.nested.property("pkg.version");
+        packageJson.should.have.nested.property("packageJson.version");
         cleanup();
       } catch (err) {
         cleanup();
@@ -100,9 +100,9 @@ describe("Load a package.json file", function() {
 
     it("is not quiet by default", function() {
       try {
-        const pkg = getPackageJson();
+        const packageJson = getPackageJson();
         output.should.not.be.empty;
-        pkg.should.have.nested.property("pkg.version");
+        packageJson.should.have.nested.property("packageJson.version");
         cleanup();
       } catch (err) {
         cleanup();
