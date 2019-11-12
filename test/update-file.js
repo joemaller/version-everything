@@ -45,9 +45,7 @@ describe("Update a file", function() {
   it("accepts a filestream");
 
   describe("plain text files", function() {
-    it("should report the previous version (css block comment)", function(
-      done
-    ) {
+    it("should report the previous version (css block comment)", function(done) {
       const file = "file.css";
       updateFile(file, newVersion, { quiet: true }, (err, result) => {
         result.should.have.property("oldVersion");
@@ -59,9 +57,7 @@ describe("Update a file", function() {
       });
     });
 
-    it("should increment a plain text file (css block comment)", function(
-      done
-    ) {
+    it("should increment a plain text file (css block comment)", function(done) {
       const file = "file.css";
       const regex = new RegExp(
         "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " +
@@ -77,9 +73,19 @@ describe("Update a file", function() {
       });
     });
 
-    it("should report the previous version (php docblock comment)", function(
-      done
-    ) {
+    it("should increment a v0.0.0 style version at the end of a line in a plain text file (css block comment)", function(done) {
+      const file = "file.css";
+      const regex = new RegExp("^v" + newVersion.replace(/\./g, "\\."), "im");
+      updateFile(file, newVersion, { quiet: true }, err => {
+        assert.ifError(err);
+        fs.readFile(file, (err, data) => {
+          data.toString().should.match(regex);
+          done();
+        });
+      });
+    });
+
+    it("should report the previous version (php docblock comment)", function(done) {
       const file = "file.php";
       updateFile(file, newVersion, { quiet: true }, (err, result) => {
         assert.ifError(err);
@@ -88,9 +94,7 @@ describe("Update a file", function() {
       });
     });
 
-    it("should increment a plain text file (php docblock comment)", function(
-      done
-    ) {
+    it("should increment a plain text file (php docblock comment)", function(done) {
       const file = "file.php";
       const regex = new RegExp(
         "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " +
@@ -106,9 +110,7 @@ describe("Update a file", function() {
       });
     });
 
-    it("should report the previous version (php docblock version tag)", function(
-      done
-    ) {
+    it("should report the previous version (php docblock version tag)", function(done) {
       const file = "php-docblock-version-tag.php";
       updateFile(file, newVersion, { quiet: true }, (err, result) => {
         assert.ifError(err);
@@ -117,9 +119,7 @@ describe("Update a file", function() {
       });
     });
 
-    it("should increment a plain text file (php docblock version tag)", function(
-      done
-    ) {
+    it("should increment a plain text file (php docblock version tag)", function(done) {
       const file = "php-docblock-version-tag.php";
       const regex = new RegExp(
         "^\\s+\\*\\s+@version\\s+([^:]+:)?" + newVersion.replace(/\./g, "\\."),
@@ -162,9 +162,7 @@ describe("Update a file", function() {
     it(
       "should update yaml frontmatter versions and text version strings in markdown documents"
     );
-    it("should update several version strings in the same file", function(
-      done
-    ) {
+    it("should update several version strings in the same file", function(done) {
       const file = "decoy-version.md";
       updateFile(file, newVersion, { quiet: true }, err => {
         assert.ifError(err);
@@ -176,9 +174,7 @@ describe("Update a file", function() {
       });
     });
 
-    it("should not update non-version titles that look like versions", function(
-      done
-    ) {
+    it("should not update non-version titles that look like versions", function(done) {
       const file = "decoy-version.md";
       updateFile(file, newVersion, { quiet: true }, err => {
         assert.ifError(err);
@@ -215,9 +211,7 @@ describe("Update a file", function() {
     it("should increment a top-level custom attribute in a json file");
     it("should increment a nested custom attribute in a json file");
 
-    it("should increment a json file, also using a replacer array", function(
-      done
-    ) {
+    it("should increment a json file, also using a replacer array", function(done) {
       const file = "file.json";
       const replacer = ["title", "version"];
       updateFile(
@@ -237,9 +231,7 @@ describe("Update a file", function() {
       );
     });
 
-    it("should increment a json file, also using a replacer function", function(
-      done
-    ) {
+    it("should increment a json file, also using a replacer function", function(done) {
       const file = "file.json";
       const replacer = (key, value) =>
         key === "double_me" ? value * 2 : value;
@@ -259,9 +251,7 @@ describe("Update a file", function() {
       );
     });
 
-    it("should increment a json file, also using a reviver function", function(
-      done
-    ) {
+    it("should increment a json file, also using a reviver function", function(done) {
       const file = "file.json";
       const reviver = (key, value) => (key === "double_me" ? value * 2 : value);
       updateFile(
@@ -280,9 +270,7 @@ describe("Update a file", function() {
       );
     });
 
-    it("should increment a json file and set a specific indentation", function(
-      done
-    ) {
+    it("should increment a json file and set a specific indentation", function(done) {
       const file = "file.json";
       const spaces = 4;
       const regex = new RegExp("^ {" + spaces + '}"version":', "m");
@@ -444,9 +432,7 @@ describe("Update a file", function() {
       });
     });
 
-    it("Throws an error when unable to read files (permissions)", function(
-      done
-    ) {
+    it("Throws an error when unable to read files (permissions)", function(done) {
       const file = "file.json";
       fs.chmodSync(file, "0377");
       updateFile(file, newVersion, { quiet: true }, (err, result) => {

@@ -1,6 +1,12 @@
 /*
 Version: 1.22.333
+
+This is an extra line ending with a simple version number v3.14.15
+
+Simple version in the middle, v9.8.7 should *not* be updated
+
+\s*(?:\/\/|#|\*)*\s*
 */
 .fake {
-  color: bisque;
+  color: papayawhip;
 }
