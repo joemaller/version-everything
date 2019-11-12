@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "nyc mocha",
-    "test-watch": "mocha -w",
+    "test:watch": "mocha -w",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "version": "node cli.js README.md && git add -u"
   },
