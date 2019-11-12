@@ -72,81 +72,66 @@ describe("Update a file", () => {
       });
     });
 
-    test(
-      "should increment a v0.0.0 style version at the end of a line in a plain text file (css block comment)",
-      done => {
-        const file = "file.css";
-        const regex = new RegExp("^v" + newVersion.replace(/\./g, "\\."), "im");
-        updateFile(file, newVersion, { quiet: true }, err => {
-          expect(err).toBeFalsy();
-          fs.readFile(file, (err, data) => {
-            data.toString().should.match(regex);
-            done();
-          });
-        });
-      }
-    );
-
-    test(
-      "should report the previous version (php docblock comment)",
-      done => {
-        const file = "file.php";
-        updateFile(file, newVersion, { quiet: true }, (err, result) => {
-          expect(err).toBeFalsy();
-          result.should.have.property("oldVersion");
+    test("should increment a v0.0.0 style version at the end of a line in a plain text file (css block comment)", done => {
+      const file = "file.css";
+      const regex = new RegExp("^v" + newVersion.replace(/\./g, "\\."), "im");
+      updateFile(file, newVersion, { quiet: true }, err => {
+        expect(err).toBeFalsy();
+        fs.readFile(file, (err, data) => {
+          data.toString().should.match(regex);
           done();
         });
-      }
-    );
+      });
+    });
 
-    test(
-      "should increment a plain text file (php docblock comment)",
-      done => {
-        const file = "file.php";
-        const regex = new RegExp(
-          "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " +
-            newVersion.replace(/\./g, "\\."),
-          "im"
-        );
-        updateFile(file, newVersion, { quiet: true }, err => {
-          expect(err).toBeFalsy();
-          fs.readFile(file, (err, data) => {
-            data.toString().should.match(regex);
-            done();
-          });
-        });
-      }
-    );
+    test("should report the previous version (php docblock comment)", done => {
+      const file = "file.php";
+      updateFile(file, newVersion, { quiet: true }, (err, result) => {
+        expect(err).toBeFalsy();
+        result.should.have.property("oldVersion");
+        done();
+      });
+    });
 
-    test(
-      "should report the previous version (php docblock version tag)",
-      done => {
-        const file = "php-docblock-version-tag.php";
-        updateFile(file, newVersion, { quiet: true }, (err, result) => {
-          expect(err).toBeFalsy();
-          result.should.have.property("oldVersion").that.is.not.undefined;
+    test("should increment a plain text file (php docblock comment)", done => {
+      const file = "file.php";
+      const regex = new RegExp(
+        "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " +
+          newVersion.replace(/\./g, "\\."),
+        "im"
+      );
+      updateFile(file, newVersion, { quiet: true }, err => {
+        expect(err).toBeFalsy();
+        fs.readFile(file, (err, data) => {
+          data.toString().should.match(regex);
           done();
         });
-      }
-    );
+      });
+    });
 
-    test(
-      "should increment a plain text file (php docblock version tag)",
-      done => {
-        const file = "php-docblock-version-tag.php";
-        const regex = new RegExp(
-          "^\\s+\\*\\s+@version\\s+([^:]+:)?" + newVersion.replace(/\./g, "\\."),
-          "im"
-        );
-        updateFile(file, newVersion, { quiet: true }, err => {
-          expect(err).toBeFalsy();
-          fs.readFile(file, (err, data) => {
-            data.toString().should.match(regex);
-            done();
-          });
+    test("should report the previous version (php docblock version tag)", done => {
+      const file = "php-docblock-version-tag.php";
+      updateFile(file, newVersion, { quiet: true }, (err, result) => {
+        expect(err).toBeFalsy();
+        result.should.have.property("oldVersion").that.is.not.undefined;
+        done();
+      });
+    });
+
+    test("should increment a plain text file (php docblock version tag)", done => {
+      const file = "php-docblock-version-tag.php";
+      const regex = new RegExp(
+        "^\\s+\\*\\s+@version\\s+([^:]+:)?" + newVersion.replace(/\./g, "\\."),
+        "im"
+      );
+      updateFile(file, newVersion, { quiet: true }, err => {
+        expect(err).toBeFalsy();
+        fs.readFile(file, (err, data) => {
+          data.toString().should.match(regex);
+          done();
         });
-      }
-    );
+      });
+    });
 
     test("should report the previous version (markdown heading)", done => {
       const file = "file.md";
@@ -173,10 +158,7 @@ describe("Update a file", () => {
       });
     });
 
-    test.skip(
-      "should update yaml frontmatter versions and text version strings in markdown documents",
-      () => {}
-    );
+    test.skip("should update yaml frontmatter versions and text version strings in markdown documents", () => {});
     test("should update several version strings in the same file", done => {
       const file = "decoy-version.md";
       updateFile(file, newVersion, { quiet: true }, err => {
@@ -189,19 +171,16 @@ describe("Update a file", () => {
       });
     });
 
-    test(
-      "should not update non-version titles that look like versions",
-      done => {
-        const file = "decoy-version.md";
-        updateFile(file, newVersion, { quiet: true }, err => {
-          expect(err).toBeFalsy();
-          fs.readFile(file, (err, data) => {
-            data.toString().should.have.string("# Version decoy file");
-            done();
-          });
+    test("should not update non-version titles that look like versions", done => {
+      const file = "decoy-version.md";
+      updateFile(file, newVersion, { quiet: true }, err => {
+        expect(err).toBeFalsy();
+        fs.readFile(file, (err, data) => {
+          data.toString().should.have.string("# Version decoy file");
+          done();
         });
-      }
-    );
+      });
+    });
   });
 
   describe("JSON files", () => {
@@ -229,102 +208,87 @@ describe("Update a file", () => {
     test.skip("should increment a top-level custom attribute in a json file", () => {});
     test.skip("should increment a nested custom attribute in a json file", () => {});
 
-    test(
-      "should increment a json file, also using a replacer array",
-      done => {
-        const file = "file.json";
-        const replacer = ["title", "version"];
-        updateFile(
-          file,
-          newVersion,
-          { json: { replacer: replacer }, quiet: true },
-          err => {
+    test("should increment a json file, also using a replacer array", done => {
+      const file = "file.json";
+      const replacer = ["title", "version"];
+      updateFile(
+        file,
+        newVersion,
+        { json: { replacer: replacer }, quiet: true },
+        err => {
+          expect(err).toBeFalsy();
+          fs.readJson(file, (err, json) => {
             expect(err).toBeFalsy();
-            fs.readJson(file, (err, json) => {
-              expect(err).toBeFalsy();
-              json.should.have.property("version", newVersion);
-              json.should.have.property("title");
-              json.should.not.have.property("double_me");
-              done();
-            });
-          }
-        );
-      }
-    );
+            json.should.have.property("version", newVersion);
+            json.should.have.property("title");
+            json.should.not.have.property("double_me");
+            done();
+          });
+        }
+      );
+    });
 
-    test(
-      "should increment a json file, also using a replacer function",
-      done => {
-        const file = "file.json";
-        const replacer = (key, value) =>
-          key === "double_me" ? value * 2 : value;
-        updateFile(
-          file,
-          newVersion,
-          { json: { replacer: replacer }, quiet: true },
-          err => {
-            expect(err).toBeFalsy();
-            fs.readJson(file, (err, json) => {
-              json.should.have.property("version", newVersion);
-              json.should.have.property("title");
-              json.should.have.property("double_me", 10);
-              done();
-            });
-          }
-        );
-      }
-    );
+    test("should increment a json file, also using a replacer function", done => {
+      const file = "file.json";
+      const replacer = (key, value) =>
+        key === "double_me" ? value * 2 : value;
+      updateFile(
+        file,
+        newVersion,
+        { json: { replacer: replacer }, quiet: true },
+        err => {
+          expect(err).toBeFalsy();
+          fs.readJson(file, (err, json) => {
+            json.should.have.property("version", newVersion);
+            json.should.have.property("title");
+            json.should.have.property("double_me", 10);
+            done();
+          });
+        }
+      );
+    });
 
-    test(
-      "should increment a json file, also using a reviver function",
-      done => {
-        const file = "file.json";
-        const reviver = (key, value) => (key === "double_me" ? value * 2 : value);
-        updateFile(
-          file,
-          newVersion,
-          { json: { reviver: reviver }, quiet: true },
-          (err, result) => {
-            expect(err).toBeFalsy();
-            fs.readJson(file, (err, json) => {
-              json.should.have.property("version", newVersion);
-              json.should.have.property("title");
-              json.should.have.property("double_me", 10);
-              done();
-            });
-          }
-        );
-      }
-    );
+    test("should increment a json file, also using a reviver function", done => {
+      const file = "file.json";
+      const reviver = (key, value) => (key === "double_me" ? value * 2 : value);
+      updateFile(
+        file,
+        newVersion,
+        { json: { reviver: reviver }, quiet: true },
+        (err, result) => {
+          expect(err).toBeFalsy();
+          fs.readJson(file, (err, json) => {
+            json.should.have.property("version", newVersion);
+            json.should.have.property("title");
+            json.should.have.property("double_me", 10);
+            done();
+          });
+        }
+      );
+    });
 
-    test(
-      "should increment a json file and set a specific indentation",
-      done => {
-        const file = "file.json";
-        const spaces = 4;
-        const regex = new RegExp("^ {" + spaces + '}"version":', "m");
-        updateFile(
-          file,
-          newVersion,
-          { json: { space: spaces }, quiet: true },
-          (err, result) => {
-            expect(err).toBeFalsy();
-            fs.readFile(file, (err, data) => {
-              data.toString().should.match(regex);
-              done();
-            });
-          }
-        );
-      }
-    );
+    test("should increment a json file and set a specific indentation", done => {
+      const file = "file.json";
+      const spaces = 4;
+      const regex = new RegExp("^ {" + spaces + '}"version":', "m");
+      updateFile(
+        file,
+        newVersion,
+        { json: { space: spaces }, quiet: true },
+        (err, result) => {
+          expect(err).toBeFalsy();
+          fs.readFile(file, (err, data) => {
+            data.toString().should.match(regex);
+            done();
+          });
+        }
+      );
+    });
   });
 
   describe("XML files", () => {
     test.skip("should report the previous version (xml file)", () => {});
-    test.skip(
-      "should increment the top-level version attribute in an xml file",
-      () => {}
-    );
+    test.skip("should increment the top-level version attribute in an xml file", () => {});
 
     // TODO: specify something like {key: 'project_version'} to update that key with the version
     test.skip("should increment a top-level custom attribute in an xml file", () => {});
@@ -465,29 +429,31 @@ describe("Update a file", () => {
       });
     });
 
-    test(
-      "Throws an error when unable to read files (permissions)",
-      done => {
-        const file = "file.json";
-        fs.chmodSync(file, "0377");
-        updateFile(file, newVersion, { quiet: true }, (err, result) => {
-          err.should.be.instanceOf(Error);
-          err.code.should.be.string("EACCES");
-          done();
-        });
-      }
-    );
+    test("Throws an error when unable to read files (permissions)", done => {
+      const file = "file.json";
+      fs.chmodSync(file, "0377");
+      updateFile(file, newVersion, { quiet: true }, (err, result) => {
+        expect(err).toBeInstanceOf(Error);
+        expect(err.code).toBe("EACCES");
+        done();
+      });
+    });
 
     test("Calls the callback when nothing happens", done => {
       const file = "not-really-data.txt";
-      try {
-        updateFile(file, newVersion, { quiet: false }, (err, result) => {
-          arguments.should.have.lengthOf(1);
-          done();
-        });
-      } catch (err) {
-        expect(err).toBeFalsy();
-      }
+      const mockCallback = jest.fn((err, result) => {
+        "hi";
+      });
+      updateFile(file, newVersion, { quiet: false }, mockCallback);
+      expect(mockCallback).toHaveBeenCalled();
+      // try {
+      //   updateFile(file, newVersion, { quiet: false }, (err, result) => {
+      //     arguments.should.have.lengthOf(1);
+      //     done();
+      //   });
+      // } catch (err) {
+      //   expect(err).toBeFalsy();
+      // }
     });
   });
 
