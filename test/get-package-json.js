@@ -6,7 +6,7 @@ const path = require("path");
 const should = require("chai").should();
 const getPackageJson = require("../app/get-package-json");
 
-describe("Load a package.json file", function() {
+describe("Load a package.json file", () => {
   const cwd = process.cwd();
   const consoleLog = console.log;
   const stdoutWrite = process.stdout.write;
@@ -20,8 +20,8 @@ describe("Load a package.json file", function() {
 
   afterEach(cleanup);
 
-  describe("find package.json", function() {
-    it("Finds package.json in same dir", function() {
+  describe("find package.json", () => {
+    test("Finds package.json in same dir", () => {
       process.chdir("./test/fixture/deep/dotfile/");
       const packageJson = getPackageJson({ quiet: true });
       packageJson.should.have.nested.property(
@@ -31,7 +31,7 @@ describe("Load a package.json file", function() {
       packageJson.should.have.nested.property("packageJson.version", "9.8.7");
     });
 
-    it("Finds package.json climbing up from a subdir", function() {
+    test("Finds package.json climbing up from a subdir", () => {
       process.chdir("./test/fixture/deep/dotfile/deeper/and_deeper");
       const packageJson = getPackageJson({ quiet: true });
       packageJson.should.have.nested.property(
@@ -41,7 +41,7 @@ describe("Load a package.json file", function() {
       packageJson.should.have.nested.property("packageJson.version", "9.8.7");
     });
 
-    it("Errors trying to find an ancestor package.json file", function() {
+    test("Errors trying to find an ancestor package.json file", () => {
       process.chdir("/");
       const packageJson = function() {
         getPackageJson({ quiet: true });
@@ -50,8 +50,8 @@ describe("Load a package.json file", function() {
     });
   });
 
-  describe("load specific package.json file", function() {
-    it("Load a specific package.json file", function() {
+  describe("load specific package.json file", () => {
+    test("Load a specific package.json file", () => {
       const packageJson = getPackageJson({
         package_json: "./test/fixture/deep/dotfile/package.json",
         quiet: true
@@ -64,17 +64,17 @@ describe("Load a package.json file", function() {
     });
   });
 
-  describe("test option to quiet output", function() {
+  describe("test option to quiet output", () => {
     let output;
 
-    beforeEach(function() {
+    beforeEach(() => {
       output = "";
       process.stdout.write = console.log = str => (output += str);
     });
 
     afterEach(cleanup);
 
-    it("logs to stdout, quiet == false", function() {
+    test("logs to stdout, quiet == false", () => {
       try {
         const packageJson = getPackageJson({ quiet: false });
         output.should.not.be.empty;
@@ -86,7 +86,7 @@ describe("Load a package.json file", function() {
       }
     });
 
-    it("does its thing quietly, quiet == true", function() {
+    test("does its thing quietly, quiet == true", () => {
       try {
         const packageJson = getPackageJson({ quiet: true });
         output.should.be.empty;
@@ -98,7 +98,7 @@ describe("Load a package.json file", function() {
       }
     });
 
-    it("is not quiet by default", function() {
+    test("is not quiet by default", () => {
       try {
         const packageJson = getPackageJson();
         output.should.not.be.empty;
@@ -111,15 +111,15 @@ describe("Load a package.json file", function() {
     });
   });
 
-  describe("Test invalid file errors", function() {
-    it("Errors trying to load a version-less package.json file", function() {
+  describe("Test invalid file errors", () => {
+    test("Errors trying to load a version-less package.json file", () => {
       process.chdir("./test/fixture/deep/dotfile/");
       getPackageJson
         .bind(null, { package_json: "no-version.json" })
         .should.throw(Error);
     });
 
-    it("Errors trying to load a non-json text file", function() {
+    test("Errors trying to load a non-json text file", () => {
       process.chdir("./test/fixture/deep/dotfile/");
       getPackageJson
         .bind(null, { package_json: "not-really-data.txt" })

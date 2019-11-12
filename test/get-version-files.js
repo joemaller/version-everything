@@ -90,29 +90,29 @@ const fixtureDir = "./test/fixture/";
  *   fake package.json old: 6 files
  */
 
-describe("Get a list of files to version", function() {
-  beforeEach("refresh fixtures to tempfile", function() {
+describe("Get a list of files to version", () => {
+  beforeEach(() => {
     process.chdir(tmpFixture(fixtureDir));
   });
 
-  afterEach("clean up tmpDir", function() {
+  afterEach(() => {
     process.chdir(cwd);
   });
 
-  describe("accepts a variety of config arguments", function() {
-    it("Handles a single file as a string", function() {
+  describe("accepts a variety of config arguments", () => {
+    test("Handles a single file as a string", () => {
       let files = getVersionFiles("file1.js");
       files.should.be.an("array");
       files.should.have.a.lengthOf(1);
     });
 
-    it("Handles an array of files", function() {
+    test("Handles an array of files", () => {
       let files = getVersionFiles(["file1.js", "file2.json"]);
       files.should.be.an("array");
       files.should.have.a.lengthOf(2);
     });
 
-    it("Handles an object with a files array", function() {
+    test("Handles an object with a files array", () => {
       let files = getVersionFiles({
         files: ["file1.js", "file2.json", "file3.yml"]
       });
@@ -120,7 +120,7 @@ describe("Get a list of files to version", function() {
       files.should.have.a.lengthOf(3);
     });
 
-    it("Handles an object with a file string", function() {
+    test("Handles an object with a file string", () => {
       let files = getVersionFiles({
         files: "file1.js"
       });
@@ -129,14 +129,17 @@ describe("Get a list of files to version", function() {
     });
   });
 
-  describe("gets files from a .version-everything.js file", function() {
-    it("loads a .version-everything.js as sibilng of specified package.json file", function() {
-      let files = getVersionFiles([], { path: "./deep/dotfile/package.json" });
-      files.should.be.an("array");
-      files.should.have.a.lengthOf(4);
-    });
+  describe("gets files from a .version-everything.js file", () => {
+    test(
+      "loads a .version-everything.js as sibilng of specified package.json file",
+      () => {
+        let files = getVersionFiles([], { path: "./deep/dotfile/package.json" });
+        files.should.be.an("array");
+        files.should.have.a.lengthOf(4);
+      }
+    );
 
-    it("find .version-everything.js in nested dir", function() {
+    test("find .version-everything.js in nested dir", () => {
       let files = getVersionFiles([], {
         path: "./deep/dotfile/deeper/and_deeper"
       });
@@ -144,53 +147,56 @@ describe("Get a list of files to version", function() {
       files.should.have.a.lengthOf(4);
     });
 
-    it("finds .version-everything.js in parent dir", function() {
+    test("finds .version-everything.js in parent dir", () => {
       let files = getVersionFiles([], { path: "./deep/dotfile/deeper" });
       files.should.be.an("array");
       files.should.have.a.lengthOf(4);
     });
   });
 
-  describe("gets files from package.json", function() {
-    it("uses 'versionFiles' from specified package.json file", function() {
+  describe("gets files from package.json", () => {
+    test("uses 'versionFiles' from specified package.json file", () => {
       let files = getVersionFiles([], fakePackageJson);
       files.should.be.an("array");
       files.should.have.a.lengthOf(5);
     });
 
-    it("uses old 'version_files' from specified package.json file", function() {
+    test("uses old 'version_files' from specified package.json file", () => {
       let files = getVersionFiles([], fakePackageJsonOld);
       files.should.be.an("array");
       files.should.have.a.lengthOf(6);
     });
 
-    it("uses 'versionFiles' before 'version_files' both are defined", function() {
-      let files = getVersionFiles([], fakePackageJson);
-      files.should.be.an("array");
-      files.should.have.a.lengthOf(5);
-    });
+    test(
+      "uses 'versionFiles' before 'version_files' both are defined",
+      () => {
+        let files = getVersionFiles([], fakePackageJson);
+        files.should.be.an("array");
+        files.should.have.a.lengthOf(5);
+      }
+    );
   });
 
-  describe("handles various false values", function() {
-    it("version_files is empty array", function() {
+  describe("handles various false values", () => {
+    test("version_files is empty array", () => {
       const files = getVersionFiles([]);
       files.should.be.an("array");
       files.should.have.a.lengthOf(0);
     });
 
-    it("version_files is false", function() {
+    test("version_files is false", () => {
       const files = getVersionFiles(false);
       files.should.be.an("array");
       files.should.have.a.lengthOf(0);
     });
 
-    it("version_files is null", function() {
+    test("version_files is null", () => {
       const files = getVersionFiles(null);
       files.should.be.an("array");
       files.should.have.a.lengthOf(0);
     });
 
-    it("version_files is undefined", function() {
+    test("version_files is undefined", () => {
       const undef = {};
       const files = getVersionFiles(undef.foo);
       files.should.be.an("array");
@@ -198,8 +204,8 @@ describe("Get a list of files to version", function() {
     });
   });
 
-  describe("fails gracefully", function() {
-    it("no arguments, no fallbacks", function() {
+  describe("fails gracefully", () => {
+    test("no arguments, no fallbacks", () => {
       let files = getVersionFiles();
       files.should.be.an("array");
       files.should.have.a.lengthOf(0);
