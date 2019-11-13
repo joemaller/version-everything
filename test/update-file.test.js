@@ -1,7 +1,6 @@
 /* eslint-env node,mocha */
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "should" }]*/
 
-"use strict";
 
 const should = require("chai").should();
 
@@ -72,13 +71,17 @@ describe("Update a file", () => {
       });
     });
 
-    test("should increment a v0.0.0 style version at the end of a line in a plain text file (css block comment)", done => {
+    it("should increment a v0.0.0 style version at the end of a line in a plain text file (css block comment)", (done) => {
       const file = "file.css";
-      const regex = new RegExp("^v" + newVersion.replace(/\./g, "\\."), "im");
+      const regex = new RegExp(
+        "v" + newVersion.replace(/\./g, "\\.") + "$",
+        "gim"
+      );
+
       updateFile(file, newVersion, { quiet: true }, err => {
         expect(err).toBeFalsy();
         fs.readFile(file, (err, data) => {
-          data.toString().should.match(regex);
+          expect(data.toString()).toMatch(regex);
           done();
         });
       });
