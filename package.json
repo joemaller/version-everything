@@ -7,8 +7,8 @@
     "version-everything": "cli.js"
   },
   "scripts": {
-    "test": "nyc mocha",
-    "test:watch": "mocha -w",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "version": "node cli.js README.md && git add -u"
   },
@@ -28,8 +28,8 @@
   },
   "homepage": "https://github.com/joemaller/version-everything#readme",
   "dependencies": {
-    "chalk": "^2.4.2",
-    "cosmiconfig": "^5.2.1",
+    "chalk": "^3.0.0",
+    "cosmiconfig": "^6.0.0",
     "find-up": "^4.1.0",
     "fs-extra": "^8.1.0",
     "js-yaml": "^3.13.1",
