@@ -39,6 +39,7 @@ module.exports = function(file, version, options, cb) {
   // console.log(path.extname(file).toLowerCase())
 
   fs.readFile(file, "utf8", (err, data) => {
+    // TODO: Why not just throw here?
     if (err && cb && typeof cb === "function") return cb(err);
     let result;
 
