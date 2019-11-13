@@ -193,6 +193,7 @@ describe("Get a list of files to version", () => {
   describe("fails gracefully", () => {
     test("no arguments, no fallbacks", () => {
       let files = getVersionFiles();
+      console.log(files);
       expect(files).toHaveLength(0);
     });
   });

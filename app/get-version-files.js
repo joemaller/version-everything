@@ -17,6 +17,7 @@ module.exports = function(config, pkg) {
   if (Array.isArray(files) && files.length) return files;
   if (typeof files === "string") return [files];
 
+  console.log('hello?')
   try {
     let pkgdir = findUp(".version-everything.js", { cwd: pkgPath });
     return require(pkgdir).files;
