@@ -1,0 +1,8 @@
+{
+  "name": "version-everything-test-fixture",
+  "description": "Placeholder package.json file for testing",
+  "version": "5.4.33",
+  "version-everything": {
+    "files": ["file1.js", "file2.json", "file3.yml", "file4.js", "package.json"]
+  }
+}

@@ -41,6 +41,7 @@ module.exports = function(file, version, options, cb) {
   fs.readFile(file, "utf8", (err, data) => {
     // TODO: Why not just throw here?
     if (err && cb && typeof cb === "function") return cb(err);
+
     let result;
 
     switch (path.extname(file).toLowerCase()) {
@@ -48,8 +49,9 @@ module.exports = function(file, version, options, cb) {
         result = bumpJSON(data, version, config.json);
         break;
 
-      case ".xml":
-      case ".plist":
+      // These need to be commented out or coverage reports the switch as uncovered
+      // case ".xml":
+      // case ".plist":
       // XML or PLIST FILE!
       // break;
 
@@ -89,7 +91,6 @@ module.exports = function(file, version, options, cb) {
             result.oldVersion
           )} to ${chalk.cyan(version)}`
         );
-        // cb(err, result);
         if (cb && typeof cb === "function") cb(err, result);
       });
     } else {
