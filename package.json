@@ -2,31 +2,34 @@
   "name": "version-everything",
   "version": "0.5.0",
   "description": "Use npm to version all kinds of projects, not just javascript.",
+  "keywords": [
+    "npm",
+    "semver",
+    "version"
+  ],
+  "homepage": "https://github.com/joemaller/version-everything#readme",
+  "bugs": {
+    "url": "https://github.com/joemaller/version-everything/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joemaller/version-everything.git"
+  },
+  "license": "MIT",
+  "author": "Joe Maller <joe@joemaller.com> (http://www.joemaller.com)",
   "main": "index.js",
   "bin": {
     "version-everything": "cli.js"
   },
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watch --coverage",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "test:watch": "jest --watch",
     "version": "node cli.js README.md && git add -u"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/joemaller/version-everything.git"
+  "jest": {
+    "verbose": true,
+    "collectCoverage": true
   },
-  "keywords": [
-    "npm",
-    "version",
-    "semver"
-  ],
-  "author": "Joe Maller <joe@joemaller.com> (http://www.joemaller.com)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/joemaller/version-everything/issues"
-  },
-  "homepage": "https://github.com/joemaller/version-everything#readme",
   "dependencies": {
     "chalk": "^3.0.0",
     "cosmiconfig": "^6.0.0",
