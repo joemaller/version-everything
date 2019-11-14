@@ -1,7 +1,6 @@
 /* eslint-env node,mocha */
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "should" }]*/
 
-
 const should = require("chai").should();
 
 const fs = require("fs-extra");
@@ -39,6 +38,13 @@ describe("Update a file", () => {
     file.should.throw(Error);
   });
 
+  test("requires a version string argument (Uppercase)", () => {
+    const file = function() {
+      updateFile("file.TXT");
+    };
+    file.should.throw(Error);
+  });
+
   test.skip("accepts a string file path", () => {});
   test.skip("accepts a filestream", () => {});
 
@@ -71,7 +77,7 @@ describe("Update a file", () => {
       });
     });
 
-    it("should increment a v0.0.0 style version at the end of a line in a plain text file (css block comment)", (done) => {
+    it("should increment a v0.0.0 style version at the end of a line in a plain text file (css block comment)", done => {
       const file = "file.css";
       const regex = new RegExp(
         "v" + newVersion.replace(/\./g, "\\.") + "$",
@@ -458,13 +464,23 @@ describe("Update a file", () => {
       //   expect(err).toBeFalsy();
       // }
     });
+
+
+    test("Stupid test for coverage (callback is not a function)", () => {
+      const file = "file.json";
+      updateFile(file, newVersion, { quiet: false }, null);
+    });
+
+    test("Even dumber test for coverage (callback is not a function)", () => {
+      const file = "not-really-data.txt";
+      updateFile(file, newVersion, { quiet: false }, null);
+    });
   });
 
   describe("Test output (console.log)", () => {
     let output;
     const consoleLog = console.log;
     const stdoutWrite = process.stdout.write;
-    console.log(cwd);
 
     // ref https://github.com/mochajs/mocha/wiki/Mess-with-globals
     const cleanup = function() {
