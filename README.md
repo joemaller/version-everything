@@ -27,8 +27,8 @@ There are several ways version-everything can be used, the only requirement is a
 The file list is an array specified in one of the following forms, in order of precedence:
 
 1. Command line arguments
-2. `files` key in a **.version-everything.js** file
-3. `versionFiles` key in the parent project's **package.json** file
+2. `files` key in a **version-everything.config.js** file
+3. `version-everything.files` key in the parent project's **package.json** file
 
 ### npm lifecycle script in package.json
 
@@ -56,13 +56,11 @@ Then run a command like `npm version minor` to bump the version in all the files
 
 Note that structured data files will be formatted using default settings.
 
-### .version-everything.js dotfile
+### version-everything config files
 
-Following the lead of projects like [Webpack][] and [ESLint][], version-everything can also be configured using a JavaScript dotfile. While this introduces another file to the project, it offers additional configuration options, can be documented in place and keeps package.json cleaner.
+This project uses the popular [cosmiconfig](https://www.npmjs.com/package/cosmiconfig) library to load config files.the file-key should be `version-everything`, so files like `.version-everythingrc` or `.version-everythingrc.js` will work.
 
-A project's .version-everything.js file should be a sibling of the project's package.json file.
-
-The basic schema of the config file should look something like this:
+The file shoudl export a simple JS object and look something like this:
 
 ```js
 module.exports = {
