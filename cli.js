@@ -26,15 +26,17 @@ const argv = require("yargs")
 
 // TODO: Add yargs, options to override package.json, list files
 
-var versionEverything = require(".");
+const versionEverything = require(".");
 
 // TODO: This will be revamped with yargs stuff
-var config = {
+const config = {
   // files: process.argv.slice(2)
   files: argv._,
   quiet: argv.quiet
 };
-if (argv.package_json) config.package_json = argv.package_json;
+if (argv.package_json) {
+  config.package_json = argv.package_json;
+}
 
 // console.log(argv, argv._);
 // console.log(config);
