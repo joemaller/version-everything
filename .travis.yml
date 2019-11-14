@@ -5,6 +5,8 @@
 env:
   global:
     - CC_TEST_REPORTER_ID=e8befb5505e0cd69a8fb41ea66baab92b597fdbd2cfa62019173f1ee831ca574
+    - CODECOV_TOKEN="b276fb6f-adb2-479c-a186-fb2cc5c365b6"
+
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -13,8 +15,12 @@ before_script:
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - codecov
 
 # after_success: npm run coverage
+
+install:
+  - npm install -g codecov
 
 language: node_js
 node_js:
