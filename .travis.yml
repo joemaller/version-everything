@@ -15,13 +15,12 @@ before_script:
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - cat ./coverage/lcov.info | coveralls
   - codecov
-
-# after_success: npm run coverage
 
 install:
   - npm ci
-  - npm install -g codecov
+  - npm install -g codecov coveralls
 
 language: node_js
 node_js:
