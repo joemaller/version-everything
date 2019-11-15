@@ -32,7 +32,20 @@ module.exports = function(args) {
       const pkg = readPkgUp.sync();
       if (pkg) {
         const { packageJson } = pkg;
-        return packageJson.version_files || packageJson.versionFiles || [];
+        if (packageJson.version_files) {
+          console.log(
+            'Files loaded from deprecated "version_files" key.',
+            'Please update this package.json file to use a "version-everything.files" key.'
+          );
+          return packageJson.version_files;
+        } else if (packageJson.versionFiles) {
+          console.log(
+            "Files loaded from deprecated 'versionFiles' key.",
+            "Please update this package.json file to use a 'version-everything.files' key."
+          );
+          return packageJson.versionFiles;
+        }
+        // return packageJson.version_files || packageJson.versionFiles || [];
       }
     }
   }

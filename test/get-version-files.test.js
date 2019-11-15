@@ -84,14 +84,24 @@ describe("Get a list of files to version", () => {
 
     test("load old-style version_files key from old package.json file", () => {
       process.chdir("./old-package-version_files");
+      console.log = jest.fn()
       const files = getVersionFiles();
       expect(files).toHaveLength(5);
+      expect(console.log.mock.calls[0][0]).toMatch(/deprecated/)
     });
 
     test("load new-old-style versionFiles key from old package.json file", () => {
       process.chdir("./old-package-versionFiles");
+      console.log = jest.fn()
       const files = getVersionFiles();
       expect(files).toHaveLength(5);
+      expect(console.log.mock.calls[0][0]).toMatch(/deprecated/)
+    });
+
+    test("package.json file doesn't have any keys to use", () => {
+      process.chdir("./package-empty");
+      const files = getVersionFiles();
+      expect(files).toHaveLength(0);
     });
 
     test("load prefer version-everything.files over version_files from package.json file", () => {

@@ -1,0 +1,5 @@
+{
+  "name": "version-everything-test-fixture",
+  "description": "Placeholder package.json with an old-style version_files key",
+  "version": "5.4.33"
+}
