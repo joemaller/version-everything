@@ -82,6 +82,24 @@ describe("Get a list of files to version", () => {
       expect(files).toHaveLength(5);
     });
 
+    test("load old-style version_files key from old package.json file", () => {
+      process.chdir("./old-package-version_files");
+      const files = getVersionFiles();
+      expect(files).toHaveLength(5);
+    });
+
+    test("load new-old-style versionFiles key from old package.json file", () => {
+      process.chdir("./old-package-versionFiles");
+      const files = getVersionFiles();
+      expect(files).toHaveLength(5);
+    });
+
+    test("load prefer version-everything.files over version_files from package.json file", () => {
+      process.chdir("./old-n-new-package");
+      const files = getVersionFiles();
+      expect(files).toHaveLength(5);
+    });
+
     test("load version-everything.files key from cosmiconfig file", () => {
       process.chdir("./cosmiconfig");
       const files = getVersionFiles();
