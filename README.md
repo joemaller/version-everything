@@ -1,12 +1,12 @@
 # version-everything
 
-#### Version: 0.5.0
+#### Version: 0.5.1
 
 Use npm to version all kinds of projects, not just JavaScript
 
 [![Travis Build Status](https://img.shields.io/travis/joemaller/version-everything?logo=travis)](https://travis-ci.org/joemaller/version-everything)
 [![codecov](https://codecov.io/gh/joemaller/version-everything/branch/master/graph/badge.svg)](https://codecov.io/gh/joemaller/version-everything)
-![Coveralls github](https://img.shields.io/coveralls/github/joemaller/version-everything?label=Coveralls)[![Maintainability](https://api.codeclimate.com/v1/badges/6b0958bcd94274198117/maintainability)](https://codeclimate.com/github/joemaller/version-everything/maintainability)<br>
+![Coveralls github](https://img.shields.io/coveralls/github/joemaller/version-everything?label=Coveralls)[![Maintainability](https://api.codeclimate.com/v0.5.1
 [![npm](https://img.shields.io/npm/v/version-everything.svg)](https://www.npmjs.com/package/version-everything)
 [![dependencies Status](https://david-dm.org/joemaller/version-everything/status.svg)](https://david-dm.org/joemaller/version-everything)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
@@ -60,7 +60,7 @@ In text files, the following version strings will be updated.
 - `Version: 1.2.34`
 - `### Version: 2.34.5` (Markdown headings)
 - `* @version 4.5.67`
-- `any text v6.7.89` (git-tags)
+- `any text v0.5.1
 
 _Notes:_ Colons are optional. Simple v-prefixed git-tag style version strings must appear at the end of a line.
 
