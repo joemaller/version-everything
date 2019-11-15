@@ -4,15 +4,12 @@
 
 Use npm to version all kinds of projects, not just JavaScript
 
-[![Build Status](https://travis-ci.org/joemaller/version-everything.svg?branch=master)](https://travis-ci.org/joemaller/version-everything)
+[![Travis Build Status](https://img.shields.io/travis/joemaller/version-everything?logo=travis)](https://travis-ci.org/joemaller/version-everything)
 [![codecov](https://codecov.io/gh/joemaller/version-everything/branch/master/graph/badge.svg)](https://codecov.io/gh/joemaller/version-everything)
+![Coveralls github](https://img.shields.io/coveralls/github/joemaller/version-everything?label=Coveralls)[![Maintainability](https://api.codeclimate.com/v1/badges/6b0958bcd94274198117/maintainability)](https://codeclimate.com/github/joemaller/version-everything/maintainability)<br>
 [![npm](https://img.shields.io/npm/v/version-everything.svg)](https://www.npmjs.com/package/version-everything)
-
 [![dependencies Status](https://david-dm.org/joemaller/version-everything/status.svg)](https://david-dm.org/joemaller/version-everything)
-[![devDependencies Status](https://david-dm.org/joemaller/version-everything/dev-status.svg)](https://david-dm.org/joemaller/version-everything?type=dev)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
-
-<!-- [![libhive - Open source examples](https://www.libhive.com/providers/npm/packages/version-everything/examples/badge.svg)](https://www.libhive.com/providers/npm/packages/version-everything)  -->
 
 Synchronize the version string from package.json into a set of additional text or structured data files. When called from npm's version script, all versioned files in a project will be updated and committed with a single command.
 
@@ -22,7 +19,7 @@ Synchronize the version string from package.json into a set of additional text o
 
 ## How to version everything
 
-There are several ways version-everything can be used, the only requirement is an array of files to synchronize versions into. The files can be text (php, css, markdown, whatever) or structured data (JSON, yaml or xml).
+There are several ways version-everything can be used, the only requirement is an array of files to synchronize versions into. The files can be text (php, css, markdown, whatever) or structured data (JSON or yaml<!-- or xml, eventually -->).
 
 The file list is an array specified in one of the following forms, in order of precedence:
 
@@ -56,11 +53,22 @@ Then run a command like `npm version minor` to bump the version in all the files
 
 Note that structured data files will be formatted using default settings.
 
+### Replacing version strings
+
+In text files, the following version strings will be updated.
+
+- `Version: 1.2.34`
+- `### Version: 2.34.5` (Markdown headings)
+- `* @version 4.5.67`
+- `any text v6.7.89` (git-tags)
+
+_Notes:_ Colons are optional. Simple v-prefixed git-tag style version strings must appear at the end of a line.
+
 ### version-everything config files
 
-This project uses the popular [cosmiconfig](https://www.npmjs.com/package/cosmiconfig) library to load config files.the file-key should be `version-everything`, so files like `.version-everythingrc` or `.version-everythingrc.js` will work.
+This project uses the [cosmiconfig](https://www.npmjs.com/package/cosmiconfig) library to load config files.the file-key should be `version-everything`, so files like `.version-everythingrc` or `.version-everythingrc.js` will work.
 
-The file shoudl export a simple JS object and look something like this:
+The file should export a simple JS object and look something like this:
 
 ```js
 module.exports = {
