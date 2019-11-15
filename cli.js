@@ -1,17 +1,19 @@
 #!/usr/bin/env node
 
+const path = require("path");
+
 const argv = require("yargs")
   .usage("Usage: $0 [options] [files...]")
   .option("package-json", {
     alias: "p",
-    describe: "load a specific pakage.json file",
+    describe: "load a specific package.json file",
     type: "string"
   })
-  .option("dry-run", {
-    alias: "n",
-    describe: "do not update files",
-    type: "boolean"
-  })
+  // .option("dry-run", {
+  //   alias: "n",
+  //   describe: "do not update files",
+  //   type: "boolean"
+  // })
   .option("quiet", {
     alias: "q",
     describe: "suppress console output",
@@ -24,20 +26,17 @@ const argv = require("yargs")
   .help()
   .version().argv;
 
-// TODO: Add yargs, options to override package.json, list files
-
 const versionEverything = require(".");
 
-// TODO: This will be revamped with yargs stuff
-const config = {
-  // files: process.argv.slice(2)
-  files: argv._,
-  quiet: argv.quiet
-};
-if (argv.package_json) {
-  config.package_json = argv.package_json;
+const config = !argv.packageJson ? {} : require(path.resolve(argv.packageJson));
+if (!config["version-everything"]) {
+  config["version-everything"] = { files: [], options: {} };
+}
+if (argv._.length) {
+  config["version-everything"].files = argv._;
+}
+if (argv.quiet) {
+  config["version-everything"].options.quiet = argv.quiet;
 }
 
-// console.log(argv, argv._);
-// console.log(config);
 versionEverything(config);

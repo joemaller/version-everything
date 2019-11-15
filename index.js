@@ -1,19 +1,30 @@
-"use strict";
-const getPackageJson = require("./app/get-package-json");
+const readPkgUp = require("read-pkg-up");
+
 const getVersionFiles = require("./app/get-version-files");
 const updateFile = require("./app/update-file");
 
 /**
- * Updates the version number in specified files
- * @param  {array or object} config Arrays of filenames will be loaded
- *                                  directly.
- *                                  Objects should contain a files key
- *                                  and an optional package_json key
- * @return {[type]}               [description]
+ * The version-everything object should contain a files array and an optional options object
+ *
+ * "version-everything": {
+ *   files: ["file1.js", "file2.json"],
+ *   options: {
+ *      quiet: false
+ *   }
+ * }
+ *
  */
-module.exports = function(config) {
-  const packageJson = getPackageJson(config);
-  getVersionFiles(config, packageJson).forEach(f =>
-    updateFile(f, packageJson.packageJson.version, config)
-  );
+
+/**
+ * Updates the version number in specified files
+ * @param  {array, string or object} args An array of files, a single filename or an
+ *                                        object representation of a package.json file.
+ */
+module.exports = function(args) {
+  const { packageJson } = readPkgUp.sync();
+  const version = args.version || packageJson.version;
+  const options =
+    (args["version-everything"] && args["version-everything"].options) || {};
+
+  getVersionFiles(args).forEach(f => updateFile(f, version, options));
 };

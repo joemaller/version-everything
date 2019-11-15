@@ -105,6 +105,10 @@ When run from the command line, all arguments following the command are assumed 
 $ version-everything readme.md manifest.json
 ```
 
+#### Conflicting arguments
+
+If a package.json is specified, it will be loaded first, then any subsequent args will be applied on top. So if package.json were to contain a `version-everything.files` array, that array would be overwritten by any list of files provided to the command line.
+
 ### Recognized File Extensions
 
 Files with the following extensions will be recognized as structured text and parsed accordingly.
