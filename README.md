@@ -6,7 +6,8 @@ Use npm to version all kinds of projects, not just JavaScript
 
 [![Travis Build Status](https://img.shields.io/travis/joemaller/version-everything?logo=travis)](https://travis-ci.org/joemaller/version-everything)
 [![codecov](https://codecov.io/gh/joemaller/version-everything/branch/master/graph/badge.svg)](https://codecov.io/gh/joemaller/version-everything)
-![Coveralls github](https://img.shields.io/coveralls/github/joemaller/version-everything?label=Coveralls)[![Maintainability](https://api.codeclimate.com/v0.5.1
+![Coveralls github](https://img.shields.io/coveralls/github/joemaller/version-everything?label=Coveralls)
+![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/joemaller/version-everything)<br>
 [![npm](https://img.shields.io/npm/v/version-everything.svg)](https://www.npmjs.com/package/version-everything)
 [![dependencies Status](https://david-dm.org/joemaller/version-everything/status.svg)](https://david-dm.org/joemaller/version-everything)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
