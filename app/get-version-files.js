@@ -1,5 +1,3 @@
-"use strict";
-
 const readPkgUp = require("read-pkg-up");
 const { cosmiconfigSync } = require("cosmiconfig");
 
@@ -11,6 +9,8 @@ const { cosmiconfigSync } = require("cosmiconfig");
  * @return {array} List of files to version
  */
 module.exports = function(args) {
+  let output = [];
+
   if (arguments.length) {
     if (args) {
       let files = [];
@@ -19,15 +19,15 @@ module.exports = function(args) {
       } else {
         files = args.files ? args.files : args;
       }
-      if (Array.isArray(files) && files.length) return files;
-      if (typeof files === "string") return [files];
+      output = Array.isArray(files) && files.length ? files : output;
+      output = typeof files === "string" ? [files] : output;
     }
   } else {
     const explorerSync = cosmiconfigSync("version-everything");
     const configFile = explorerSync.search();
 
     if (configFile && configFile.config) {
-      return configFile.config.files || [];
+      output = configFile.config.files || [];
     } else {
       const pkg = readPkgUp.sync({ normalize: false });
       if (pkg) {
@@ -37,17 +37,17 @@ module.exports = function(args) {
             'Files loaded from deprecated "version_files" key.',
             'Please update this package.json file to use a "version-everything.files" key.'
           );
-          return packageJson.version_files;
+          output = packageJson.version_files;
         } else if (packageJson.versionFiles) {
           console.log(
             "Files loaded from deprecated 'versionFiles' key.",
             "Please update this package.json file to use a 'version-everything.files' key."
           );
-          return packageJson.versionFiles;
+          output = packageJson.versionFiles;
         }
         // return packageJson.version_files || packageJson.versionFiles || [];
       }
     }
   }
-  return [];
+  return output;
 };
