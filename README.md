@@ -1,6 +1,6 @@
 # version-everything
 
-#### Version: 0.5.2
+#### Version: 0.5.3
 
 Use npm to version all kinds of projects, not just JavaScript
 
@@ -61,7 +61,7 @@ In text files, the following version strings will be updated.
 - `Version: 1.2.34`
 - `### Version: 2.34.5` (Markdown headings)
 - `* @version 4.5.67`
-- `some arbitrary text v0.5.2
+- `some arbitrary text v0.5.3
 
 _Notes:_ Colons are optional. Simple v-prefixed, git-tag style version strings must appear at the end of a line.
 
