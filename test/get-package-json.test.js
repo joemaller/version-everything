@@ -5,6 +5,7 @@
 const path = require("path");
 const should = require("chai").should();
 const getPackageJson = require("../app/get-package-json");
+const tmpFixture = require("../app/lib/tmp-fixture");
 
 describe("Load a package.json file", () => {
   const cwd = process.cwd();
@@ -43,10 +44,7 @@ describe("Load a package.json file", () => {
 
     test("Errors trying to find an ancestor package.json file", () => {
       process.chdir("/");
-      const packageJson = function() {
-        getPackageJson({ quiet: true });
-      };
-      packageJson.should.throw();
+      expect(() => getPackageJson({ quiet: true })).toThrow();
     });
   });
 
@@ -112,18 +110,34 @@ describe("Load a package.json file", () => {
   });
 
   describe("Test invalid file errors", () => {
+    const cwd = process.cwd();
+    const fixtureDir = "./test/fixture/";
+
+    beforeEach(() => {
+      process.chdir(tmpFixture(fixtureDir));
+    });
+
+    afterEach(() => {
+      process.chdir(cwd);
+    });
+
     test("Errors trying to load a version-less package.json file", () => {
-      process.chdir("./test/fixture/deep/dotfile/");
+      process.chdir("./deep/dotfile/");
       getPackageJson
         .bind(null, { package_json: "no-version.json" })
         .should.throw(Error);
     });
 
     test("Errors trying to load a non-json text file", () => {
-      process.chdir("./test/fixture/deep/dotfile/");
+      process.chdir("./deep/dotfile/");
       getPackageJson
         .bind(null, { package_json: "not-really-data.txt" })
         .should.throw(Error);
+    });
+
+    test("No package.json", () => {
+      process.chdir("./package-missing");
+      expect(() => getPackageJson()).toThrow();
     });
   });
 });

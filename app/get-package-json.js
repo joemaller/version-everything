@@ -30,7 +30,7 @@ module.exports = function(args) {
     }
   } else {
     data = readPkgUp({ normalize: false });
-    if (!Object.keys(data).length)
+    if (!data || !Object.keys(data).length)
       throw new Error("Unable to find a package.json file.");
   }
 
