@@ -21,7 +21,7 @@ const updateFile = require("./app/update-file");
  *                                        object representation of a package.json file.
  */
 module.exports = function(args) {
-  const { packageJson } = readPkgUp.sync();
+  const { packageJson } = readPkgUp.sync({ normalize: false });
   const version = args.version || packageJson.version;
   const options =
     (args["version-everything"] && args["version-everything"].options) || {};

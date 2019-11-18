@@ -29,7 +29,7 @@ module.exports = function(args) {
     if (configFile && configFile.config) {
       return configFile.config.files || [];
     } else {
-      const pkg = readPkgUp.sync();
+      const pkg = readPkgUp.sync({ normalize: false });
       if (pkg) {
         const { packageJson } = pkg;
         if (packageJson.version_files) {
