@@ -1,4 +1,3 @@
-"use strict";
 const path = require("path");
 const fs = require("fs-extra");
 const readPkgUp = require("read-pkg-up").sync;
@@ -13,8 +12,7 @@ const logInit = require("./lib/log-init");
  *                         quiet - suppress console.log output
  * @return {object}        The loaded, normalized representation of package.json
  */
-module.exports = function(args) {
-  const config = args || {};
+module.exports = function(config = {}) {
   const log = logInit(config.quiet);
   let data;
 
@@ -30,12 +28,14 @@ module.exports = function(args) {
     }
   } else {
     data = readPkgUp({ normalize: false });
-    if (!data || !Object.keys(data).length)
+    if (!data || !Object.keys(data).length) {
       throw new Error("Unable to find a package.json file.");
+    }
   }
 
-  if (data.packageJson && data.packageJson.version)
+  if (data.packageJson && data.packageJson.version) {
     data.packageJson.version = semver.clean(data.packageJson.version);
+  }
   if (!data.packageJson.version) {
     let relPath = path.relative(process.cwd(), data.path);
     throw new Error(
