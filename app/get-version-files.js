@@ -22,7 +22,9 @@ module.exports = function(args) {
       output = Array.isArray(files) && files.length ? files : output;
       output = typeof files === "string" ? [files] : output;
     }
-  } else {
+  }
+
+  if (!output.length) {
     const explorerSync = cosmiconfigSync("version-everything");
     const configFile = explorerSync.search();
 

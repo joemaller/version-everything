@@ -84,18 +84,18 @@ describe("Get a list of files to version", () => {
 
     test("load old-style version_files key from old package.json file", () => {
       process.chdir("./old-package-version_files");
-      console.log = jest.fn()
+      console.log = jest.fn();
       const files = getVersionFiles();
       expect(files).toHaveLength(5);
-      expect(console.log.mock.calls[0][0]).toMatch(/deprecated/)
+      expect(console.log.mock.calls[0][0]).toMatch(/deprecated/);
     });
 
     test("load new-old-style versionFiles key from old package.json file", () => {
       process.chdir("./old-package-versionFiles");
-      console.log = jest.fn()
+      console.log = jest.fn();
       const files = getVersionFiles();
       expect(files).toHaveLength(5);
-      expect(console.log.mock.calls[0][0]).toMatch(/deprecated/)
+      expect(console.log.mock.calls[0][0]).toMatch(/deprecated/);
     });
 
     test("package.json file doesn't have any keys to use", () => {
@@ -120,6 +120,32 @@ describe("Get a list of files to version", () => {
       process.chdir("./cosmiconfig-no-files");
       const files = getVersionFiles();
       expect(files).toHaveLength(0);
+    });
+  });
+
+  describe("Default and missing arguments", () => {
+    test("Loads package.json if config is empty", () => {
+      process.chdir("./package");
+      const files = getVersionFiles({ files: [], options: {} });
+      expect(files).toHaveLength(5);
+    });
+
+    test("Loads package.json if config.files is empty", () => {
+      process.chdir("./package");
+      const files = getVersionFiles({ files: [] });
+      expect(files).toHaveLength(5);
+    });
+
+    test("Loads package.json if config.files is false!?", () => {
+      process.chdir("./package");
+      const files = getVersionFiles({ files: false });
+      expect(files).toHaveLength(5);
+    });
+
+    test("Loads package.json if config.options is empty", () => {
+      process.chdir("./package");
+      const files = getVersionFiles({ options: {} });
+      expect(files).toHaveLength(5);
     });
   });
 
