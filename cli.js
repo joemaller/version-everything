@@ -2,7 +2,11 @@
 
 const path = require("path");
 
-const argv = require("yargs")
+const yargs = require("yargs");
+
+const versionEverything = require(".");
+
+const argv = yargs
   .usage("Usage: $0 [options] [files...]")
   .option("package-json", {
     alias: "p",
@@ -26,17 +30,26 @@ const argv = require("yargs")
   .help()
   .version().argv;
 
-const versionEverything = require(".");
+const getConfig = (yargsObject = { _: [] }) => {
+  const config = {};
+  if (yargsObject.packageJson) {
+    Object.assign(config, require(path.resolve(yargsObject.packageJson)));
+  }
+  if (!config["version-everything"]) {
+    config["version-everything"] = { files: [], options: {} };
+  }
+  if (yargsObject._.length) {
+    config["version-everything"].files = yargsObject._;
+  }
+  if (yargsObject.quiet) {
+    config["version-everything"].options.quiet = yargsObject.quiet;
+  }
+  return config;
+};
 
-const config = !argv.packageJson ? {} : require(path.resolve(argv.packageJson));
-if (!config["version-everything"]) {
-  config["version-everything"] = { files: [], options: {} };
-}
-if (argv._.length) {
-  config["version-everything"].files = argv._;
-}
-if (argv.quiet) {
-  config["version-everything"].options.quiet = argv.quiet;
-}
+module.exports = getConfig;
 
-versionEverything(config);
+/* istanbul ignore next */
+if (require.main === module) {
+  versionEverything(getConfig(argv));
+}
