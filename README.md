@@ -152,6 +152,8 @@ Passed directly to the [js-yaml safeDump method][safedump]. See [js-yaml][] docs
 
 **npm** may fail to commit/tag files when `package.json` is nested below the git repository root. Ref: [npm#18795][npm18795]
 
+Enabling `push.followTags` in Git's global config is highly recommended: `git config --global push.followTags true`
+
 While this module strongly encourages the use of true SemVer versions, these are not enforced. Just about any wacky version string without a whitespace character should work.
 
 [phpDocumentor @version tag][phpdoc-version] vcs-prefixes and version-descriptions will be dropped.
