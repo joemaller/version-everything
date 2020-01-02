@@ -24,14 +24,15 @@ const bumpYAML = require("./lib/bump-yaml");
 module.exports = function(file, version, options, cb) {
   if (!file) throw new Error("A file argument is required.");
   if (!version) throw new Error("A version argument (string) is required.");
-  const defaults = {
+  const defaultOptions = {
     quiet: false,
+    dryRun: false,
     json: { space: 2, replacer: null, reviver: null },
     xml: {},
     yaml: {}
   };
 
-  const config = Object.assign({}, defaults, options);
+  const config = Object.assign({}, defaultOptions, options);
   const log = logInit(config.quiet);
 
   // first pass tries file extensions, if those don't match, try parsing

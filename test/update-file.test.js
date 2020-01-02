@@ -477,7 +477,7 @@ describe("Update a file", () => {
     });
   });
 
-  describe("Test output (console.log)", () => {
+  describe("Test output (console.log) & Dry-run", () => {
     let output;
     const consoleLog = console.log;
     const stdoutWrite = process.stdout.write;
@@ -537,5 +537,29 @@ describe("Update a file", () => {
       }
       cleanup();
     });
+
+
+
+    test("dry-run should not change source file", done => {
+      const file = "file.json";
+      try {
+        updateFile(file, newVersion, {dryRun: true}, (err, result) => {
+          output.should.not.be.empty;
+          done();
+        });
+      } catch (err) {
+        expect(err).toBeFalsy();
+      }
+
+
+    });
+
+
+    test.skip("dry-run should list results for multiple files", () => {});
+    // No it shouldn't. This only deals with one file at a time...
+    // just make sure there's space between.
+
+
   });
+
 });
