@@ -192,6 +192,24 @@ describe("Update a file", () => {
     });
   });
 
+  describe("Dockerfile Labels", () => {
+
+
+// https://docs.docker.com/engine/reference/builder/#label
+// https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#label
+  test("should update Dockerfile labels", done => {
+    const file = "Dockerfile";
+    updateFile(file, newVersion, { quiet: true }, err => {
+      expect(err).toBeFalsy();
+      fs.readFile(file, (err, data) => {
+        data.toString().should.have.string('LABEL version="1.0"');
+        done();
+      });
+    });
+  });
+});
+
+
   describe("JSON files", () => {
     test("should report the previous version (json file)", done => {
       const file = "file.json";
@@ -545,7 +563,15 @@ describe("Update a file", () => {
       try {
         updateFile(file, newVersion, {dryRun: true}, (err, result) => {
           output.should.not.be.empty;
-          done();
+
+          fs.readFile(file, (err, data) => {
+            expect(err).toBeFalsy();
+            const yamlData = yaml.safeLoad(data);
+            expect(yamlData).toHaveProperty("version", newVersion);
+            // yamlData.should.have.property("version", newVersion);
+            done();
+          });
+
         });
       } catch (err) {
         expect(err).toBeFalsy();
