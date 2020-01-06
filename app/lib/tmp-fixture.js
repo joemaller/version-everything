@@ -1,9 +1,5 @@
-"use strict";
-
 const fs = require("fs-extra");
 const tmp = require("tmp");
-
-tmp.setGracefulCleanup();
 
 /**
  * Copies a directory (fixture) to a temp directory and returns
@@ -11,8 +7,8 @@ tmp.setGracefulCleanup();
  * @param  {string} fixtureDir path to directory to copy
  * @return {[type]}            [description]
  */
-module.exports = function(fixtureDir) {
-  const tmpDir = tmp.dirSync({ unsafeCleanup: true }).name;
+module.exports = fixtureDir => {
+  const tmpDir = tmp.dirSync({ keep: true }).name;
   fs.copySync(fixtureDir, tmpDir);
   return tmpDir;
 };
