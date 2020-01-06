@@ -12,17 +12,14 @@ const logInit = require("./lib/log-init");
  *                         quiet - suppress console.log output
  * @return {object}        The loaded, normalized representation of package.json
  */
-module.exports = function(config = {}) {
+module.exports = (config = {}) => {
   const log = logInit(config.quiet);
   let data;
 
   if (config.package_json) {
     try {
-      let jsonFile = fs.readJsonSync(config.package_json);
-      data = {
-        path: config.package_json,
-        packageJson: jsonFile
-      };
+      const packageJson = fs.readJsonSync(config.package_json);
+      data = { path: config.package_json, packageJson };
     } catch (err) {
       throw new Error(`Unable to load ${config.package_json}  ${err}`);
     }
@@ -33,10 +30,9 @@ module.exports = function(config = {}) {
     }
   }
 
-  if (data.packageJson && data.packageJson.version) {
-    data.packageJson.version = semver.clean(data.packageJson.version);
-  }
-  if (!data.packageJson.version) {
+  data.packageJson.version = semver.clean(data.packageJson.version || "");
+
+  if (data.packageJson.version === null) {
     let relPath = path.relative(process.cwd(), data.path);
     throw new Error(
       `${relPath} does not contain a valid SemVer version string.`

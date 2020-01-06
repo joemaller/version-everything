@@ -58,7 +58,7 @@ describe("Load a package.json file", () => {
         "packageJson.name",
         "version-everything-test-fixture"
       );
-      packageJson.should.have.nested.property("packageJson.version", "9.8.7");
+      expect(packageJson. packageJson).toHaveProperty('version', "9.8.7")
     });
   });
 

@@ -23,6 +23,7 @@
   },
   "scripts": {
     "test": "jest",
+    "test:debug": "node --inspect-brk $(npm bin)/jest --runInBand",
     "test:watch": "jest --watch",
     "version": "node cli.js README.md && git add -u"
   },
