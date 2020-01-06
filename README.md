@@ -61,7 +61,8 @@ In text files, the following version strings will be updated.
 - `Version: 1.2.34`
 - `### Version: 2.34.5` (Markdown headings)
 - `* @version 4.5.67`
-- `some arbitrary text v0.6.0
+- `v0.6.0` (At end-of-line)
+- `LABEL version="1.2.34"` (Dockerfiles)
 
 _Notes:_ Colons are optional. Simple v-prefixed, git-tag style version strings must appear at the end of a line.
 
