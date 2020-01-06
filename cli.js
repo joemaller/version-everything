@@ -13,11 +13,11 @@ const argv = yargs
     describe: "load a specific package.json file",
     type: "string"
   })
-  // .option("dry-run", {
-  //   alias: "n",
-  //   describe: "do not update files",
-  //   type: "boolean"
-  // })
+  .option("dry-run", {
+    alias: "n",
+    describe: "do not update files",
+    type: "boolean"
+  })
   .option("quiet", {
     alias: "q",
     describe: "suppress console output",
