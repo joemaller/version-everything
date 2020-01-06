@@ -168,47 +168,32 @@ describe("Update a file", () => {
     });
 
     test.skip("should update yaml frontmatter versions and text version strings in markdown documents", () => {});
-    test("should update several version strings in the same file", done => {
-      const file = "decoy-version.md";
-      updateFile(file, newVersion, { quiet: true }, err => {
-        expect(err).toBeFalsy();
-        fs.readFile(file, (err, data) => {
-          data.toString().should.have.string("## Version: " + newVersion);
-          data.toString().should.have.string("### Version " + newVersion);
-          done();
-        });
-      });
-    });
 
-    test("should not update non-version titles that look like versions", done => {
-      const file = "decoy-version.md";
-      updateFile(file, newVersion, { quiet: true }, err => {
-        expect(err).toBeFalsy();
-        fs.readFile(file, (err, data) => {
-          data.toString().should.have.string("# Version decoy file");
-          done();
-        });
-      });
-    });
+    // TODO: Moved to snapshots
+    // test("should update several version strings in the same file", done => {
+    //   const file = "decoy-version.md";
+    //   updateFile(file, newVersion, { quiet: true }, err => {
+    //     expect(err).toBeFalsy();
+    //     fs.readFile(file, (err, data) => {
+    //       data.toString().should.have.string("## Version: " + newVersion);
+    //       data.toString().should.have.string("### Version " + newVersion);
+    //       done();
+    //     });
+    //   });
+    // });
+
+    // TODO: Moved to snapshots
+    // test("should not update non-version titles that look like versions", done => {
+    //   const file = "decoy-version.md";
+    //   updateFile(file, newVersion, { quiet: true }, err => {
+    //     expect(err).toBeFalsy();
+    //     fs.readFile(file, (err, data) => {
+    //       data.toString().should.have.string("# Version decoy file");
+    //       done();
+    //     });
+    //   });
+    // });
   });
-
-  describe("Dockerfile Labels", () => {
-
-
-// https://docs.docker.com/engine/reference/builder/#label
-// https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#label
-  test("should update Dockerfile labels", done => {
-    const file = "Dockerfile";
-    updateFile(file, newVersion, { quiet: true }, err => {
-      expect(err).toBeFalsy();
-      fs.readFile(file, (err, data) => {
-        data.toString().should.have.string('LABEL version="1.0"');
-        done();
-      });
-    });
-  });
-});
-
 
   describe("JSON files", () => {
     test("should report the previous version (json file)", done => {

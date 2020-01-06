@@ -1,0 +1,69 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot Tests: Dockerfile 1`] = `
+===================================== input ======================================
+FROM alpine
+
+LABEL version="1.2.23"
+
+===================================== output =====================================
+FROM alpine
+
+LABEL version="1.414.213"
+
+`;
+
+exports[`Snapshot Tests: Dockerfile-indented-LABEL 1`] = `
+===================================== input ======================================
+  FROM alpine:latest
+
+       LABEL version="0.444.1"
+
+===================================== output =====================================
+  FROM alpine:latest
+
+       LABEL version="1.414.213"
+
+`;
+
+exports[`Snapshot Tests: Dockerfile-quoted-key 1`] = `
+===================================== input ======================================
+FROM alpine:latest
+
+LABEL "version"="0.5555.1"
+
+===================================== output =====================================
+FROM alpine:latest
+
+LABEL "version"="1.414.213"
+
+`;
+
+exports[`Snapshot Tests: decoy-version.md 1`] = `
+===================================== input ======================================
+# Version decoy file, these are not valid SemVer versions
+
+## Version: 0
+
+### Version 0.0
+
+===================================== output =====================================
+# Version decoy file, these are not valid SemVer versions
+
+## Version: 0
+
+### Version 0.0
+
+`;
+
+exports[`Snapshot Tests: simple-package.json 1`] = `
+===================================== input ======================================
+{
+  "version": "1.22.333"
+}
+
+===================================== output =====================================
+{
+  "version": "1.414.213"
+}
+`;
