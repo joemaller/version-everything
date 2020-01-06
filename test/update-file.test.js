@@ -3,6 +3,7 @@
 
 const should = require("chai").should();
 
+const path = require("path");
 const fs = require("fs-extra");
 const yaml = require("js-yaml");
 const semver = require("semver");
@@ -10,71 +11,52 @@ const semver = require("semver");
 const tmpFixture = require("../app/lib/tmp-fixture");
 const updateFile = require("../app/update-file");
 
+let newVersion = "3.14.1592";
+const cwd = process.cwd();
+const fixtureDir = "./test/fixture/deep/dotfile";
+
+beforeEach(async () => {
+  // newVersion = semver.inc(newVersion, "patch");
+  const tmpFix = await tmpFixture(fixtureDir);
+  // console.log('creating', tmpFix)
+  process.chdir(tmpFix);
+});
+
+afterEach(() => {
+  process.chdir(cwd);
+});
+
 describe("Update a file", () => {
-  let newVersion = "1.0.0";
-  const cwd = process.cwd();
-  const fixtureDir = "./test/fixture/deep/dotfile";
-
-  beforeEach(() => {
-    newVersion = semver.inc(newVersion, "patch");
-    process.chdir(tmpFixture(fixtureDir));
-  });
-
-  afterEach(() => {
-    process.chdir(cwd);
-  });
-
   test("requires a file argument", () => {
-    const file = function() {
-      updateFile();
-    };
-    file.should.throw(Error);
+    updateFile().catch(err => expect(err.toString()).toMatch("Error"));
   });
 
   test("requires a version string argument", () => {
-    const file = function() {
-      updateFile("foo.file");
-    };
-    file.should.throw(Error);
-  });
-
-  test("requires a version string argument (Uppercase)", () => {
-    const file = function() {
-      updateFile("file.TXT");
-    };
-    file.should.throw(Error);
+    updateFile("file").catch(err => expect(err.toString()).toMatch("Error"));
   });
 
   test.skip("accepts a string file path", () => {});
   test.skip("accepts a filestream", () => {});
 
   describe("plain text files", () => {
-    test("should report the previous version (css block comment)", done => {
+    test("should report the previous version (css block comment)", async () => {
       const file = "file.css";
-      updateFile(file, newVersion, { quiet: true }, (err, result) => {
-        result.should.have.property("oldVersion");
-        result.should.have
-          .property("oldVersion")
-          .that.is.not.string(newVersion);
-        result.should.have.property("oldVersion").that.is.not.undefined;
-        done();
-      });
+      const result = await updateFile(file, newVersion, { quiet: true });
+      expect(result).toHaveProperty("oldVersion");
+      expect(result.oldVersion).not.toEqual(newVersion);
     });
 
-    test("should increment a plain text file (css block comment)", done => {
+    test("should increment a plain text file (css block comment)", async () => {
       const file = "file.css";
       const regex = new RegExp(
         "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " +
           newVersion.replace(/\./g, "\\."),
         "im"
       );
-      updateFile(file, newVersion, { quiet: true }, err => {
-        expect(err).toBeFalsy();
-        fs.readFile(file, (err, data) => {
-          data.toString().should.match(regex);
-          done();
-        });
-      });
+      await updateFile(file, newVersion, { quiet: true });
+      const newFile = await fs.readFile(file, "utf8");
+      // console.log({ newFile });
+      expect(newFile).toMatch(regex);
     });
 
     it("should increment a v0.0.0 style version at the end of a line in a plain text file (css block comment)", done => {
@@ -86,8 +68,8 @@ describe("Update a file", () => {
 
       updateFile(file, newVersion, { quiet: true }, err => {
         expect(err).toBeFalsy();
-        fs.readFile(file, (err, data) => {
-          expect(data.toString()).toMatch(regex);
+        fs.readFile(file, "utf8", (err, data) => {
+          expect(data).toMatch(`v${newVersion}`);
           done();
         });
       });
@@ -430,9 +412,19 @@ describe("Update a file", () => {
         });
       });
     });
+
+    test("Don't udpate this file", async () => {
+      const file = "do-not-update.txt";
+      const updated = await updateFile(file, newVersion, {});
+      // console.log(updated);
+      expect(updated).toBe(undefined);
+    });
   });
 
   describe("Errors and Callbacks", () => {
+    test.skip("Calls a callback", () => {});
+    test.skip("Returns a promise", () => {});
+
     test("Throws an error on missing files", done => {
       const file = "not-a-file.txt";
       updateFile(file, newVersion, {}, (err, result) => {
@@ -468,15 +460,18 @@ describe("Update a file", () => {
       // }
     });
 
-
     test("Stupid test for coverage (callback is not a function)", () => {
-      const file = "file.json";
-      updateFile(file, newVersion, { quiet: false }, null);
+      updateFile("file", newVersion, { quiet: false }, null).catch(err =>
+        expect(err.toString()).toMatch("Error")
+      );
     });
 
-    test("Even dumber test for coverage (callback is not a function)", () => {
-      const file = "not-really-data.txt";
-      updateFile(file, newVersion, { quiet: false }, null);
+    test("Fail to update read-only file", async () => {
+      const file = "file.json";
+      fs.chmodSync(file, 0o444);
+      await updateFile(file, newVersion, { quiet: true }).catch(err =>
+        expect(err.toString()).toMatch("EACCES")
+      );
     });
   });
 
@@ -526,13 +521,12 @@ describe("Update a file", () => {
       cleanup();
     });
 
-    test("shows the file, current version and updated version", done => {
+    test("should be quiet, even if dryRun is true", done => {
       const file = "file.json";
       try {
-        updateFile(file, newVersion, {}, (err, result) => {
-          output.should.have.string(file);
-          output.should.have.string(newVersion);
-          output.should.have.string(result.oldVersion);
+        updateFile(file, newVersion, { quiet: true, dryRun: true }, err => {
+          expect(err).toBeFalsy();
+          output.should.be.empty;
           done();
         });
       } catch (err) {
@@ -541,36 +535,46 @@ describe("Update a file", () => {
       cleanup();
     });
 
-
-
-    test("dry-run should not change source file", done => {
+    test("shows the file, current version and updated version", () => {
       const file = "file.json";
-      try {
-        updateFile(file, newVersion, {dryRun: true}, (err, result) => {
-          output.should.not.be.empty;
-
-          fs.readFile(file, (err, data) => {
-            expect(err).toBeFalsy();
-            const yamlData = yaml.safeLoad(data);
-            expect(yamlData).toHaveProperty("version", newVersion);
-            // yamlData.should.have.property("version", newVersion);
-            done();
-          });
-
-        });
-      } catch (err) {
-        expect(err).toBeFalsy();
-      }
-
-
+      // try {
+      return updateFile(file, newVersion, {})
+        .then(result => {
+          output.should.have.string(file);
+          output.should.have.string(newVersion);
+          output.should.have.string(result.oldVersion);
+        })
+        .catch(err => expect(err).toBeFalsy());
+      // } catch (err) {
+      // expect(err).toBeFalsy();
+      // }
+      // cleanup();
     });
 
+    test("dry-run should not change source file", async () => {
+      // cleanup();
+      const file = "file.json";
 
-    test.skip("dry-run should list results for multiple files", () => {});
-    // No it shouldn't. This only deals with one file at a time...
-    // just make sure there's space between.
+      // console.log('hi?', fs.readFileSync(file, 'utf8'));
+      const rawData = await fs.readFile(file, "utf8");
+      // const updated = await updateFile(file, newVersion, { dryRun: true });
+      const newData = await fs.readFile(file, "utf8");
 
+      expect(newData).toEqual(rawData);
+    });
 
+    test("dry-run output should include file contents", async () => {
+      // cleanup();
+      const file = "file.json";
+      // console.log('hi2?', fs.readFileSync(file, 'utf8'));
+      const rawData = await fs.readFile(file);
+      const updated = await updateFile(file, newVersion, { dryRun: true });
+      const newData = await fs.readFile(file);
+
+      expect(output).not.toEqual("");
+      expect(output).toContain(newVersion);
+      expect(output).toContain(`"version": "${newVersion}",`);
+      expect(output).toMatch(updated.data);
+    });
   });
-
 });

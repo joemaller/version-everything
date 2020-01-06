@@ -1,0 +1,14 @@
+/*
+Version: 3.14.1592
+
+This is an extra line ending with a simple version number v3.14.1592
+
+Simple version in the middle, v9.8.7 should *not* be updated
+
+A second string to replace:
+Version: 3.14.1592
+
+*/
+.fake {
+  color: papayawhip;
+}
