@@ -1,9 +1,9 @@
 const fs = require("fs-extra");
 const path = require("path");
 
+const universalify = require("universalify");
 const chalk = require("chalk");
-// const sed = require('shelljs').sed;
-// const yaml = require("js-yaml");
+
 const xml2js = require("xml2js");
 const builder = new xml2js.Builder();
 const logInit = require("./lib/log-init");
@@ -18,9 +18,21 @@ const bumpYAML = require("./lib/bump-yaml");
  * @param {object} options Config options, quiet, json, xml and yaml
  * @param {[function]} cb   standard node callback mostly used for testing
  */
-module.exports = function(file, version, options, cb) {
-  if (!file) throw new Error("A file argument is required.");
-  if (!version) throw new Error("A version argument (string) is required.");
+const updateFile = (file, version, options = {}, cb = (e, r) => {}) => {
+  if (typeof file == "function" || !file) {
+    throw new Error("A file argument is required.");
+  }
+  if (typeof version == "function" || !version) {
+    throw new Error("A version argument (string) is required.");
+  }
+  // TODO: throw an error for wrong-format `options`?
+  // if (typeof options == "function" || typeof options != "object") {
+  //   throw new Error("The options argument should be an Object.");
+  // }
+  if (typeof options == "object" && typeof cb != "function") {
+    throw new Error("Callback must be a function.");
+  }
+
   const defaultOptions = {
     quiet: false,
     dryRun: false,
@@ -131,3 +143,5 @@ module.exports = function(file, version, options, cb) {
     cb(err, result);
   });
 };
+
+module.exports = universalify.fromCallback(updateFile);
