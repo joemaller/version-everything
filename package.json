@@ -28,7 +28,14 @@
   },
   "jest": {
     "verbose": true,
-    "collectCoverage": true
+    "collectCoverage": true,
+    "snapshotSerializers": [
+      "jest-snapshot-serializer-raw"
+    ],
+    "coveragePathIgnorePatterns": [
+      "node_modules",
+      "__snapshots__"
+    ]
   },
   "dependencies": {
     "chalk": "^3.0.0",
@@ -36,14 +43,15 @@
     "find-up": "^4.1.0",
     "fs-extra": "^8.1.0",
     "js-yaml": "^3.13.1",
-    "read-pkg-up": "^7.0.0",
-    "semver": "^6.3.0",
-    "xml2js": "^0.4.22",
-    "yargs": "^15.0.2"
+    "read-pkg-up": "^7.0.1",
+    "semver": "^7.1.1",
+    "universalify": "^0.1.2",
+    "xml2js": "^0.4.23",
+    "yargs": "^15.1.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "globby": "^10.0.1",
+    "jest-snapshot-serializer-raw": "^1.1.0",
     "jest": "^24.9.0",
     "tmp": "0.1.0"
   }
