@@ -7,7 +7,7 @@
 
 // const path = require("path");
 
-const tmpFixture = require("../app/lib/tmp-fixture");
+const tmpFixture = require("./lib/tmp-fixture");
 
 const getVersionFiles = require("../app/get-version-files");
 

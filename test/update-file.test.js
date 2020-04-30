@@ -8,7 +8,7 @@ const fs = require("fs-extra");
 const yaml = require("js-yaml");
 const semver = require("semver");
 
-const tmpFixture = require("../app/lib/tmp-fixture");
+const tmpFixture = require("./lib/tmp-fixture");
 const updateFile = require("../app/update-file");
 
 let newVersion = "3.14.1592";

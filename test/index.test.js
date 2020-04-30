@@ -1,6 +1,6 @@
 const readPkgUp = require("read-pkg-up");
 
-const tmpFixture = require("../app/lib/tmp-fixture");
+const tmpFixture = require("./lib/tmp-fixture");
 const versionEverything = require("../");
 
 const cwd = process.cwd();

@@ -5,7 +5,7 @@
 const path = require("path");
 const should = require("chai").should();
 const getPackageJson = require("../app/get-package-json");
-const tmpFixture = require("../app/lib/tmp-fixture");
+const tmpFixture = require("./lib/tmp-fixture");
 
 describe("Load a package.json file", () => {
   const cwd = process.cwd();

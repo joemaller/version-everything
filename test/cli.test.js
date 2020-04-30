@@ -1,4 +1,4 @@
-const tmpFixture = require("../app/lib/tmp-fixture");
+const tmpFixture = require("./lib/tmp-fixture");
 const cli = require("../cli.js");
 // const versionEverything = require("../");
 

@@ -7,7 +7,7 @@ const tmp = require("tmp");
  * @param  {string} fixtureDir path to directory to copy
  * @return {[type]}            [description]
  */
-module.exports = fixtureDir => {
+module.exports = (fixtureDir) => {
   const tmpDir = tmp.dirSync({ keep: true }).name;
   fs.copySync(fixtureDir, tmpDir);
   return tmpDir;
