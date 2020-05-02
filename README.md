@@ -40,13 +40,15 @@ Add something like the following to your project's package.json file:
   "scripts": {
     "version": "version-everything && git add -u"
   },
-  "versionFiles": [
-    "README.md",
-    "example_wordpress_plugin.php",
-    "styles.css",
-    "manifest.json",
-    "sadness.xml"
-  ]
+  "version-everything": {
+    "files": [
+      "README.md",
+      "example_wordpress_plugin.php",
+      "styles.css",
+      "manifest.json",
+      "sadness.xml"
+    ]
+  }
 }
 ```
 
@@ -83,7 +85,7 @@ module.exports = {
   },
   xml: {
     /* optional xml config object, passes directly to xml2js */
-  }
+  },
 };
 ```
 

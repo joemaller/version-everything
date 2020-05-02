@@ -3,24 +3,17 @@
 
 "use strict";
 
-// const should = require("chai").should();
-
-// const path = require("path");
-
 const tmpFixture = require("./lib/tmp-fixture");
 
 const getVersionFiles = require("../app/get-version-files");
 
-/**
- * Uses 'versionFiles' property instead of 'version_files'
- */
 const fakePackageJson = {
   name: "fake-package-json",
   version: "11.22.33",
   description: "Fake package.json for testing",
   "version-everything": {
-    files: ["file1.js", "file2.json", "file3.yml", "file4.xml", "file5.php"]
-  }
+    files: ["file1.js", "file2.json", "file3.yml", "file4.xml", "file5.php"],
+  },
 };
 
 const cwd = process.cwd();
@@ -57,14 +50,14 @@ describe("Get a list of files to version", () => {
 
     test("Handles an object with a files array", () => {
       const files = getVersionFiles({
-        files: ["file1.js", "file2.json", "file3.yml"]
+        files: ["file1.js", "file2.json", "file3.yml"],
       });
       expect(files).toHaveLength(3);
     });
 
     test("Handles an object with a file string", () => {
       const files = getVersionFiles({
-        files: "file1.js"
+        files: "file1.js",
       });
       expect(files).toHaveLength(1);
     });
