@@ -4,13 +4,14 @@ const path = require("path");
 const universalify = require("universalify");
 const chalk = require("chalk");
 
-const xml2js = require("xml2js");
-const builder = new xml2js.Builder();
+// const xml2js = require("xml2js");
+// const builder = new xml2js.Builder();
 const logInit = require("./lib/log-init");
 
 const bumpPlainText = require("./lib/bump-plain-text");
 const bumpJSON = require("./lib/bump-json");
 const bumpYAML = require("./lib/bump-yaml");
+
 /**
  * Sends files to the correct bumping function, writes the result
  * @param {[type]} file    [description]
@@ -18,18 +19,14 @@ const bumpYAML = require("./lib/bump-yaml");
  * @param {object} options Config options, quiet, json, xml and yaml
  * @param {[function]} cb   standard node callback mostly used for testing
  */
-const updateFile = (file, version, options = {}, cb = (e, r) => {}) => {
-  if (typeof file == "function" || !file) {
+const updateFile = async (file, version, options = {}) => {
+  if (!file) {
     throw new Error("A file argument is required.");
   }
-  if (typeof version == "function" || !version) {
+  if (!version) {
     throw new Error("A version argument (string) is required.");
   }
-  // TODO: throw an error for wrong-format `options`?
-  // if (typeof options == "function" || typeof options != "object") {
-  //   throw new Error("The options argument should be an Object.");
-  // }
-  if (typeof options == "object" && typeof cb != "function") {
+  if (typeof options !== "object") {
     throw new Error("Callback must be a function.");
   }
 
@@ -38,7 +35,7 @@ const updateFile = (file, version, options = {}, cb = (e, r) => {}) => {
     dryRun: false,
     json: { space: 2, replacer: null, reviver: null },
     xml: {},
-    yaml: {}
+    yaml: {},
   };
 
   const config = Object.assign({}, defaultOptions, options);
@@ -48,11 +45,13 @@ const updateFile = (file, version, options = {}, cb = (e, r) => {}) => {
   // the file contents before falling back to plain-text regex replace
   // console.log(path.extname(file).toLowerCase())
 
-  fs.readFile(file, "utf8", async (err, data) => {
-    // TODO: Why not just throw here?
-    if (err && cb && typeof cb === "function") return cb(err);
-    let result;
+  // const data = await fs.readFile(file, "utf8").catch((err) => new Error(err));
+  const data = await fs.readFile(file, "utf8").catch((err) => err);
 
+  let result;
+  if (data.errno && data.code) {
+    result = data;
+  } else {
     switch (path.extname(file).toLowerCase()) {
       case ".json":
         result = bumpJSON(data, version, config.json);
@@ -71,12 +70,10 @@ const updateFile = (file, version, options = {}, cb = (e, r) => {}) => {
 
       default:
         // no extension match
+        // trying file as unmarked JSON
         try {
-          // trying file as unmarked JSON
           result = bumpJSON(data, version, config.json);
-        } catch (err) {
-          // not JSON
-        }
+        } catch (err) {}
         if (!result) {
           // No result, trying file as XML
         }
@@ -84,64 +81,43 @@ const updateFile = (file, version, options = {}, cb = (e, r) => {}) => {
           // No result, trying file as YAML
           try {
             result = bumpYAML(data, version, config.yaml);
-          } catch (err) {
-            // not YAML
-          }
+          } catch (error) {}
         }
         if (!result) {
           // No result, trying file as plain text (RegExp)
           result = bumpPlainText(data, version);
         }
     }
-    if (result) {
-      const updateMsg = [
+  }
+
+  if (result) {
+    let updateMsg;
+
+    if (result.errno && result.code) {
+      updateMsg = [chalk.red.bold(result.toString())];
+    } else {
+      updateMsg = [
         "Updated",
         chalk.magenta(path.basename(file)),
         "from",
         chalk.gray(result.oldVersion),
         "to",
-        chalk.cyan(version)
-        // ...(options.dryRun ? ["\n", result.data] : [])
+        chalk.cyan(version),
       ];
-      // const val = await aPromise.catch(err => console.log(err));
-      // console.log(options.dryRun);
+
       if (config.dryRun) {
         updateMsg.push("\n", result.data);
       } else {
-        // try {
-        //   fs.writeFileSync(file, result.data);
-        // } catch (writeError) {
-        //   console.log({ writeError });
-        // }
-        // const foo =
-        await fs.writeFile(file, result.data)
-        .catch(err => {
-          // console.log({ rerr });
-          cb(err)
-          // throw new Error('BOOGA');
-        });
-        // console.log({ foo });
+        try {
+          await fs.writeFile(file, result.data);
+        } catch (err) {
+          throw err;
+        }
       }
-
-      // err = options.dryRun ? err : await fs.writeFile(file, result.data);
-      log(updateMsg.join(" "));
-      // log(updateMsg, config.dryRun ? result.data : "");
-
-      // if (options.dryRun) {
-      //   log(updateMsg, result.data);
-      //   if (cb && typeof cb === "function") cb(err, result);
-      // } else {
-      //   fs.writeFile(file, result.data, err => {
-      //     log(updateMsg);
-      //     if (cb && typeof cb === "function") cb(err, result);
-      //   });
-      // }
-      // } else {
-      //   if (cb && typeof cb === "function") cb(err);
     }
-    // if (cb && typeof cb === "function") cb(err, result);
-    cb(err, result);
-  });
+    log(updateMsg.join(" "));
+  }
+  return result;
 };
 
-module.exports = universalify.fromCallback(updateFile);
+module.exports = universalify.fromPromise(updateFile);
