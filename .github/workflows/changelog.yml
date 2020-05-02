@@ -1,4 +1,4 @@
-name: Changelog
+name: Update Changelog
 
 on:
   pull_request:
@@ -11,11 +11,13 @@ on:
     types: [closed, edited]
 
 jobs:
-  generate_changelog:
+  changelog:
     runs-on: ubuntu-latest
     name: Generate changelog for master branch
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: master
 
       - name: Generate changelog
         uses: charmixer/auto-changelog-action@v1
@@ -29,13 +31,8 @@ jobs:
         run: |
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git config --local user.name "$GITHUB_ACTOR"
-          git checkout -b $TMP_BRANCH
           git status
           git add CHANGELOG.md
           git commit -m 'Updated CHANGELOG.md' 
-          git fetch
-          git status
-          git checkout -b $PUSH_BRANCH --track origin/${PUSH_BRANCH}
-          git rebase $TMP_BRANCH $PUSH_BRANCH
           git status
           git push
