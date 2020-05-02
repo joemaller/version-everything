@@ -1,0 +1,31 @@
+name: Changelog
+
+on:
+  pull_request:
+    types: [closed]
+
+  release:
+    types: [published]
+
+  issues:
+    types: [closed, edited]
+
+jobs:
+  generate_changelog:
+    runs-on: ubuntu-latest
+    name: Generate changelog for master branch
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Generate changelog
+        uses: charmixer/auto-changelog-action@v1
+          with:
+             token: ${{  GITHUB_TOKEN }}
+
+      - name: Commit files
+        run: |
+          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config --local user.name "$GITHUB_ACTOR"
+          git add CHANGELOG.md 
+          git commit -m 'Updated CHANGELOG.md'
+          git push
