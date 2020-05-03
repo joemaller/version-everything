@@ -35,15 +35,18 @@ describe("Update a file", () => {
     updateFile("file").catch((err) => expect(err.toString()).toMatch("Error"));
   });
 
-  test("should fail if options is not an object", () => {
-    updateFile("file", "1.2.3", false).catch((err) =>
-      expect(err.toString()).toMatch("Error")
+  test("should fail if options is not an object", async () => {
+    await expect(updateFile("file", "1.2.3", false)).rejects.toThrow(
+      "Options should be an object"
     );
-    updateFile("file", "1.2.3", [""]).catch((err) =>
-      expect(err.toString()).toMatch("Error")
+    await expect(updateFile("file", "1.2.3", [])).rejects.toThrow(
+      "Options should be an object"
     );
-    updateFile("file", "1.2.3", "hello").catch((err) =>
-      expect(err.toString()).toMatch("Error")
+    await expect(updateFile("file", "1.2.3", [""])).rejects.toThrow(
+      "Options should be an object"
+    );
+    await expect(updateFile("file", "1.2.3", "hello")).rejects.toThrow(
+      "Options should be an object"
     );
   });
 
@@ -530,7 +533,6 @@ describe("Update a file", () => {
       } catch (err) {
         expect(err).toBeFalsy();
       }
-      cleanup();
     });
 
     test("should be loud", (done) => {
@@ -544,7 +546,6 @@ describe("Update a file", () => {
       } catch (err) {
         expect(err).toBeFalsy();
       }
-      cleanup();
     });
 
     test("should be quiet, even if dryRun is true", (done) => {
@@ -558,12 +559,10 @@ describe("Update a file", () => {
       } catch (err) {
         expect(err).toBeFalsy();
       }
-      cleanup();
     });
 
     test("shows the file, current version and updated version", () => {
       const file = "file.json";
-      // try {
       return updateFile(file, newVersion, {})
         .then((result) => {
           output.should.have.string(file);
@@ -571,10 +570,6 @@ describe("Update a file", () => {
           output.should.have.string(result.oldVersion);
         })
         .catch((err) => expect(err).toBeFalsy());
-      // } catch (err) {
-      // expect(err).toBeFalsy();
-      // }
-      // cleanup();
     });
 
     test("dry-run should not change source file", async () => {

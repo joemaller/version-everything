@@ -3,6 +3,7 @@ const path = require("path");
 
 const universalify = require("universalify");
 const chalk = require("chalk");
+const isPlainObject = require("lodash.isplainobject");
 
 // const xml2js = require("xml2js");
 // const builder = new xml2js.Builder();
@@ -26,8 +27,9 @@ const updateFile = async (file, version, options = {}) => {
   if (!version) {
     throw new Error("A version argument (string) is required.");
   }
-  if (typeof options !== "object") {
-    throw new Error("Callback must be a function.");
+
+  if (!isPlainObject(options)) {
+    throw new Error("Options should be an object.");
   }
 
   const defaultOptions = {
