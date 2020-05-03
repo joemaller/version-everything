@@ -94,7 +94,12 @@ const updateFile = async (file, version, options = {}) => {
     let updateMsg;
 
     if (result.errno && result.code) {
-      updateMsg = [chalk.red.bold(result.toString())];
+      updateMsg = [
+        "⚠️ Could not update",
+        chalk.magenta(path.basename(file)),
+        "\n",
+        chalk.red.bold(result.toString()),
+      ];
     } else {
       updateMsg = [
         "Updated",
