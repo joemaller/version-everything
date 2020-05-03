@@ -8,6 +8,10 @@
 
 - Add Changelog with GitHub Actions and github-changelog-generator [\#18](https://github.com/joemaller/version-everything/issues/18)
 
+**Closed issues:**
+
+- Code Climate: Refactor bump-plain-text.js [\#19](https://github.com/joemaller/version-everything/issues/19)
+
 **Merged pull requests:**
 
 - Bump acorn from 5.7.3 to 5.7.4 [\#17](https://github.com/joemaller/version-everything/pull/17) ([dependabot[bot]](https://github.com/apps/dependabot))
