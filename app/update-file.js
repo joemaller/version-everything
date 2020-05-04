@@ -5,13 +5,12 @@ const universalify = require("universalify");
 const chalk = require("chalk");
 const isPlainObject = require("lodash.isplainobject");
 
-// const xml2js = require("xml2js");
-// const builder = new xml2js.Builder();
 const logInit = require("./lib/log-init");
 
 const bumpPlainText = require("./lib/bump-plain-text");
 const bumpJSON = require("./lib/bump-json");
 const bumpYAML = require("./lib/bump-yaml");
+// const bumpXML = require("./lib/bump-xml");
 
 /**
  * Sends files to the correct bumping function, writes the result
@@ -63,6 +62,7 @@ const updateFile = async (file, version, options = {}) => {
       // case ".xml":
       // case ".plist":
       // XML or PLIST FILE!
+      //   result = bumpXML(data, version, config.xml);
       // break;
 
       case ".yml":
