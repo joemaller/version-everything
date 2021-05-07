@@ -25,20 +25,21 @@
     "test": "jest",
     "test:debug": "node --inspect-brk $(npm bin)/jest --runInBand",
     "test:watch": "jest --watch",
-    "version": "node cli.js README.md && git add -u"
+    "version": "node cli.js README.md && auto-changelog && git add -u"
   },
   "jest": {
-    "verbose": true,
     "collectCoverage": true,
-    "snapshotSerializers": [
-      "jest-snapshot-serializer-raw"
-    ],
     "coveragePathIgnorePatterns": [
       "node_modules",
       "__snapshots__"
-    ]
+    ],
+    "snapshotSerializers": [
+      "jest-snapshot-serializer-raw"
+    ],
+    "verbose": true
   },
   "dependencies": {
+    "auto-changelog": "^2.2.1",
     "chalk": "^4.1.1",
     "cosmiconfig": "^7.0.0",
     "escape-string-regexp": "^4.0.0",
@@ -58,5 +59,9 @@
     "jest": "^26.6.3",
     "jest-snapshot-serializer-raw": "^1.2.0",
     "tmp": "0.2.1"
+  },
+  "auto-changelog": {
+    "package": true,
+    "backfillLimit": 7
   }
 }
