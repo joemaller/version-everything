@@ -324,7 +324,7 @@ describe("Update a file", () => {
         expect(err).toBeFalsy();
         fs.readFile(file, (err, data) => {
           expect(err).toBeFalsy();
-          const yamlData = yaml.safeLoad(data);
+          const yamlData = yaml.load(data);
           yamlData.should.have.property("version", newVersion);
           done();
         });
@@ -361,7 +361,7 @@ describe("Update a file", () => {
         expect(err).toBeFalsy();
         fs.readFile(file, (err, data) => {
           expect(err).toBeFalsy();
-          const yamlData = yaml.safeLoad(data);
+          const yamlData = yaml.load(data);
           yamlData.should.have.property("version", newVersion);
           done();
         });
@@ -401,7 +401,7 @@ describe("Update a file", () => {
         expect(err).toBeFalsy();
         fs.readFile(file, (err, data) => {
           expect(err).toBeFalsy();
-          const yamlData = yaml.safeLoad(data);
+          const yamlData = yaml.load(data);
           expect(yamlData).toHaveProperty("version", newVersion);
           // yamlData.should.have.property("version", newVersion);
           done();
