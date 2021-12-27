@@ -4,12 +4,10 @@
 
 Use npm to version all kinds of projects, not just JavaScript
 
-[![Travis Build Status](https://img.shields.io/travis/joemaller/version-everything?logo=travis)](https://travis-ci.org/joemaller/version-everything)
-[![codecov](https://codecov.io/gh/joemaller/version-everything/branch/master/graph/badge.svg)](https://codecov.io/gh/joemaller/version-everything)
-[![Coveralls github](https://img.shields.io/coveralls/github/joemaller/version-everything?label=Coveralls)](https://coveralls.io/github/joemaller/version-everything)
-[![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/joemaller/version-everything)](https://codeclimate.com/github/joemaller/version-everything)<br>
 [![npm](https://img.shields.io/npm/v/version-everything.svg)](https://www.npmjs.com/package/version-everything)
-[![Libraries.io dependency status](https://img.shields.io/librariesio/release/npm/version-everything)](https://libraries.io/npm/version-everything/)
+[![codecov](https://codecov.io/gh/joemaller/version-everything/branch/master/graph/badge.svg)](https://codecov.io/gh/joemaller/version-everything)
+[![Coverage Status](https://coveralls.io/repos/github/joemaller/version-everything/badge.svg)](https://coveralls.io/github/joemaller/version-everything)
+[![Maintainability](https://api.codeclimate.com/v1/badges/6b0958bcd94274198117/maintainability)](https://codeclimate.com/github/joemaller/version-everything/maintainability)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 Synchronize the version string from package.json into a set of additional text or structured data files. When called from npm's version script, all versioned files in a project will be updated and committed with a single command.
