@@ -1,0 +1,30 @@
+name: Create Release from Version Tags
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    name: Build Release
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up REPO and TAG environment vars
+        run: |
+          echo "REPO=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
+          echo "TAG=${GITHUB_SHA:0:6}" >> $GITHUB_ENV
+
+      - name: This run was triggered by a version tag, reset the $TAG variable to the tag name
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          echo "TAG=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+      - name: Create GitHub release
+        if: ${{ contains(github.ref, 'refs/tags/') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create v${TAG}
