@@ -8,6 +8,10 @@
 
 - auto-publish to npm [\#20](https://github.com/joemaller/version-everything/issues/20)
 
+**Closed issues:**
+
+- pick a changelog [\#25](https://github.com/joemaller/version-everything/issues/25)
+
 ## [v0.6.4](https://github.com/joemaller/version-everything/tree/v0.6.4) (2021-05-07)
 
 [Full Changelog](https://github.com/joemaller/version-everything/compare/v0.6.3...v0.6.4)
