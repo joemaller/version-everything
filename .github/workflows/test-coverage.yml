@@ -1,6 +1,6 @@
-name: PHPUnit Test Coverage
+name: Test Coverage
 
-on:  push
+on: push
 
 jobs:
   build:
