@@ -1,9 +1,3 @@
-/* eslint-env node,mocha,chai */
-/* eslint no-unused-vars: "should"*/
-
-"use strict";
-const path = require("path");
-const should = require("chai").should();
 const getPackageJson = require("../app/get-package-json");
 const tmpFixture = require("./lib/tmp-fixture");
 
@@ -13,7 +7,7 @@ describe("Load a package.json file", () => {
   const stdoutWrite = process.stdout.write;
 
   // ref https://github.com/mochajs/mocha/wiki/Mess-with-globals
-  const cleanup = function() {
+  const cleanup = () => {
     process.chdir(cwd);
     console.log = consoleLog;
     process.stdout.write = stdoutWrite;
@@ -25,21 +19,21 @@ describe("Load a package.json file", () => {
     test("Finds package.json in same dir", () => {
       process.chdir("./test/fixture/deep/dotfile/");
       const packageJson = getPackageJson({ quiet: true });
-      packageJson.should.have.nested.property(
+      expect(packageJson).toHaveProperty(
         "packageJson.name",
         "version-everything-test-fixture"
       );
-      packageJson.should.have.nested.property("packageJson.version", "9.8.7");
+      expect(packageJson).toHaveProperty("packageJson.version", "9.8.7");
     });
 
     test("Finds package.json climbing up from a subdir", () => {
       process.chdir("./test/fixture/deep/dotfile/deeper/and_deeper");
       const packageJson = getPackageJson({ quiet: true });
-      packageJson.should.have.nested.property(
+      expect(packageJson).toHaveProperty(
         "packageJson.name",
         "version-everything-test-fixture"
       );
-      packageJson.should.have.nested.property("packageJson.version", "9.8.7");
+      expect(packageJson).toHaveProperty("packageJson.version", "9.8.7");
     });
 
     test("Errors trying to find an ancestor package.json file", () => {
@@ -52,13 +46,13 @@ describe("Load a package.json file", () => {
     test("Load a specific package.json file", () => {
       const packageJson = getPackageJson({
         package_json: "./test/fixture/deep/dotfile/package.json",
-        quiet: true
+        quiet: true,
       });
-      packageJson.should.have.nested.property(
+      expect(packageJson).toHaveProperty(
         "packageJson.name",
         "version-everything-test-fixture"
       );
-      expect(packageJson. packageJson).toHaveProperty('version', "9.8.7")
+      expect(packageJson).toHaveProperty("packageJson.version", "9.8.7");
     });
   });
 
@@ -67,7 +61,7 @@ describe("Load a package.json file", () => {
 
     beforeEach(() => {
       output = "";
-      process.stdout.write = console.log = str => (output += str);
+      process.stdout.write = console.log = (str) => (output += str);
     });
 
     afterEach(cleanup);
@@ -75,8 +69,8 @@ describe("Load a package.json file", () => {
     test("logs to stdout, quiet == false", () => {
       try {
         const packageJson = getPackageJson({ quiet: false });
-        output.should.not.be.empty;
-        packageJson.should.have.nested.property("packageJson.version");
+        expect(output).not.toBe("");
+        expect(packageJson).toHaveProperty("packageJson.version");
         cleanup();
       } catch (err) {
         cleanup();
@@ -87,8 +81,8 @@ describe("Load a package.json file", () => {
     test("does its thing quietly, quiet == true", () => {
       try {
         const packageJson = getPackageJson({ quiet: true });
-        output.should.be.empty;
-        packageJson.should.have.nested.property("packageJson.version");
+        expect(output).toBe("");
+        expect(packageJson).toHaveProperty("packageJson.version");
         cleanup();
       } catch (err) {
         cleanup();
@@ -99,8 +93,8 @@ describe("Load a package.json file", () => {
     test("is not quiet by default", () => {
       try {
         const packageJson = getPackageJson();
-        output.should.not.be.empty;
-        packageJson.should.have.nested.property("packageJson.version");
+        expect(output).not.toBe("");
+        expect(packageJson).toHaveProperty("packageJson.version");
         cleanup();
       } catch (err) {
         cleanup();
@@ -123,16 +117,14 @@ describe("Load a package.json file", () => {
 
     test("Errors trying to load a version-less package.json file", () => {
       process.chdir("./deep/dotfile/");
-      getPackageJson
-        .bind(null, { package_json: "no-version.json" })
-        .should.throw(Error);
+      const args = { package_json: "no-version.json" };
+      expect(() => getPackageJson(args)).toThrow();
     });
 
     test("Errors trying to load a non-json text file", () => {
       process.chdir("./deep/dotfile/");
-      getPackageJson
-        .bind(null, { package_json: "not-really-data.txt" })
-        .should.throw(Error);
+      const args = { package_json: "not-really-data.txt" };
+      expect(() => getPackageJson(args)).toThrow();
     });
 
     test("No package.json", () => {

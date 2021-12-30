@@ -1,9 +1,4 @@
-/* eslint-env node,mocha */
-/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "should" }]*/
-
-const should = require("chai").should();
-
-const path = require("path");
+// const path = require("path");
 const fs = require("fs-extra");
 const yaml = require("js-yaml");
 const semver = require("semver");
@@ -84,7 +79,7 @@ describe("Update a file", () => {
       updateFile(file, newVersion, { quiet: true }, (err) => {
         expect(err).toBeFalsy();
         fs.readFile(file, "utf8", (err, data) => {
-          expect(data).toMatch(`v${newVersion}`);
+          expect(data.toString()).toMatch(`v${newVersion}`);
           done();
         });
       });
@@ -94,7 +89,7 @@ describe("Update a file", () => {
       const file = "file.php";
       updateFile(file, newVersion, { quiet: true }, (err, result) => {
         expect(err).toBeFalsy();
-        result.should.have.property("oldVersion");
+        expect(result).toHaveProperty("oldVersion");
         done();
       });
     });
@@ -109,7 +104,7 @@ describe("Update a file", () => {
       updateFile(file, newVersion, { quiet: true }, (err) => {
         expect(err).toBeFalsy();
         fs.readFile(file, (err, data) => {
-          data.toString().should.match(regex);
+          expect(data.toString()).toMatch(regex);
           done();
         });
       });
@@ -119,7 +114,8 @@ describe("Update a file", () => {
       const file = "php-docblock-version-tag.php";
       updateFile(file, newVersion, { quiet: true }, (err, result) => {
         expect(err).toBeFalsy();
-        result.should.have.property("oldVersion").that.is.not.undefined;
+        expect(result).toHaveProperty("oldVersion");
+        expect(result.oldVersion).not.toBeUndefined();
         done();
       });
     });
@@ -133,7 +129,7 @@ describe("Update a file", () => {
       updateFile(file, newVersion, { quiet: true }, (err) => {
         expect(err).toBeFalsy();
         fs.readFile(file, (err, data) => {
-          data.toString().should.match(regex);
+          expect(data.toString()).toMatch(regex);
           done();
         });
       });
@@ -143,7 +139,7 @@ describe("Update a file", () => {
       const file = "file.md";
       updateFile(file, newVersion, { quiet: true }, (err, result) => {
         expect(err).toBeFalsy();
-        result.should.have.property("oldVersion");
+        expect(result).toHaveProperty("oldVersion");
         done();
       });
     });
@@ -158,7 +154,7 @@ describe("Update a file", () => {
       updateFile(file, newVersion, { quiet: true }, (err) => {
         expect(err).toBeFalsy();
         fs.readFile(file, (err, data) => {
-          data.toString().should.match(regex);
+          expect(data.toString()).toMatch(regex);
           done();
         });
       });
@@ -197,7 +193,7 @@ describe("Update a file", () => {
       const file = "file.json";
       updateFile(file, newVersion, { quiet: true }, (err, result) => {
         expect(err).toBeFalsy();
-        result.should.have.property("oldVersion");
+        expect(result).toHaveProperty("oldVersion");
         done();
       });
     });
@@ -208,7 +204,7 @@ describe("Update a file", () => {
         expect(err).toBeFalsy();
         fs.readJson(file, (err, json) => {
           expect(err).toBeFalsy();
-          json.should.have.property("version", newVersion);
+          expect(json).toHaveProperty("version", newVersion);
           done();
         });
       });
@@ -228,9 +224,9 @@ describe("Update a file", () => {
           expect(err).toBeFalsy();
           fs.readJson(file, (err, json) => {
             expect(err).toBeFalsy();
-            json.should.have.property("version", newVersion);
-            json.should.have.property("title");
-            json.should.not.have.property("double_me");
+            expect(json).toHaveProperty("version", newVersion);
+            expect(json).toHaveProperty("title");
+            expect(json).not.toHaveProperty("double_me");
             done();
           });
         }
@@ -248,9 +244,9 @@ describe("Update a file", () => {
         (err) => {
           expect(err).toBeFalsy();
           fs.readJson(file, (err, json) => {
-            json.should.have.property("version", newVersion);
-            json.should.have.property("title");
-            json.should.have.property("double_me", 10);
+            expect(json).toHaveProperty("version", newVersion);
+            expect(json).toHaveProperty("title");
+            expect(json).toHaveProperty("double_me", 10);
             done();
           });
         }
@@ -264,12 +260,12 @@ describe("Update a file", () => {
         file,
         newVersion,
         { json: { reviver: reviver }, quiet: true },
-        (err, result) => {
+        (err) => {
           expect(err).toBeFalsy();
           fs.readJson(file, (err, json) => {
-            json.should.have.property("version", newVersion);
-            json.should.have.property("title");
-            json.should.have.property("double_me", 10);
+            expect(json).toHaveProperty("version", newVersion);
+            expect(json).toHaveProperty("title");
+            expect(json).toHaveProperty("double_me", 10);
             done();
           });
         }
@@ -284,10 +280,10 @@ describe("Update a file", () => {
         file,
         newVersion,
         { json: { space: spaces }, quiet: true },
-        (err, result) => {
+        (err) => {
           expect(err).toBeFalsy();
           fs.readFile(file, (err, data) => {
-            data.toString().should.match(regex);
+            expect(data.toString()).toMatch(regex);
             done();
           });
         }
@@ -313,7 +309,7 @@ describe("Update a file", () => {
       const file = "file.yml";
       updateFile(file, newVersion, { quiet: true }, (err, result) => {
         expect(err).toBeFalsy();
-        result.should.have.property("oldVersion");
+        expect(result).toHaveProperty("oldVersion");
         done();
       });
     });
@@ -325,7 +321,7 @@ describe("Update a file", () => {
         fs.readFile(file, (err, data) => {
           expect(err).toBeFalsy();
           const yamlData = yaml.load(data);
-          yamlData.should.have.property("version", newVersion);
+          expect(yamlData).toHaveProperty("version", newVersion);
           done();
         });
       });
@@ -348,7 +344,7 @@ describe("Update a file", () => {
       updateFile(file, newVersion, { quiet: true }, (err) => {
         expect(err).toBeFalsy();
         fs.readJson(file, (err, json) => {
-          json.should.have.property("version", newVersion);
+          expect(json).toHaveProperty("version", newVersion);
           done();
         });
       });
@@ -362,7 +358,7 @@ describe("Update a file", () => {
         fs.readFile(file, (err, data) => {
           expect(err).toBeFalsy();
           const yamlData = yaml.load(data);
-          yamlData.should.have.property("version", newVersion);
+          expect(yamlData).toHaveProperty("version", newVersion);
           done();
         });
       });
@@ -374,8 +370,7 @@ describe("Update a file", () => {
       const file = "no-version.json";
       try {
         updateFile(file, newVersion, { quiet: true }, (err, result) => {
-          result.should.have.property("oldVersion");
-          result.should.have.property("oldVersion").that.is.undefined;
+          expect(result).toHaveProperty("oldVersion", undefined);
           done();
         });
       } catch (err) {
@@ -388,7 +383,7 @@ describe("Update a file", () => {
       updateFile(file, newVersion, { quiet: true }, (err) => {
         expect(err).toBeFalsy();
         fs.readJson(file, (err, json) => {
-          json.should.have.property("version", newVersion);
+          expect(json).toHaveProperty("version", newVersion);
           done();
         });
       });
@@ -403,7 +398,6 @@ describe("Update a file", () => {
           expect(err).toBeFalsy();
           const yamlData = yaml.load(data);
           expect(yamlData).toHaveProperty("version", newVersion);
-          // yamlData.should.have.property("version", newVersion);
           done();
         });
       });
@@ -422,7 +416,7 @@ describe("Update a file", () => {
           delete stats.atimeMs;
           delete newStats.atimeMs;
           expect(newStats).toStrictEqual(stats);
-          data.toString().should.equal(content);
+          expect(data.toString()).toEqual(content);
           done();
         });
       });
@@ -431,7 +425,6 @@ describe("Update a file", () => {
     test("Don't udpate this file", async () => {
       const file = "do-not-update.txt";
       const updated = await updateFile(file, newVersion, {});
-      // console.log(updated);
       expect(updated).toBe(undefined);
     });
   });
@@ -527,7 +520,7 @@ describe("Update a file", () => {
       try {
         updateFile(file, newVersion, { quiet: true }, (err) => {
           expect(err).toBeFalsy();
-          output.should.be.empty;
+          expect(output).toBe("");
           done();
         });
       } catch (err) {
@@ -540,7 +533,7 @@ describe("Update a file", () => {
       try {
         updateFile(file, newVersion, {}, (err) => {
           expect(err).toBeFalsy();
-          output.should.not.be.empty;
+          expect(output).not.toBe("");
           done();
         });
       } catch (err) {
@@ -553,7 +546,7 @@ describe("Update a file", () => {
       try {
         updateFile(file, newVersion, { quiet: true, dryRun: true }, (err) => {
           expect(err).toBeFalsy();
-          output.should.be.empty;
+          expect(output).toBe("");
           done();
         });
       } catch (err) {
@@ -565,22 +558,17 @@ describe("Update a file", () => {
       const file = "file.json";
       return updateFile(file, newVersion, {})
         .then((result) => {
-          output.should.have.string(file);
-          output.should.have.string(newVersion);
-          output.should.have.string(result.oldVersion);
+          expect(output).toEqual(expect.stringContaining(file));
+          expect(output).toEqual(expect.stringContaining(newVersion));
+          expect(output).toEqual(expect.stringContaining(result.oldVersion));
         })
         .catch((err) => expect(err).toBeFalsy());
     });
 
     test("dry-run should not change source file", async () => {
-      // cleanup();
       const file = "file.json";
-
-      // console.log('hi?', fs.readFileSync(file, 'utf8'));
       const rawData = await fs.readFile(file, "utf8");
-      // const updated = await updateFile(file, newVersion, { dryRun: true });
       const newData = await fs.readFile(file, "utf8");
-
       expect(newData).toEqual(rawData);
     });
 
