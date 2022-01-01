@@ -52,4 +52,12 @@ describe("Test the CLI", () => {
     expect(config).toHaveProperty("version-everything");
     expect(config["version-everything"].options).toHaveProperty("quiet");
   });
+
+  test("Passes prefix flag in options", () => {
+    const prefix = 'namespace/foo-img:';
+    const args = { ...fakeYargs, prefix };
+    const config = cli(args);
+    expect(config).toHaveProperty("version-everything");
+    expect(config["version-everything"].options).toHaveProperty("prefix", prefix);
+  });
 });

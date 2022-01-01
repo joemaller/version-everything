@@ -11,24 +11,32 @@ const argv = yargs
   .option("package-json", {
     alias: "p",
     describe: "load a specific package.json file",
-    type: "string"
+    type: "string",
+  })
+  .option("prefix", {
+    describe: "Match version numbers appearing after this prefix",
+    type: "string",
   })
   .option("dry-run", {
     alias: "n",
     describe: "do not update files",
-    type: "boolean"
+    type: "boolean",
   })
   .option("quiet", {
     alias: "q",
     describe: "suppress console output",
-    type: "boolean"
+    type: "boolean",
   })
   .example(
     "$0 -p b/package.json a/file.txt",
     "Reads version string from b/package.json and applies it to a/file.txt"
   )
-  .help()
-  .version().argv;
+  .example(
+    "$0 --prefix 'namespace/foo-img:' a/docker-compose.yml",
+    "Matches versions used as tags for docker images like 'namespace/foo-img:1.2.3'"
+  )
+  .help('help').alias({help: 'h'})
+    .version().argv;
 
 const getConfig = (yargsObject = { _: [] }) => {
   const config = {};
@@ -43,6 +51,9 @@ const getConfig = (yargsObject = { _: [] }) => {
   }
   if (yargsObject.quiet) {
     config["version-everything"].options.quiet = yargsObject.quiet;
+  }
+  if (yargsObject.prefix) {
+    config["version-everything"].options.prefix = yargsObject.prefix;
   }
   return config;
 };

@@ -461,6 +461,11 @@ describe("Update a file", () => {
     });
   });
 
+  describe("Update prefixed versions", () => {
+    test.skip("should update prefixed versions (docker-compose images)", () => {});
+    test.skip("should update prefixed versions (in markdown Readme files)", () => {});
+  });
+
   describe("Errors and Callbacks", () => {
     let output;
     const consoleLog = console.log;
