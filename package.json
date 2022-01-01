@@ -49,16 +49,21 @@
     "glob": "^7.2.0",
     "js-yaml": "^4.1.0",
     "lodash.isplainobject": "^4.0.6",
+    "plist": "^3.0.4",
     "read-pkg-up": "^7.0.1",
     "semver": "^7.3.5",
     "universalify": "^2.0.0",
-    "xml2js": "^0.4.23",
+    "xml-js": "^1.6.11",
     "yargs": "^17.3.1"
   },
   "devDependencies": {
+    "@types/jest": "^27.4.0",
     "jest": "^27.4.5",
     "jest-snapshot-serializer-raw": "^1.2.0",
     "tmp": "0.2.1"
+  },
+  "engines": {
+    "node": ">=12"
   },
   "auto-changelog": {
     "package": true,

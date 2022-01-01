@@ -1,7 +1,6 @@
-// const path = require("path");
+// @ts-check
 const fs = require("fs-extra");
 const yaml = require("js-yaml");
-const semver = require("semver");
 
 const tmpFixture = require("./lib/tmp-fixture");
 const updateFile = require("../app/update-file");
@@ -11,9 +10,7 @@ const cwd = process.cwd();
 const fixtureDir = "./test/fixture/deep/dotfile";
 
 beforeEach(async () => {
-  // newVersion = semver.inc(newVersion, "patch");
   const tmpFix = await tmpFixture(fixtureDir);
-  // console.log('creating', tmpFix)
   process.chdir(tmpFix);
 });
 
@@ -178,13 +175,16 @@ describe("Update a file", () => {
   });
 
   describe("JSON files", () => {
-    test("should report the previous version (json file)", (done) => {
+    // TODO: This isn't doing what it says it's doing? Should be silent?
+    test("should report the previous version (json file)", async () => {
       const file = "file.json";
-      updateFile(file, newVersion, { quiet: true }, (err, result) => {
-        expect(err).toBeFalsy();
-        expect(result).toHaveProperty("oldVersion");
-        done();
-      });
+      let output = "";
+      process.stdout.write = console.log = (str) => (output += str);
+
+      const result = await updateFile(file, newVersion, { quiet: false });
+      expect(result).toHaveProperty("oldVersion");
+      expect(output).toMatch(newVersion);
+      expect(output).toMatch(result.oldVersion);
     });
 
     test("should increment a json file", (done) => {
@@ -281,8 +281,39 @@ describe("Update a file", () => {
   });
 
   describe("XML files", () => {
-    test.skip("should report the previous version (xml file)", () => {});
-    test.skip("should increment the top-level version attribute in an xml file", () => {});
+    test("should report the previous version (xml file)", async () => {
+      const file = "file.xml";
+      let output = "";
+      process.stdout.write = console.log = (str) => (output += str);
+
+      const result = await updateFile(file, newVersion, {});
+      expect(result).toHaveProperty("oldVersion");
+      expect(output).toMatch(result.oldVersion);
+    });
+
+    test("should increment the top-level version attribute in an xml file (async)", async () => {
+      const file = "file.xml";
+      const result = await updateFile(file, newVersion, {});
+      const actual = await fs.readFile(file);
+
+      expect(actual.toString()).toMatch(`<version>${newVersion}</version>`);
+    });
+
+    test("Should not add a second version element if one already exists", async () => {
+      const file = "file.xml";
+      const result = await updateFile(file, newVersion, {});
+      expect(result).toHaveProperty("oldVersion");
+      expect(result.data).not.toMatch(result.oldVersion);
+    });
+
+    test("Should not add a top-level version element if CData contains a version", async () => {
+      const file = "comments.xml";
+      const result = await updateFile(file, newVersion, {});
+      const actual = (await fs.readFile(file)).toString();
+
+      expect(actual).not.toMatch(`<version>${result.oldVersion}</version>`);
+      expect(actual).not.toMatch(`<version>${newVersion}</version>`);
+    });
 
     // TODO: specify something like {key: 'project_version'} to update that key with the version
     test.skip("should increment a top-level custom attribute in an xml file", () => {});
@@ -290,7 +321,12 @@ describe("Update a file", () => {
     // TODO: specify something like {key: 'config.project_version'} to update that key with the version
     test.skip("should increment a nested custom attribute in an xml file", () => {});
 
-    test.skip("should increment an xml plist file", () => {});
+  });
+
+  describe("Plist files", () => {
+    test.skip("should increment a plist file", () => {});
+    test.skip("should add a Version element to a plist file", () => {});
+
   });
 
   describe("YAML files", () => {
@@ -339,7 +375,14 @@ describe("Update a file", () => {
       });
     });
 
-    test.skip("should increment an xml file without a file extension", () => {});
+    test("should increment an xml file without a file extension", async () => {
+      const file = "naked-xml";
+      const result = await updateFile(file, newVersion, {});
+      const actual = await fs.readFile(file);
+      expect(result).toHaveProperty("oldVersion");
+      expect(result.oldVersion).not.toMatch(newVersion);
+    });
+
     test("should increment a yaml file without a file extension", (done) => {
       const file = "naked-yaml";
       updateFile(file, newVersion, { quiet: true }, (err, result) => {
@@ -378,18 +421,20 @@ describe("Update a file", () => {
       });
     });
 
-    test.skip("adds version to version-less xml file", () => {});
-    test("adds version to version-less yaml file", (done) => {
+    test("adds version to version-less xml file", async () => {
+      const file = "no-version.xml";
+      const result = await updateFile(file, newVersion, { quiet: true });
+      const actual = await fs.readFile(file);
+      expect(actual.toString()).toMatch(`<version>${newVersion}</version>`);
+      expect(result.oldVersion).toBeUndefined();
+    });
+
+    test("adds version to version-less yaml file", async () => {
       const file = "no-version.yml";
-      updateFile(file, newVersion, { quiet: true }, (err) => {
-        expect(err).toBeFalsy();
-        fs.readFile(file, (err, data) => {
-          expect(err).toBeFalsy();
-          const yamlData = yaml.load(data);
-          expect(yamlData).toHaveProperty("version", newVersion);
-          done();
-        });
-      });
+      const result = await updateFile(file, newVersion, { quiet: true });
+      const actual = yaml.load(await fs.readFile(file));
+      expect(actual).toHaveProperty("version", newVersion);
+      expect(result.oldVersion).toBeUndefined();
     });
 
     test("passes version-less plain files through unchanged", (done) => {
@@ -411,7 +456,7 @@ describe("Update a file", () => {
       });
     });
 
-    test("Don't udpate this file", async () => {
+    test("Don't update this file", async () => {
       const file = "do-not-update.txt";
       const updated = await updateFile(file, newVersion, {});
       expect(updated).toBe(undefined);

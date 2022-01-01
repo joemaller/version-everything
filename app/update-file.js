@@ -1,3 +1,4 @@
+// @ts-check
 const fs = require("fs-extra");
 const path = require("path");
 
@@ -10,14 +11,13 @@ const logInit = require("./lib/log-init");
 const bumpPlainText = require("./lib/bump-plain-text");
 const bumpJSON = require("./lib/bump-json");
 const bumpYAML = require("./lib/bump-yaml");
-// const bumpXML = require("./lib/bump-xml");
+const bumpXML = require("./lib/bump-xml");
 
 /**
  * Sends files to the correct bumping function, writes the result
- * @param {[type]} file    [description]
- * @param {[type]} version [description]
- * @param {object} options Config options, quiet, json, xml and yaml
- * @param {[function]} cb   standard node callback mostly used for testing
+ * @param {String} file    [description]
+ * @param {String} version [description]
+ * @param {Object} options Config options, quiet, json, xml and yaml
  */
 const updateFile = async (file, version, options = {}) => {
   if (!file) {
@@ -46,7 +46,6 @@ const updateFile = async (file, version, options = {}) => {
   // the file contents before falling back to plain-text regex replace
   // console.log(path.extname(file).toLowerCase())
 
-  // const data = await fs.readFile(file, "utf8").catch((err) => new Error(err));
   const data = await fs.readFile(file, "utf8").catch((err) => err);
 
   let result;
@@ -58,12 +57,12 @@ const updateFile = async (file, version, options = {}) => {
         result = bumpJSON(data, version, config.json);
         break;
 
-      // These need to be commented out or coverage reports the switch as uncovered
-      // case ".xml":
+      case ".xml":
+        result = bumpXML(data, version, config.xml);
+        break;
+
+      // TODO: Handle PLIST files separately from XML
       // case ".plist":
-      // XML or PLIST FILE!
-      //   result = bumpXML(data, version, config.xml);
-      // break;
 
       case ".yml":
       case ".yaml":
@@ -78,6 +77,9 @@ const updateFile = async (file, version, options = {}) => {
         } catch (err) {}
         if (!result) {
           // No result, trying file as XML
+          try {
+            result = bumpXML(data, version, config.xml);
+          } catch (error) {}
         }
         if (!result) {
           // No result, trying file as YAML
