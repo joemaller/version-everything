@@ -1,3 +1,4 @@
+// @ts-check
 const readPkgUp = require("read-pkg-up");
 const { cosmiconfigSync } = require("cosmiconfig");
 
@@ -20,13 +21,25 @@ const filesFromDeprecated = ({ packageJson }) => {
 };
 /**
  * Returns an array of files to version
- * @param  {array, object, string} args an array of filenames, an object representing a package.json file
+ * @param  {array|object|string} args an array of filenames, an object representing a package.json file;
  *                                      or an object containing a version-everything.files or files array
  *                                      or a string representing a file path. Input isn't validated.
- * @return {array} List of files to version
+ * @return {string[]} List of files to version
  */
 module.exports = function (args) {
   let output = [];
+
+  const explorerSync = cosmiconfigSync("version-everything");
+  const configFile = explorerSync.search();
+
+  if (configFile && configFile.config) {
+    output = configFile.config.files || [];
+  } else {
+    const pkg = readPkgUp.sync({ normalize: false });
+    if (pkg) {
+      output = filesFromDeprecated(pkg);
+    }
+  }
 
   if (args) {
     let files = [];
@@ -39,18 +52,5 @@ module.exports = function (args) {
     output = typeof files === "string" ? [files] : output;
   }
 
-  if (!output.length) {
-    const explorerSync = cosmiconfigSync("version-everything");
-    const configFile = explorerSync.search();
-
-    if (configFile && configFile.config) {
-      output = configFile.config.files || [];
-    } else {
-      const pkg = readPkgUp.sync({ normalize: false });
-      if (pkg) {
-        output = filesFromDeprecated(pkg);
-      }
-    }
-  }
   return output;
 };
