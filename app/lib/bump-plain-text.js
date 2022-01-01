@@ -8,8 +8,8 @@ const combineRegexp = require("./regexp-escape-combine");
  * the `<SEMVER>` token will be replaced with the current version string
  */
 const patterns = [
-  /^(\s*(?:\/\/|#|\*)*\s*Version:?\s*)(<SEMVER>)$/gim,
-  /(v)(<SEMVER>)$/gim, // simple "v1.2.34" string at the end of a line
+  /^(\s*(?:\/\/|#|\*)*\s*Version:?\s*)(<SEMVER>)(\s*)$/gim,
+  /(v)(<SEMVER>)(\s*)$/gim, // simple "v1.2.34" string at the end of a line
   /^(\s+\*\s+@version\s+)((?:[^:]+:)?\s+.*)$/gim, // phpdoc @version tag
   /^(\s*LABEL\s+(?:version|"version")=")(<SEMVER>)(")/gim,
 ];
@@ -23,15 +23,16 @@ module.exports = function (data, version) {
   const oldVersionsRegex = combineRegexp(oldVersions);
 
   const matches = patterns
-    .map((pat) => {
-      const regex = new RegExp(
-        pat.source.replace(/<SEMVER>/g, oldVersionsRegex),
-        pat.flags
+  .map((pat) => {
+    const regex = new RegExp(
+      pat.source.replace(/<SEMVER>/g, oldVersionsRegex),
+      pat.flags
       );
       return { pattern: regex, match: regex.exec(data) };
     })
     .filter((pat) => pat.match);
 
+    // console.log({data, oldVersions, matches});
   if (matches.length) {
     let newData = data;
 

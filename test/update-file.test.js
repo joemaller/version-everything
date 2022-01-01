@@ -160,32 +160,21 @@ describe("Update a file", () => {
       });
     });
 
+    test("should increment a plain text version with trailing spaces (markdown)", async () => {
+      const file = "file-trailing-space.md";
+      const regex = new RegExp(
+        "Version: " + newVersion.replace(/\./g, "\\.") + "\\s+$",
+        "im"
+      );
+      const { data, oldVersion } = await updateFile(file, newVersion, {
+        quiet: true,
+      });
+
+      expect(data).toMatch(regex);
+      expect(oldVersion).not.toEqual(newVersion);
+    });
+
     test.skip("should update yaml frontmatter versions and text version strings in markdown documents", () => {});
-
-    // TODO: Moved to snapshots
-    // test("should update several version strings in the same file", done => {
-    //   const file = "decoy-version.md";
-    //   updateFile(file, newVersion, { quiet: true }, err => {
-    //     expect(err).toBeFalsy();
-    //     fs.readFile(file, (err, data) => {
-    //       data.toString().should.have.string("## Version: " + newVersion);
-    //       data.toString().should.have.string("### Version " + newVersion);
-    //       done();
-    //     });
-    //   });
-    // });
-
-    // TODO: Moved to snapshots
-    // test("should not update non-version titles that look like versions", done => {
-    //   const file = "decoy-version.md";
-    //   updateFile(file, newVersion, { quiet: true }, err => {
-    //     expect(err).toBeFalsy();
-    //     fs.readFile(file, (err, data) => {
-    //       data.toString().should.have.string("# Version decoy file");
-    //       done();
-    //     });
-    //   });
-    // });
   });
 
   describe("JSON files", () => {
