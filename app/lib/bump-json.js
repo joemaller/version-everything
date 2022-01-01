@@ -1,13 +1,13 @@
-"use strict";
+// @ts-check
 
-module.exports = function(data, version, config) {
+module.exports = function (data, version, config) {
   try {
     let json = JSON.parse(data, config.reviver);
     const oldVersion = json.version;
     json.version = version;
     return {
       oldVersion: oldVersion,
-      data: JSON.stringify(json, config.replacer, config.space)
+      data: JSON.stringify(json, config.replacer, config.space),
     };
   } catch (err) {
     // console.log('bumpJSON Error:', err);

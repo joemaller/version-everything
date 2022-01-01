@@ -320,13 +320,11 @@ describe("Update a file", () => {
 
     // TODO: specify something like {key: 'config.project_version'} to update that key with the version
     test.skip("should increment a nested custom attribute in an xml file", () => {});
-
   });
 
   describe("Plist files", () => {
     test.skip("should increment a plist file", () => {});
     test.skip("should add a Version element to a plist file", () => {});
-
   });
 
   describe("YAML files", () => {
