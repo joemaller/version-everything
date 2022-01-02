@@ -9,6 +9,15 @@ let newVersion = "3.14.1592";
 const cwd = process.cwd();
 const fixtureDir = "./test/fixture/deep/dotfile";
 
+const consoleLog = console.log;
+const stdoutWrite = process.stdout.write;
+
+// ref https://github.com/mochajs/mocha/wiki/Mess-with-globals
+const cleanup = () => {
+  console.log = consoleLog;
+  process.stdout.write = stdoutWrite;
+};
+
 beforeEach(async () => {
   const tmpFix = await tmpFixture(fixtureDir);
   process.chdir(tmpFix);
@@ -16,6 +25,7 @@ beforeEach(async () => {
 
 afterEach(() => {
   process.chdir(cwd);
+  cleanup();
 });
 
 describe("Update a file", () => {
@@ -284,7 +294,7 @@ describe("Update a file", () => {
     test("should report the previous version (xml file)", async () => {
       const file = "file.xml";
       let output = "";
-      process.stdout.write = console.log = (str) => (output += str);
+      console.log = (str) => (output += str);
 
       const result = await updateFile(file, newVersion, {});
       expect(result).toHaveProperty("oldVersion");
@@ -293,7 +303,7 @@ describe("Update a file", () => {
 
     test("should increment the top-level version attribute in an xml file (async)", async () => {
       const file = "file.xml";
-      const result = await updateFile(file, newVersion, {});
+      const result = await updateFile(file, newVersion, { quiet: true });
       const actual = await fs.readFile(file);
 
       expect(actual.toString()).toMatch(`<version>${newVersion}</version>`);
@@ -301,14 +311,14 @@ describe("Update a file", () => {
 
     test("Should not add a second version element if one already exists", async () => {
       const file = "file.xml";
-      const result = await updateFile(file, newVersion, {});
+      const result = await updateFile(file, newVersion, { quiet: true });
       expect(result).toHaveProperty("oldVersion");
       expect(result.data).not.toMatch(result.oldVersion);
     });
 
     test("Should not add a top-level version element if CData contains a version", async () => {
       const file = "comments.xml";
-      const result = await updateFile(file, newVersion, {});
+      const result = await updateFile(file, newVersion, { quiet: true });
       const actual = (await fs.readFile(file)).toString();
 
       expect(actual).not.toMatch(`<version>${result.oldVersion}</version>`);
@@ -375,7 +385,7 @@ describe("Update a file", () => {
 
     test("should increment an xml file without a file extension", async () => {
       const file = "naked-xml";
-      const result = await updateFile(file, newVersion, {});
+      const result = await updateFile(file, newVersion, { quiet: true });
       const actual = await fs.readFile(file);
       expect(result).toHaveProperty("oldVersion");
       expect(result.oldVersion).not.toMatch(newVersion);
@@ -536,21 +546,11 @@ describe("Update a file", () => {
 
   describe("Test output (console.log) & Dry-run", () => {
     let output;
-    const consoleLog = console.log;
-    const stdoutWrite = process.stdout.write;
-
-    // ref https://github.com/mochajs/mocha/wiki/Mess-with-globals
-    const cleanup = function () {
-      console.log = consoleLog;
-      process.stdout.write = stdoutWrite;
-    };
 
     beforeEach(() => {
       output = "";
-      process.stdout.write = console.log = (str) => (output += str);
+      console.log = (str) => (output += str);
     });
-
-    afterEach(cleanup);
 
     test("should be quiet", (done) => {
       const file = "file.json";
@@ -610,9 +610,7 @@ describe("Update a file", () => {
     });
 
     test("dry-run output should include file contents", async () => {
-      // cleanup();
       const file = "file.json";
-      // console.log('hi2?', fs.readFileSync(file, 'utf8'));
       const rawData = await fs.readFile(file);
       const updated = await updateFile(file, newVersion, { dryRun: true });
       const newData = await fs.readFile(file);
@@ -621,6 +619,7 @@ describe("Update a file", () => {
       expect(output).toContain(newVersion);
       expect(output).toContain(`"version": "${newVersion}",`);
       expect(output).toMatch(updated.data);
+      expect(rawData.toString()).toEqual(newData.toString());
     });
   });
 });
