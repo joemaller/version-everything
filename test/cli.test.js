@@ -1,3 +1,4 @@
+// @ts-check
 const tmpFixture = require("./lib/tmp-fixture");
 const cli = require("../cli.js");
 // const versionEverything = require("../");
@@ -53,11 +54,24 @@ describe("Test the CLI", () => {
     expect(config["version-everything"].options).toHaveProperty("quiet");
   });
 
-  test("Passes prefix flag in options", () => {
-    const prefix = 'namespace/foo-img:';
+  test("Pass a string of prefix", () => {
+    const prefix = "namespace/foo-img:";
     const args = { ...fakeYargs, prefix };
     const config = cli(args);
     expect(config).toHaveProperty("version-everything");
-    expect(config["version-everything"].options).toHaveProperty("prefix", prefix);
+    expect(config["version-everything"].options).toHaveProperty("prefixes", [
+      prefix,
+    ]);
+  });
+
+  test("Pass an array of prefixes", () => {
+    const prefix = ["namespace/foo-img:", "foo/bar"];
+    const args = { ...fakeYargs, prefix };
+    const config = cli(args);
+    expect(config).toHaveProperty("version-everything");
+    expect(config["version-everything"].options).toHaveProperty(
+      "prefixes",
+      prefix
+    );
   });
 });

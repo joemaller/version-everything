@@ -1,4 +1,5 @@
 // @ts-check
+
 const readPkgUp = require("read-pkg-up");
 const { cosmiconfigSync } = require("cosmiconfig");
 

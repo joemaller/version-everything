@@ -1,4 +1,6 @@
 // @ts-check
+'use strict';
+
 const fs = require("fs-extra");
 const path = require("path");
 
@@ -18,6 +20,7 @@ const bumpXML = require("./lib/bump-xml");
  * @param {String} file    [description]
  * @param {String} version [description]
  * @param {Object} options Config options, quiet, json, xml and yaml
+ * @return {Promise}
  */
 const updateFile = async (file, version, options = {}) => {
   if (!file) {
@@ -37,6 +40,7 @@ const updateFile = async (file, version, options = {}) => {
     json: { space: 2, replacer: null, reviver: null },
     xml: {},
     yaml: {},
+    prefixes: [],
   };
 
   const config = Object.assign({}, defaultOptions, options);
@@ -54,11 +58,11 @@ const updateFile = async (file, version, options = {}) => {
   } else {
     switch (path.extname(file).toLowerCase()) {
       case ".json":
-        result = bumpJSON(data, version, config.json);
+        result = bumpJSON(data, version, config);
         break;
 
       case ".xml":
-        result = bumpXML(data, version, config.xml);
+        result = bumpXML(data, version, config);
         break;
 
       // TODO: Handle PLIST files separately from XML
@@ -66,30 +70,30 @@ const updateFile = async (file, version, options = {}) => {
 
       case ".yml":
       case ".yaml":
-        result = bumpYAML(data, version, config.yaml);
+        result = bumpYAML(data, version, config);
         break;
 
       default:
         // no extension match
         // trying file as unmarked JSON
         try {
-          result = bumpJSON(data, version, config.json);
+          result = bumpJSON(data, version, config);
         } catch (err) {}
         if (!result) {
           // No result, trying file as XML
           try {
-            result = bumpXML(data, version, config.xml);
+            result = bumpXML(data, version, config);
           } catch (error) {}
         }
         if (!result) {
           // No result, trying file as YAML
           try {
-            result = bumpYAML(data, version, config.yaml);
+            result = bumpYAML(data, version, config);
           } catch (error) {}
         }
         if (!result) {
           // No result, trying file as plain text (RegExp)
-          result = bumpPlainText(data, version);
+          result = bumpPlainText(data, version, config);
         }
     }
   }

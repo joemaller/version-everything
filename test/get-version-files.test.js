@@ -1,8 +1,7 @@
 //@ts-check
 
 const readPkgUp = require("read-pkg-up");
-const cosmiconfig = require("cosmiconfig");
-
+const { cosmiconfigSync } = require("cosmiconfig");
 const tmpFixture = require("./lib/tmp-fixture");
 
 const getVersionFiles = require("../app/get-version-files");
@@ -17,11 +16,12 @@ const fakePackageJson = {
 };
 
 let config = null;
+
 jest.mock("cosmiconfig");
-cosmiconfig.cosmiconfigSync.mockImplementation(() => {
-  return {
-    search: () => config,
-  };
+
+/* @ts-ignore */
+cosmiconfigSync.mockReturnValue({
+  search: () => config,
 });
 
 const cwd = process.cwd();
@@ -98,18 +98,13 @@ describe("Get a list of files to version", () => {
     });
 
     test("load old-style version_files key from old package.json file", () => {
-      // const mockConsole = jest.spyOn(console, "log");
-
       let output = "";
       console.log = (str) => (output += str);
 
       process.chdir("./old-package-version_files");
-      // console.log = jest.fn();
       const files = getVersionFiles();
       expect(files).toHaveLength(5);
-      // expect(console.log.mock.calls[0][0]).toMatch(/deprecated/);
       expect(output).toMatch(/deprecated/);
-      // mockConsole.mockRestore();
     });
 
     test("load new-old-style versionFiles key from old package.json file", () => {
@@ -140,7 +135,6 @@ describe("Get a list of files to version", () => {
       config = { config: { files: configFiles } };
       const files = getVersionFiles();
       expect(files).toHaveLength(configFiles.length);
-
     });
 
     test("fail loading version-everything from cosmiconfig with no files", () => {
@@ -180,7 +174,6 @@ describe("Get a list of files to version", () => {
     });
 
     test("Fail gracefully if cosmiconfig has no files", () => {
-      // const configFiles = ["file1.js", "file2.json"];
       config = { config: { pie: "pecan" } };
       const files = getVersionFiles({ options: {} });
       expect(files).toHaveLength(0);

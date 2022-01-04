@@ -1,3 +1,6 @@
+// @ts-check
+"use strict";
+
 const readPkgUp = require("read-pkg-up");
 
 const getVersionFiles = require("./app/get-version-files");
@@ -17,14 +20,14 @@ const updateFile = require("./app/update-file");
 
 /**
  * Updates the version number in specified files
- * @param  {array, string or object} args An array of files, a single filename or an
+ * @param  {string[] | string | object} args An array of files, a single filename or an
  *                                        object representation of a package.json file.
  */
-module.exports = function(args = {}) {
+module.exports = function (args = {}) {
   const { packageJson } = readPkgUp.sync({ normalize: false });
   const version = args.version || packageJson.version;
   const options =
     (args["version-everything"] && args["version-everything"].options) || {};
 
-  getVersionFiles(args).forEach(f => updateFile(f, version, options));
+  getVersionFiles(args).forEach((f) => updateFile(f, version, options));
 };

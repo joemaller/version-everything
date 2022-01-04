@@ -21,7 +21,8 @@ module.exports = (data, version, config) => {
       if (xmlData.elements[0].elements[n].type === "cdata") {
         const cdata = bumpPlainText(
           xmlData.elements[0].elements[n].cdata,
-          version
+          version,
+          config
         );
         if (cdata.data) {
           hasCdata = true;

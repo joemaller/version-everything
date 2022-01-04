@@ -55,320 +55,9 @@ describe("Update a file", () => {
   test.skip("accepts a string file path", () => {});
   test.skip("accepts a filestream", () => {});
 
-  describe("plain text files", () => {
-    test("should report the previous version (css block comment)", async () => {
-      const file = "file.css";
-      const result = await updateFile(file, newVersion, { quiet: true });
-      expect(result).toHaveProperty("oldVersion");
-      expect(result.oldVersion).not.toEqual(newVersion);
-    });
-
-    test("should increment a plain text file (css block comment)", async () => {
-      const file = "file.css";
-      const regex = new RegExp(
-        "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " +
-          newVersion.replace(/\./g, "\\."),
-        "im"
-      );
-      await updateFile(file, newVersion, { quiet: true });
-      const newFile = await fs.readFile(file, "utf8");
-      // console.log({ newFile });
-      expect(newFile).toMatch(regex);
-    });
-
-    it("should increment a v0.0.0 style version at the end of a line in a plain text file (css block comment)", (done) => {
-      const file = "file.css";
-      const regex = new RegExp(
-        "v" + newVersion.replace(/\./g, "\\.") + "$",
-        "gim"
-      );
-
-      updateFile(file, newVersion, { quiet: true }, (err) => {
-        expect(err).toBeFalsy();
-        fs.readFile(file, "utf8", (err, data) => {
-          expect(data.toString()).toMatch(`v${newVersion}`);
-          done();
-        });
-      });
-    });
-
-    test("should report the previous version (php docblock comment)", (done) => {
-      const file = "file.php";
-      updateFile(file, newVersion, { quiet: true }, (err, result) => {
-        expect(err).toBeFalsy();
-        expect(result).toHaveProperty("oldVersion");
-        done();
-      });
-    });
-
-    test("should increment a plain text file (php docblock comment)", (done) => {
-      const file = "file.php";
-      const regex = new RegExp(
-        "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " +
-          newVersion.replace(/\./g, "\\."),
-        "im"
-      );
-      updateFile(file, newVersion, { quiet: true }, (err) => {
-        expect(err).toBeFalsy();
-        fs.readFile(file, (err, data) => {
-          expect(data.toString()).toMatch(regex);
-          done();
-        });
-      });
-    });
-
-    test("should report the previous version (php docblock version tag)", (done) => {
-      const file = "php-docblock-version-tag.php";
-      updateFile(file, newVersion, { quiet: true }, (err, result) => {
-        expect(err).toBeFalsy();
-        expect(result).toHaveProperty("oldVersion");
-        expect(result.oldVersion).not.toBeUndefined();
-        done();
-      });
-    });
-
-    test("should increment a plain text file (php docblock version tag)", (done) => {
-      const file = "php-docblock-version-tag.php";
-      const regex = new RegExp(
-        "^\\s+\\*\\s+@version\\s+([^:]+:)?" + newVersion.replace(/\./g, "\\."),
-        "im"
-      );
-      updateFile(file, newVersion, { quiet: true }, (err) => {
-        expect(err).toBeFalsy();
-        fs.readFile(file, (err, data) => {
-          expect(data.toString()).toMatch(regex);
-          done();
-        });
-      });
-    });
-
-    test("should report the previous version (markdown heading)", (done) => {
-      const file = "file.md";
-      updateFile(file, newVersion, { quiet: true }, (err, result) => {
-        expect(err).toBeFalsy();
-        expect(result).toHaveProperty("oldVersion");
-        done();
-      });
-    });
-
-    test("should increment a plain text file (markdown heading)", (done) => {
-      const file = "file.md";
-      const regex = new RegExp(
-        "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " +
-          newVersion.replace(/\./g, "\\."),
-        "im"
-      );
-      updateFile(file, newVersion, { quiet: true }, (err) => {
-        expect(err).toBeFalsy();
-        fs.readFile(file, (err, data) => {
-          expect(data.toString()).toMatch(regex);
-          done();
-        });
-      });
-    });
-
-    test("should increment a plain text version with trailing spaces (markdown)", async () => {
-      const file = "file-trailing-space.md";
-      const regex = new RegExp(
-        "Version: " + newVersion.replace(/\./g, "\\.") + "\\s+$",
-        "im"
-      );
-      const { data, oldVersion } = await updateFile(file, newVersion, {
-        quiet: true,
-      });
-
-      expect(data).toMatch(regex);
-      expect(oldVersion).not.toEqual(newVersion);
-    });
-
-    test.skip("should update yaml frontmatter versions and text version strings in markdown documents", () => {});
-  });
-
-  describe("JSON files", () => {
-    // TODO: This isn't doing what it says it's doing? Should be silent?
-    test("should report the previous version (json file)", async () => {
-      const file = "file.json";
-      let output = "";
-      process.stdout.write = console.log = (str) => (output += str);
-
-      const result = await updateFile(file, newVersion, { quiet: false });
-      expect(result).toHaveProperty("oldVersion");
-      expect(output).toMatch(newVersion);
-      expect(output).toMatch(result.oldVersion);
-    });
-
-    test("should increment a json file", (done) => {
-      const file = "file.json";
-      updateFile(file, newVersion, { quiet: true }, (err) => {
-        expect(err).toBeFalsy();
-        fs.readJson(file, (err, json) => {
-          expect(err).toBeFalsy();
-          expect(json).toHaveProperty("version", newVersion);
-          done();
-        });
-      });
-    });
-
-    test.skip("should increment a top-level custom attribute in a json file", () => {});
-    test.skip("should increment a nested custom attribute in a json file", () => {});
-
-    test("should increment a json file, also using a replacer array", (done) => {
-      const file = "file.json";
-      const replacer = ["title", "version"];
-      updateFile(
-        file,
-        newVersion,
-        { json: { replacer: replacer }, quiet: true },
-        (err) => {
-          expect(err).toBeFalsy();
-          fs.readJson(file, (err, json) => {
-            expect(err).toBeFalsy();
-            expect(json).toHaveProperty("version", newVersion);
-            expect(json).toHaveProperty("title");
-            expect(json).not.toHaveProperty("double_me");
-            done();
-          });
-        }
-      );
-    });
-
-    test("should increment a json file, also using a replacer function", (done) => {
-      const file = "file.json";
-      const replacer = (key, value) =>
-        key === "double_me" ? value * 2 : value;
-      updateFile(
-        file,
-        newVersion,
-        { json: { replacer: replacer }, quiet: true },
-        (err) => {
-          expect(err).toBeFalsy();
-          fs.readJson(file, (err, json) => {
-            expect(json).toHaveProperty("version", newVersion);
-            expect(json).toHaveProperty("title");
-            expect(json).toHaveProperty("double_me", 10);
-            done();
-          });
-        }
-      );
-    });
-
-    test("should increment a json file, also using a reviver function", (done) => {
-      const file = "file.json";
-      const reviver = (key, value) => (key === "double_me" ? value * 2 : value);
-      updateFile(
-        file,
-        newVersion,
-        { json: { reviver: reviver }, quiet: true },
-        (err) => {
-          expect(err).toBeFalsy();
-          fs.readJson(file, (err, json) => {
-            expect(json).toHaveProperty("version", newVersion);
-            expect(json).toHaveProperty("title");
-            expect(json).toHaveProperty("double_me", 10);
-            done();
-          });
-        }
-      );
-    });
-
-    test("should increment a json file and set a specific indentation", (done) => {
-      const file = "file.json";
-      const spaces = 4;
-      const regex = new RegExp("^ {" + spaces + '}"version":', "m");
-      updateFile(
-        file,
-        newVersion,
-        { json: { space: spaces }, quiet: true },
-        (err) => {
-          expect(err).toBeFalsy();
-          fs.readFile(file, (err, data) => {
-            expect(data.toString()).toMatch(regex);
-            done();
-          });
-        }
-      );
-    });
-  });
-
-  describe("XML files", () => {
-    test("should report the previous version (xml file)", async () => {
-      const file = "file.xml";
-      let output = "";
-      console.log = (str) => (output += str);
-
-      const result = await updateFile(file, newVersion, {});
-      expect(result).toHaveProperty("oldVersion");
-      expect(output).toMatch(result.oldVersion);
-    });
-
-    test("should increment the top-level version attribute in an xml file (async)", async () => {
-      const file = "file.xml";
-      const result = await updateFile(file, newVersion, { quiet: true });
-      const actual = await fs.readFile(file);
-
-      expect(actual.toString()).toMatch(`<version>${newVersion}</version>`);
-    });
-
-    test("Should not add a second version element if one already exists", async () => {
-      const file = "file.xml";
-      const result = await updateFile(file, newVersion, { quiet: true });
-      expect(result).toHaveProperty("oldVersion");
-      expect(result.data).not.toMatch(result.oldVersion);
-    });
-
-    test("Should not add a top-level version element if CData contains a version", async () => {
-      const file = "comments.xml";
-      const result = await updateFile(file, newVersion, { quiet: true });
-      const actual = (await fs.readFile(file)).toString();
-
-      expect(actual).not.toMatch(`<version>${result.oldVersion}</version>`);
-      expect(actual).not.toMatch(`<version>${newVersion}</version>`);
-    });
-
-    // TODO: specify something like {key: 'project_version'} to update that key with the version
-    test.skip("should increment a top-level custom attribute in an xml file", () => {});
-
-    // TODO: specify something like {key: 'config.project_version'} to update that key with the version
-    test.skip("should increment a nested custom attribute in an xml file", () => {});
-  });
-
   describe("Plist files", () => {
     test.skip("should increment a plist file", () => {});
     test.skip("should add a Version element to a plist file", () => {});
-  });
-
-  describe("YAML files", () => {
-    test("should report the previous version (yaml file)", (done) => {
-      const file = "file.yml";
-      updateFile(file, newVersion, { quiet: true }, (err, result) => {
-        expect(err).toBeFalsy();
-        expect(result).toHaveProperty("oldVersion");
-        done();
-      });
-    });
-
-    test("should increment a top-level attribute in a yaml file", (done) => {
-      const file = "file.yml";
-      updateFile(file, newVersion, { quiet: true }, (err) => {
-        expect(err).toBeFalsy();
-        fs.readFile(file, (err, data) => {
-          expect(err).toBeFalsy();
-          const yamlData = yaml.load(data);
-          expect(yamlData).toHaveProperty("version", newVersion);
-          done();
-        });
-      });
-    });
-
-    // TODO: specify something like {key: '_playbook_version'} to update that key with the version
-    test.skip("should increment a top-level custom attribute in a yaml file", () => {});
-
-    // TODO: specify something like {key: 'config.version'} to update that nested key with the version
-    test.skip("should increment a nested custom attribute in a yaml file", () => {});
-
-    // it("should increment a plain-text comment in a yaml file");  // Is this really doable or necessary?
-
-    test.skip("should increment yaml frontmatter in a markdown file", () => {});
   });
 
   describe("Files without extensions", () => {
@@ -406,7 +95,7 @@ describe("Update a file", () => {
   });
 
   describe("Files without versions", () => {
-    test("should report the file was unversioned", (done) => {
+    test("should report the file was un-versioned", (done) => {
       const file = "no-version.json";
       try {
         updateFile(file, newVersion, { quiet: true }, (err, result) => {
@@ -434,15 +123,15 @@ describe("Update a file", () => {
       const result = await updateFile(file, newVersion, { quiet: true });
       const actual = await fs.readFile(file);
       expect(actual.toString()).toMatch(`<version>${newVersion}</version>`);
-      expect(result.oldVersion).toBeUndefined();
+      expect(result).toHaveProperty("oldVersion", undefined);
     });
 
     test("adds version to version-less yaml file", async () => {
       const file = "no-version.yml";
       const result = await updateFile(file, newVersion, { quiet: true });
-      const actual = yaml.load(await fs.readFile(file));
+      const actual = yaml.load((await fs.readFile(file)).toString());
       expect(actual).toHaveProperty("version", newVersion);
-      expect(result.oldVersion).toBeUndefined();
+      expect(result).toHaveProperty("oldVersion", undefined);
     });
 
     test("passes version-less plain files through unchanged", (done) => {
@@ -471,20 +160,8 @@ describe("Update a file", () => {
     });
   });
 
-  describe("Update prefixed versions", () => {
-    test.skip("should update prefixed versions (docker-compose images)", () => {});
-    test.skip("should update prefixed versions (in markdown Readme files)", () => {});
-  });
-
   describe("Errors and Callbacks", () => {
     let output;
-    const consoleLog = console.log;
-    const stdoutWrite = process.stdout.write;
-
-    const cleanup = function () {
-      console.log = consoleLog;
-      process.stdout.write = stdoutWrite;
-    };
 
     beforeEach(() => {
       output = "";

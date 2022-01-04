@@ -15,7 +15,7 @@ const argv = yargs
   })
   .option("prefix", {
     describe: "Match version numbers appearing after this prefix",
-    type: "string",
+    type: "array",
   })
   .option("dry-run", {
     alias: "n",
@@ -35,8 +35,9 @@ const argv = yargs
     "$0 --prefix 'namespace/foo-img:' a/docker-compose.yml",
     "Matches versions used as tags for docker images like 'namespace/foo-img:1.2.3'"
   )
-  .help('help').alias({help: 'h'})
-    .version().argv;
+  .help("help")
+  .alias({ help: "h" })
+  .version().argv;
 
 const getConfig = (yargsObject = { _: [] }) => {
   const config = {};
@@ -53,7 +54,10 @@ const getConfig = (yargsObject = { _: [] }) => {
     config["version-everything"].options.quiet = yargsObject.quiet;
   }
   if (yargsObject.prefix) {
-    config["version-everything"].options.prefix = yargsObject.prefix;
+    if (typeof yargsObject.prefix === "string") {
+      yargsObject.prefix = [yargsObject.prefix];
+    }
+    config["version-everything"].options.prefixes = yargsObject.prefix;
   }
   return config;
 };

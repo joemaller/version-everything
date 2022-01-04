@@ -5,7 +5,7 @@ const tmp = require("tmp");
  * Copies a directory (fixture) to a temp directory and returns
  * that directory
  * @param  {string} fixtureDir path to directory to copy
- * @return {[type]}            [description]
+ * @return {string}            path of the temp directory
  */
 module.exports = (fixtureDir) => {
   const tmpDir = tmp.dirSync({ keep: true }).name;
