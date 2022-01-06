@@ -20,7 +20,7 @@ const bumpXML = require("./lib/bump-xml");
  * @param {String} file    [description]
  * @param {String} version [description]
  * @param {Object} options Config options, quiet, json, xml and yaml
- * @return {Promise}
+ * @return {Promise<any>}
  */
 const updateFile = async (file, version, options = {}) => {
   if (!file) {
@@ -133,4 +133,5 @@ const updateFile = async (file, version, options = {}) => {
   return result;
 };
 
+/** @type {any} */
 module.exports = universalify.fromPromise(updateFile);

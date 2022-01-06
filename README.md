@@ -116,7 +116,7 @@ If a package.json is specified, it will be loaded first, then any subsequent arg
 Files with the following extensions will be recognized as structured text and parsed accordingly.
 
 - **JSON** - `.json`
-- **XML** - `.xml`, `.plist`
+- **XML** - `.xml` <!--, `.plist`-->
 - **YAML** - `.yml`, `.yaml`
 
 ## API
@@ -142,7 +142,17 @@ Three keys from the `json` object will be passed directly to [`JSON.parse`][json
 ##### xml
 
 Type: `object`
-Passed directly to the [xml2js Builder class][xml2js-builder]. See [xml2js][] docs for available options.
+Merged with a minimal set of defaults, then passed to the [xml-js `js2xml` converter][xml-js convert]. See [xml-js docs][] for available options.
+
+Default XML Options:
+
+```js
+{
+  compact: false,
+  spaces: 2,
+  indentCdata: true,
+}
+```
 
 ##### yaml
 
@@ -157,12 +167,14 @@ Enabling `push.followTags` in Git's global config is highly recommended: `git co
 
 While this module strongly encourages the use of true SemVer versions, these are not enforced. Just about any wacky version string without a whitespace character should work.
 
+Empty CData blocks `<![CDATA[]]>` will be removed from processed XML Documents. To preserve empty blocks, add one or more spaces: `<![CDATA[ ]]>`
+
 [phpDocumentor @version tag][phpdoc-version] vcs-prefixes and version-descriptions will be dropped.
 
 [webpack]: https://webpack.github.io/docs/configuration.html
 [eslint]: http://eslint.org/docs/user-guide/configuring#configuration-file-formats
-[xml2js]: https://www.npmjs.com/package/xml2js
-[xml2js-builder]: https://www.npmjs.com/package/xml2js#options-for-the-builder-class
+[xml-js]: https://www.npmjs.com/package/xml-js
+[xml-js convert]: https://www.npmjs.com/package/xml-js#convert-js-object--json-%E2%86%92-xml
 [jsondocs]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON
 [jsonparse]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
 [stringify]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify

@@ -4,10 +4,15 @@ const convert = require("xml-js");
 const bumpPlainText = require("./bump-plain-text");
 
 module.exports = (data, version, config) => {
-  // 1. Update any existing root-level CData or version elements
-  // 2. If nothing was updated, add a new root-level version element.
+  const xmlDefaults = {
+    compact: false,
+    spaces: 2,
+    indentCdata: true,
+  };
+  const xmlConfig = { ...xmlDefaults, ...config.xml };
+
   try {
-    const xmlData = convert.xml2js(data, {});
+    const xmlData = convert.xml2js(data, xmlConfig);
     let oldVersion;
     let hasCdata = false;
     let hasVersion = false;
@@ -24,7 +29,8 @@ module.exports = (data, version, config) => {
           version,
           config
         );
-        if (cdata.data) {
+
+        if (cdata && cdata.data) {
           hasCdata = true;
           oldVersion = cdata.oldVersion;
           xmlData.elements[0].elements[n].cdata = cdata.data;
@@ -33,12 +39,18 @@ module.exports = (data, version, config) => {
 
       if (xmlData.elements[0].elements[n].name === "version") {
         hasVersion = true;
-        const len = xmlData.elements[0].elements[n].elements.length;
-        for (let m = 0; m < len; m++) {
-          if (xmlData.elements[0].elements[n].elements[m].type === "text") {
-            oldVersion = xmlData.elements[0].elements[n].elements[m].text;
-            xmlData.elements[0].elements[n].elements[m].text = version;
+        if (xmlData.elements[0].elements[n].elements) {
+          const len = xmlData.elements[0].elements[n].elements.length;
+          for (let m = 0; m < len; m++) {
+            if (xmlData.elements[0].elements[n].elements[m].type === "text") {
+              oldVersion = xmlData.elements[0].elements[n].elements[m].text;
+              xmlData.elements[0].elements[n].elements[m].text = version;
+            }
           }
+        } else {
+          xmlData.elements[0].elements[n].elements = [
+            { type: "text", text: version },
+          ];
         }
       }
     }
@@ -52,11 +64,7 @@ module.exports = (data, version, config) => {
       xmlData.elements[0].elements.unshift(versionElement);
     }
 
-    const newXml = convert.js2xml(xmlData, {
-      compact: false,
-      spaces: 2,
-      indentCdata: true,
-    });
+    const newXml = convert.js2xml(xmlData, xmlConfig);
 
     return { oldVersion, data: newXml };
   } catch (err) {

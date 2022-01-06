@@ -101,5 +101,15 @@ describe("Update prefixed versions", () => {
   });
 
   // TODO: Add a fake docker image:tag to XML CData
-  test.skip("should apply prefix matching to CData xml files", () => {});
+  test("should apply prefix matching to CData xml files", async () => {
+    const file = "cdata-with-prefix.xml";
+    const prefix = "namespace/img:";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      prefixes: [prefix],
+    });
+    expect(result.data).not.toMatch(result.oldVersion);
+    expect(result.data).not.toMatch("1.2.3");
+    expect(result.data).toMatch(`${prefix}${newVersion}`);
+  });
 });

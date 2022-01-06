@@ -60,9 +60,50 @@ describe("XML files", () => {
     expect(actual).not.toMatch(`<version>${newVersion}</version>`);
   });
 
+  test("Should check empty CData (will be removed)", async () => {
+    const file = "empty-cdata.xml";
+    const result = await updateFile(file, newVersion, { quiet: true });
+    const actual = (await fs.readFile(file)).toString();
+    expect(actual).not.toMatch(`<version>${result.oldVersion}</version>`);
+    expect(actual).not.toMatch("<![CDATA[]]>");
+  });
+
+  test("Should check empty CData (whitespace is not empty)", async () => {
+    const file = "empty-cdata-whitespace.xml";
+    const result = await updateFile(file, newVersion, { quiet: true });
+    const actual = (await fs.readFile(file)).toString();
+    expect(actual).not.toMatch(`<version>${result.oldVersion}</version>`);
+    expect(actual).toMatch("<![CDATA[ ");
+    expect(actual).toMatch(" ]]>");
+  });
+
+  test("should add a version to an empty Version element", async () => {
+    const file = "empty-version.xml";
+    const result = await updateFile(file, newVersion, { quiet: true });
+    const actual = (await fs.readFile(file)).toString();
+    expect(actual).toMatch(`<version>${newVersion}</version>`);
+    expect(result.oldVersion).toBeUndefined();
+  });
+
+  test("should add a version to an empty Version element", async () => {
+    const file = "empty-version-self-closing.xml";
+    const result = await updateFile(file, newVersion, { quiet: true });
+    const actual = (await fs.readFile(file)).toString();
+    expect(actual).toMatch(`<version>${newVersion}</version>`);
+    expect(result.oldVersion).toBeUndefined();
+  });
+
+  test("should update a version despite an extra element", async () => {
+    const file = "version-with-extra-element.xml";
+    const result = await updateFile(file, newVersion, { quiet: true });
+    const actual = (await fs.readFile(file)).toString();
+    expect(actual).toMatch(`<version>${newVersion}`);
+    expect(actual).toMatch(/<extra\s*\/>/);
+  });
+
   // TODO: specify something like {key: 'project_version'} to update that key with the version
   test.skip("should increment a top-level custom attribute in an xml file", () => {});
 
   // TODO: specify something like {key: 'config.project_version'} to update that key with the version
   test.skip("should increment a nested custom attribute in an xml file", () => {});
-})
+});

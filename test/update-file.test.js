@@ -86,7 +86,7 @@ describe("Update a file", () => {
         expect(err).toBeFalsy();
         fs.readFile(file, (err, data) => {
           expect(err).toBeFalsy();
-          const yamlData = yaml.load(data);
+          const yamlData = yaml.load(data.toString());
           expect(yamlData).toHaveProperty("version", newVersion);
           done();
         });
