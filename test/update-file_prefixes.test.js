@@ -112,4 +112,6 @@ describe("Update prefixed versions", () => {
     expect(result.data).not.toMatch("1.2.3");
     expect(result.data).toMatch(`${prefix}${newVersion}`);
   });
+
+  test.skip("should replace prefixed versions in Yaml as plain text", () => {});
 });
