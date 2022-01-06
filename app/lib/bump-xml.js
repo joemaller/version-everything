@@ -4,15 +4,8 @@ const convert = require("xml-js");
 const bumpPlainText = require("./bump-plain-text");
 
 module.exports = (data, version, config) => {
-  const xmlDefaults = {
-    compact: false,
-    spaces: 2,
-    indentCdata: true,
-  };
-  const xmlConfig = { ...xmlDefaults, ...config.xml };
-
   try {
-    const xmlData = convert.xml2js(data, xmlConfig);
+    const xmlData = convert.xml2js(data, config.xml);
     let oldVersion;
     let hasCdata = false;
     let hasVersion = false;
@@ -64,7 +57,7 @@ module.exports = (data, version, config) => {
       xmlData.elements[0].elements.unshift(versionElement);
     }
 
-    const newXml = convert.js2xml(xmlData, xmlConfig);
+    const newXml = convert.js2xml(xmlData, config.xml);
 
     return { oldVersion, data: newXml };
   } catch (err) {

@@ -1,5 +1,5 @@
 // @ts-check
-'use strict';
+"use strict";
 
 const fs = require("fs-extra");
 const path = require("path");
@@ -38,7 +38,7 @@ const updateFile = async (file, version, options = {}) => {
     quiet: false,
     dryRun: false,
     json: { space: 2, replacer: null, reviver: null },
-    xml: {},
+    xml: { compact: false, spaces: 2, indentCdata: true },
     yaml: {},
     prefixes: [],
   };
