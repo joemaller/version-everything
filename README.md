@@ -169,8 +169,6 @@ While this module strongly encourages the use of true SemVer versions, these are
 
 Empty CData blocks `<![CDATA[]]>` will be removed from processed XML Documents. To preserve empty blocks, add one or more spaces: `<![CDATA[ ]]>`
 
-[phpDocumentor @version tag][phpdoc-version] vcs-prefixes and version-descriptions will be dropped.
-
 [webpack]: https://webpack.github.io/docs/configuration.html
 [eslint]: http://eslint.org/docs/user-guide/configuring#configuration-file-formats
 [xml-js]: https://www.npmjs.com/package/xml-js
@@ -182,5 +180,4 @@ Empty CData blocks `<![CDATA[]]>` will be removed from processed XML Documents. 
 [replacer]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter
 [js-yaml]: https://www.npmjs.com/package/js-yaml
 [safedump]: https://www.npmjs.com/package/js-yaml#safedump-object---options-
-[phpdoc-version]: https://docs.phpdoc.org/references/phpdoc/tags/version.html
 [npm18795]: https://github.com/npm/npm/issues/18795

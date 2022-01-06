@@ -25,8 +25,6 @@ afterEach(() => {
   cleanup();
 });
 
-
-
 describe("plain text files", () => {
   test("should report the previous version (css block comment)", async () => {
     const file = "file.css";
@@ -87,28 +85,14 @@ describe("plain text files", () => {
     });
   });
 
-  test("should report the previous version (php docblock version tag)", (done) => {
+  test("should update php docblock version tag, preserving prefixes and comments", async () => {
     const file = "php-docblock-version-tag.php";
-    updateFile(file, newVersion, { quiet: true }, (err, result) => {
-      expect(err).toBeFalsy();
-      expect(result).toHaveProperty("oldVersion", expect.any(String));
-      done();
-    });
-  });
-
-  test("should increment a plain text file (php docblock version tag)", (done) => {
-    const file = "php-docblock-version-tag.php";
-    const regex = new RegExp(
-      "^\\s+\\*\\s+@version\\s+([^:]+:)?" + newVersion.replace(/\./g, "\\."),
-      "im"
-    );
-    updateFile(file, newVersion, { quiet: true }, (err) => {
-      expect(err).toBeFalsy();
-      fs.readFile(file, (err, data) => {
-        expect(data.toString()).toMatch(regex);
-        done();
-      });
-    });
+    const result = await updateFile(file, newVersion, { quiet: true });
+    const actual = (await fs.readFile(file)).toString();
+    expect(result.data).not.toMatch(result.oldVersion);
+    expect(actual).toMatch(new RegExp(`GIT:\\s+${newVersion}`, "gim"));
+    expect(actual).toMatch(new RegExp(`@version\\s+${newVersion}`, "gim"));
+    expect(actual).toMatch("Version tag description with Git prefix");
   });
 
   test("should report the previous version (markdown heading)", (done) => {
