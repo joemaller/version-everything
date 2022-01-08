@@ -75,6 +75,7 @@ The file should export a simple JS object and look something like this:
 ```js
 module.exports = {
   files: ["README.md", "example_wordpress_plugin.php", "styles.css"],
+  prefix: /* a string, regexp literal or mixed array of either */
   json: {
     /* optional json config object, keys pass directly to JSON.stringify */
   },
@@ -123,23 +124,41 @@ Files with the following extensions will be recognized as structured text and pa
 
 ### versionEverything(files, [options])
 
+All keys are optional. Files is _practically_ required, without a list of files there's nothing to do.
+
 #### files
 
 Type: `array`
 
 An array containing the files which will be versioned.
 
+#### prefix
+
+Type: `string|RegExp|[string|RegExp]`
+
+A string, RegExp, or a mixed array of either. Will be added to the list of standard version patterns to be replaced in plain-text files.
+
 #### options
 
 Type: `object`
 All keys are optional.
 
-##### json
+#### json
 
 Type: `object`
 Three keys from the `json` object will be passed directly to [`JSON.parse`][jsonparse] or [`JSON.stringify`][stringify]: **`space`** which sets indentation from an integer or string, a **[`reviver`][reviver]** function and a **[`replacer`][replacer]** function/array. See the [JSON docs][stringify] for more info.
 
-##### xml
+Default JSON Options:
+
+```js
+{
+  space: 2,
+  replacer: null,
+  reviver: null,
+}
+```
+
+#### xml
 
 Type: `object`
 Merged with a minimal set of defaults, then passed to the [xml-js `js2xml` converter][xml-js convert]. See [xml-js docs][] for available options.

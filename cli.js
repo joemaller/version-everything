@@ -54,6 +54,7 @@ const getConfig = (yargsObject = { _: [] }) => {
     config["version-everything"].options.quiet = yargsObject.quiet;
   }
   if (yargsObject.prefix) {
+    // TODO: this might be extraneous? Yargs should force this to be an array
     if (typeof yargsObject.prefix === "string") {
       yargsObject.prefix = [yargsObject.prefix];
     }

@@ -3,17 +3,19 @@
 
 const readPkgUp = require("read-pkg-up");
 
-const getVersionFiles = require("./app/get-version-files");
+const { cosmiconfigSync } = require("cosmiconfig");
+
+// const getVersionFiles = require("./app/get-version-files");
 const updateFile = require("./app/update-file");
 
 /**
- * The version-everything object should contain a files array and an optional options object
+ * The args object should contain a files array any other documented options
  *
- * "version-everything": {
+ * "{
  *   files: ["file1.js", "file2.json"],
- *   options: {
- *      quiet: false
- *   }
+ *   prefix: ['namespace/img:'],
+ *   quiet: false,
+ *   json: {space: 4}
  * }
  *
  */
@@ -26,8 +28,26 @@ const updateFile = require("./app/update-file");
 module.exports = function (args = {}) {
   const { packageJson } = readPkgUp.sync({ normalize: false });
   const version = args.version || packageJson.version;
-  const options =
-    (args["version-everything"] && args["version-everything"].options) || {};
+  if (!version) {
+    throw "No version found in args or package.json";
+  }
 
-  getVersionFiles(args).forEach((f) => updateFile(f, version, options));
+  const explorerSync = cosmiconfigSync("version-everything");
+  const configFile = explorerSync.search() || { config: {} };
+
+  const options = { ...configFile.config, ...args };
+
+  if (options.prefix) {
+    if (typeof options.prefix === "string") {
+      options.prefix = [options.prefix];
+    }
+    options.prefixes = options.prefixes || [];
+    options.prefixes = [...options.prefix, ...options.prefixes];
+    delete options.prefix;
+    delete options.config;
+  }
+  const versionFiles = options?.files || [];
+  delete options.files;
+
+  versionFiles.forEach((f) => updateFile(f, version, options));
 };

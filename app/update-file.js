@@ -43,7 +43,7 @@ const updateFile = async (file, version, options = {}) => {
     prefixes: [],
   };
 
-  const config = Object.assign({}, defaultOptions, options);
+  const config = {...defaultOptions, ...options};
   const log = logInit(config.quiet);
 
   // first pass tries file extensions, if those don't match, try parsing
