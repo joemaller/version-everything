@@ -25,8 +25,6 @@ afterEach(() => {
   cleanup();
 });
 
-
-
 describe("JSON files", () => {
   // TODO: This isn't doing what it says it's doing? Should be silent?
   test("should report the previous version (json file)", async () => {
@@ -129,5 +127,13 @@ describe("JSON files", () => {
         });
       }
     );
+  });
+
+  test("should parse csscomb file and add version (issue #6)", async () => {
+    const file = "csscomb-issue-6.json";
+    const result = await updateFile(file, newVersion, { quiet: true });
+    const actual = JSON.parse((await fs.readFile(file)).toString());
+    expect(result).toHaveProperty("oldVersion", undefined);
+    expect(actual).toHaveProperty("version", newVersion);
   });
 });
