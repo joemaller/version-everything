@@ -26,7 +26,6 @@ afterEach(() => {
 });
 
 describe("JSON files", () => {
-  // TODO: This isn't doing what it says it's doing? Should be silent?
   test("should report the previous version (json file)", async () => {
     const file = "file.json";
     let output = "";
