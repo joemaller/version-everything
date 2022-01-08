@@ -100,13 +100,23 @@ const version = require("version-everything");
 version(["README.md", "manifest.json"], { json: { space: 4 } });
 ```
 
-### Command Line Interface
+### Command Line Interface (CLI)
 
 When run from the command line, all arguments following the command are assumed to be file paths. This command would sync versions into `readme.md` and `manifest.json`:
 
 ```sh
 $ version-everything readme.md manifest.json
 ```
+
+#### Other CLI flags
+
+The following additional flags map to version-everything settings. Run `version-everything -h` for full usage info.
+
+- `-p`, `--package-json` `<path to package.json file>`<br>Loads a specific package.json file. When present, this will able be used as the starting location for Cosmiconfig.
+
+- `n`, `--dry-run`<br> Runs the command without modifying any files.
+- `q`, `--quiet`<br> Run the command silently, without showing update messages.
+- `--prefix <prefixes...>`<br>One or more additional pattern prefixes to match against.
 
 #### Conflicting arguments
 
