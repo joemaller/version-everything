@@ -1,6 +1,6 @@
 {
   "name": "version-everything",
-  "version": "0.6.4",
+  "version": "0.7.0",
   "description": "Use npm to version all kinds of projects, not just javascript.",
   "keywords": [
     "npm",
