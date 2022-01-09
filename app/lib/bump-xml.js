@@ -4,17 +4,27 @@ const convert = require("xml-js");
 const bumpPlainText = require("./bump-plain-text");
 
 module.exports = (data, version, config) => {
+  let oldVersion;
+  let hasCdata = false;
+  let hasVersion = false;
+  let prefixData = {};
+
   try {
-    const xmlData = convert.xml2js(data, config.xml);
-    let oldVersion;
-    let hasCdata = false;
-    let hasVersion = false;
+    if (config.prefixes.length > 0) {
+      prefixData = bumpPlainText(data, version, config);
+      hasVersion = !!prefixData?.data;
+    }
+
+    const xmlData = convert.xml2js(prefixData?.data || data, config.xml);
 
     for (let n = 0; n < xmlData.elements[0].elements.length; n++) {
       /**
        * Note: CData and Version elements could have different existing values
        *       Whichever appears last will be the returned value. After one pass,
        *       dual-versioned (CData & Element) values will be in sync.
+       *
+       *       This will be processed twice if there's a prefix as the whole file
+       *       would have already been processed as plain text
        */
       if (xmlData.elements[0].elements[n].type === "cdata") {
         const cdata = bumpPlainText(

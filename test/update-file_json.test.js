@@ -151,7 +151,6 @@ describe("JSON files", () => {
       quiet: true,
       json: { sort: true },
     });
-    console.log(result.data);
     expect(result.data).toMatch(/\{\s*"name/);
     expect(Object.keys(JSON.parse(result.data))[0]).toBe("name");
   });

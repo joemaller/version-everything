@@ -66,6 +66,10 @@ In text files, the following version strings will be updated.
 
 _Notes:_ Colons are optional. Simple v-prefixed, git-tag style version strings must appear at the end of a line.
 
+#### Additional Prefixes
+
+Additional string or RegExp patterns can be added to the list of default patterns which match plain text files. When prefixes are specified, structured data files will be processed first as plain text, then again as structured data if no versions are found.
+
 ### version-everything config files
 
 This project uses the [cosmiconfig](https://www.npmjs.com/package/cosmiconfig) library to load config files.the file-key should be `version-everything`, so files like `.version-everythingrc` or `.version-everythingrc.js` will work.

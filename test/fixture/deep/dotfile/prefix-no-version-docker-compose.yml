@@ -1,0 +1,19 @@
+services:
+  thing1:
+    image: namespace/img:4.3.2
+    command: |
+      echo
+
+  thing2:
+    # image: namespace/img:dev
+    image: namespace/img:4.5.6
+    restart: always
+
+  thing3:
+    image: namespace/img:dev
+    # image: namespace/img:7.8.9
+    restart: always
+
+  box:
+    image: someother/img:12.33.55
+    environment:

@@ -29,19 +29,28 @@ describe("XML files", () => {
   test("should report the previous version (xml file)", async () => {
     const file = "file.xml";
     let output = "";
-    console.log = (str) => (output += str);
+    console.log = (str) => (output += str); // mock console.log
 
     const result = await updateFile(file, newVersion, {});
     expect(result).toHaveProperty("oldVersion");
     expect(output).toMatch(result.oldVersion);
   });
 
-  test("should increment the top-level version attribute in an xml file (async)", async () => {
+  test("should increment the root-level version attribute in an xml file", async () => {
     const file = "file.xml";
     const result = await updateFile(file, newVersion, { quiet: true });
     const actual = await fs.readFile(file);
 
     expect(actual.toString()).toMatch(`<version>${newVersion}</version>`);
+  });
+
+  test("should add root-level version attribute in an xml files without versions", async () => {
+    const file = "no-version.xml";
+    const result = await updateFile(file, newVersion, { quiet: true });
+    const actual = await fs.readFile(file);
+
+    expect(actual.toString()).toMatch(`<version>${newVersion}</version>`);
+    expect(result.oldVersion).toBeUndefined;
   });
 
   test("Should not add a second version element if one already exists", async () => {

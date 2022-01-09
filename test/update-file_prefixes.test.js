@@ -37,8 +37,6 @@ describe("Update prefixed versions", () => {
     expect(actual).toMatch(newVersion);
   });
 
-  test.skip("should update prefixed versions (docker-compose images)", () => {});
-
   test("should use a string prefix)", async () => {
     const file = "prefix-patterns.md";
     const result = await updateFile(file, newVersion, {
@@ -113,5 +111,60 @@ describe("Update prefixed versions", () => {
     expect(result.data).toMatch(`${prefix}${newVersion}`);
   });
 
-  test.skip("should replace prefixed versions in Yaml as plain text", () => {});
+  test("should replace prefixed value in xml as plain text", async () => {
+    const file = "prefix-no-version.xml";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      prefixes: ["constellation/list:"],
+    });
+    expect(result.data).not.toMatch("constellation/list:299.792.458");
+    expect(result.data).toMatch("constellation/list:" + newVersion);
+    expect(result.data).not.toMatch("<version>");
+  });
+
+  test("should update normal XML versions when prefix doesn't find a match", async () => {
+    const file = "file.xml";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      prefixes: ["constellation/list:"],
+    });
+    expect(result).toHaveProperty("oldVersion");
+    expect(result.data).not.toMatch(result.oldVersion);
+  });
+
+  test("should add missing versions to XML when prefix doesn't find a match", async () => {
+    const file = "no-version.xml";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      prefixes: ["constellation/list:"],
+    });
+    expect(result).toHaveProperty("oldVersion");
+    expect(result.data).toMatch("<version>");
+  });
+
+  test("should replace prefixed value in JSON as plain text", async () => {
+    const file = "prefix-no-version.json";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      prefixes: ["constellation/list:"],
+    });
+    const actual = JSON.parse(result.data);
+    expect(result.data).not.toMatch("constellation/list:299.792.458");
+    expect(result.data).toMatch("constellation/list:" + newVersion);
+    expect(actual).not.toHaveProperty("version");
+  });
+
+  test("should replace prefixed versions in Yaml as plain text (docker-compose files)", async () => {
+    const file = "prefix-no-version-docker-compose.yml";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      prefixes: ["namespace/img:"],
+    });
+    expect(result.data).not.toMatch("namespace/img:4.3.2");
+    expect(result.data).toMatch("namespace/img:dev");
+    expect(result.data).toMatch("namespace/img:" + newVersion);
+    expect(result.data).not.toMatch(
+      new RegExp(`\\s*version:\\s+${newVersion}`)
+    );
+  });
 });

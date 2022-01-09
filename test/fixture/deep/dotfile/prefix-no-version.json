@@ -1,0 +1,5 @@
+{
+  "star": "Betelgeuse",
+  "planet": "Rigel",
+  "docker-image": "constellation/list:299.792.458"
+}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<root>
+  <star>Betelgeuse</star>
+  <planet>Rigel</planet>
+  <docker-image>constellation/list:299.792.458</docker-image>
+</root>
