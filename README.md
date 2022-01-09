@@ -198,6 +198,8 @@ While this module strongly encourages the use of true SemVer versions, these are
 
 Empty CData blocks `<![CDATA[]]>` will be removed from processed XML Documents. To preserve empty blocks, add one or more spaces: `<![CDATA[ ]]>`
 
+For some reason I can't remember, most test fixtures are in **test/fixture/deep/dotfile**. Ref [#28](https://github.com/joemaller/version-everything/issues/28)
+
 [webpack]: https://webpack.github.io/docs/configuration.html
 [eslint]: http://eslint.org/docs/user-guide/configuring#configuration-file-formats
 [xml-js]: https://www.npmjs.com/package/xml-js
