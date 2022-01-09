@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+const { Console } = require("console");
+const { readFileSync } = require("fs");
 const path = require("path");
 
 const yargs = require("yargs");
@@ -14,7 +16,8 @@ const argv = yargs
     type: "string",
   })
   .option("prefix", {
-    describe: "Match version numbers appearing after this prefix",
+    describe:
+      "Match version strings appearing after this prefix. When combined with positional arguments (files), terminate the array with '--'.",
     type: "array",
   })
   .option("dry-run", {
@@ -32,33 +35,41 @@ const argv = yargs
     "Reads version string from b/package.json and applies it to a/file.txt"
   )
   .example(
-    "$0 --prefix 'namespace/foo-img:' a/docker-compose.yml",
-    "Matches versions used as tags for docker images like 'namespace/foo-img:1.2.3'"
+    "$0 --prefix 'namespace/foo-img:' -- a/docker-compose.yml",
+    "Matches versions used as tags for docker images like 'namespace/foo-img:1.2.3'. Prefixes should be terminated with '--'."
+  )
+  .example(
+    "$0 a/docker-compose.yml --prefix 'namespace/foo-img:'",
+    "Prefixes appearing last do not need to be terminated."
   )
   .help("help")
   .alias({ help: "h" })
   .version().argv;
 
 const getConfig = (yargsObject = { _: [] }) => {
-  const config = {};
+  let config = {};
   if (yargsObject.packageJson) {
-    Object.assign(config, require(path.resolve(yargsObject.packageJson)));
-  }
-  if (!config["version-everything"]) {
-    config["version-everything"] = { files: [], options: {} };
+    const packageJsonPath = path.resolve(yargsObject.packageJson);
+
+    try {
+      const pkg = readFileSync(packageJsonPath, "utf8").toString();
+      config.version = JSON.parse(pkg).version;
+      config._searchFrom = path.dirname(packageJsonPath);
+    } catch (e) {
+      throw "Unable to read package.json file\n" + e;
+    }
   }
   if (yargsObject._.length) {
-    config["version-everything"].files = yargsObject._;
+    config.files = yargsObject._;
   }
   if (yargsObject.quiet) {
-    config["version-everything"].options.quiet = yargsObject.quiet;
+    config.quiet = yargsObject.quiet;
+  }
+  if (yargsObject["dry-run"]) {
+    config.dryRun = yargsObject["dry-run"];
   }
   if (yargsObject.prefix) {
-    // TODO: this might be extraneous? Yargs should force this to be an array
-    if (typeof yargsObject.prefix === "string") {
-      yargsObject.prefix = [yargsObject.prefix];
-    }
-    config["version-everything"].options.prefixes = yargsObject.prefix;
+    config.prefixes = yargsObject.prefix;
   }
   return config;
 };

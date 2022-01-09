@@ -229,17 +229,11 @@ describe("Update a file", () => {
       console.log = (str) => (output += str);
     });
 
-    test("should be quiet", (done) => {
+    test("should be quiet", async () => {
       const file = "file.json";
-      try {
-        updateFile(file, newVersion, { quiet: true }, (err) => {
-          expect(err).toBeFalsy();
-          expect(output).toBe("");
-          done();
-        });
-      } catch (err) {
-        expect(err).toBeFalsy();
-      }
+      const result = await updateFile(file, newVersion, { quiet: true });
+      expect(output).toBe("");
+      expect(result.oldVersion).not.toBe(undefined);
     });
 
     test("should be loud", (done) => {
@@ -286,17 +280,19 @@ describe("Update a file", () => {
       expect(newData).toEqual(rawData);
     });
 
-    test("dry-run output should include file contents", async () => {
+    test("dry-run should not change the source file", async () => {
       const file = "file.json";
-      const rawData = await fs.readFile(file);
-      const updated = await updateFile(file, newVersion, { dryRun: true });
-      const newData = await fs.readFile(file);
+      const before = (await fs.readFile(file)).toString();
+      await updateFile(file, newVersion, { dryRun: true });
+      const after = (await fs.readFile(file)).toString();
+      expect(before).toEqual(after);
+    });
 
-      expect(output).not.toEqual("");
-      expect(output).toContain(newVersion);
-      expect(output).toContain(`"version": "${newVersion}",`);
-      expect(output).toMatch(updated.data);
-      expect(rawData.toString()).toEqual(newData.toString());
+    test("dry-run output should change message", async () => {
+      const file = "file.json";
+      await updateFile(file, newVersion, { dryRun: true });
+      expect(output).toMatch("dry run");
+      expect(output).not.toMatch(/^Updated/gim);
     });
   });
 });

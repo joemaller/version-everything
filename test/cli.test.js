@@ -1,15 +1,11 @@
 // @ts-check
 const tmpFixture = require("./lib/tmp-fixture");
 const cli = require("../cli.js");
-// const versionEverything = require("../");
 
 const cwd = process.cwd();
 const fixtureDir = "./test/fixture/";
 
 const fakeYargs = { _: [], $0: "cli.js" };
-
-// jest.mock('../')
-// const versionEverything = jest.genMockFromModule('../');
 
 describe("Test the CLI", () => {
   beforeEach(() => {
@@ -22,56 +18,50 @@ describe("Test the CLI", () => {
 
   test("Call without args", () => {
     const config = cli();
-    expect(config).toHaveProperty("version-everything");
+    expect(config).toEqual({});
   });
 
   test("Call with file list", () => {
     const args = { _: ["file1.js", "file2.txt"] };
     const config = cli(args);
-    expect(config).toHaveProperty("version-everything");
-    expect(config["version-everything"].files).toHaveLength(2);
+    expect(config.files).toHaveLength(2);
   });
 
   test("Specify a package.json file", () => {
     process.chdir("./package");
     const args = { ...fakeYargs, packageJson: "package.json" };
     const config = cli(args);
-    expect(config).toHaveProperty("version-everything");
-    expect(config["version-everything"].files).toHaveLength(5);
+    expect(config).toHaveProperty("_searchFrom");
   });
 
-  test("empty version-everything object", () => {
+  test("Fail unreadable package.json file", () => {
+    process.chdir("./package-syntax-error");
+    const args = { ...fakeYargs, packageJson: "not-package.json" };
+    expect(() => cli(args)).toThrow(/Unable to read package.json file/);
+  });
+
+  test("no arguments, pass empty object", () => {
     const args = { ...fakeYargs, "version-everything": {} };
     const config = cli(args);
-    expect(config).toHaveProperty("version-everything");
-    expect(config["version-everything"].files).toHaveLength(0);
+    expect(config).not.toHaveProperty("files");
   });
 
-  test("Passes quiet flag in options", () => {
+  test("Passes quiet flag", () => {
     const args = { ...fakeYargs, quiet: true };
     const config = cli(args);
-    expect(config).toHaveProperty("version-everything");
-    expect(config["version-everything"].options).toHaveProperty("quiet");
+    expect(config).toHaveProperty("quiet");
   });
 
-  test("Pass a string of prefix", () => {
-    const prefix = "namespace/foo-img:";
-    const args = { ...fakeYargs, prefix };
+  test("Passes dry-run flag", () => {
+    const args = { ...fakeYargs, "dry-run": true };
     const config = cli(args);
-    expect(config).toHaveProperty("version-everything");
-    expect(config["version-everything"].options).toHaveProperty("prefixes", [
-      prefix,
-    ]);
+    expect(config).toHaveProperty("dryRun");
   });
 
   test("Pass an array of prefixes", () => {
     const prefix = ["namespace/foo-img:", "foo/bar"];
     const args = { ...fakeYargs, prefix };
     const config = cli(args);
-    expect(config).toHaveProperty("version-everything");
-    expect(config["version-everything"].options).toHaveProperty(
-      "prefixes",
-      prefix
-    );
+    expect(config).toHaveProperty("prefixes", prefix);
   });
 });

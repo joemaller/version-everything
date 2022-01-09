@@ -43,7 +43,7 @@ const updateFile = async (file, version, options = {}) => {
     prefixes: [],
   };
 
-  const config = {...defaultOptions, ...options};
+  const config = { ...defaultOptions, ...options };
   const log = logInit(config.quiet);
 
   // first pass tries file extensions, if those don't match, try parsing
@@ -119,8 +119,10 @@ const updateFile = async (file, version, options = {}) => {
       ];
 
       if (config.dryRun) {
-        updateMsg.push("\n", result.data);
-      } else {
+        updateMsg[0] = chalk.gray("[dry run]") + " Not updating";
+      }
+
+      if (!config.dryRun) {
         try {
           await fs.writeFile(file, result.data);
         } catch (err) {

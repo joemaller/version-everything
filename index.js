@@ -32,8 +32,9 @@ module.exports = function (args = {}) {
     throw "No version found in args or package.json";
   }
 
+  const searchFrom = args._searchFrom || process.cwd();
   const explorerSync = cosmiconfigSync("version-everything");
-  const configFile = explorerSync.search() || { config: {} };
+  const configFile = explorerSync.search(searchFrom) || { config: {} };
 
   const options = { ...configFile.config, ...args };
 
