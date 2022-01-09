@@ -135,4 +135,24 @@ describe("JSON files", () => {
     expect(result).toHaveProperty("oldVersion", undefined);
     expect(actual).toHaveProperty("version", newVersion);
   });
+
+  test("new json options should be merged over defaults", async () => {
+    const file = "package.json";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      json: { thing: 1 },
+    });
+    expect(result.data).toMatch('{\n  "');
+  });
+
+  test("should sort package.json when sort:true in json options ", async () => {
+    const file = "unsorted-package.json";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      json: { sort: true },
+    });
+    console.log(result.data);
+    expect(result.data).toMatch(/\{\s*"name/);
+    expect(Object.keys(JSON.parse(result.data))[0]).toBe("name");
+  });
 });

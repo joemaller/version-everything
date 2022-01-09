@@ -44,6 +44,8 @@ const updateFile = async (file, version, options = {}) => {
   };
 
   const config = { ...defaultOptions, ...options };
+  config.json = { ...defaultOptions.json, ...options.json };
+  config.xml = { ...defaultOptions.xml, ...options.xml };
   const log = logInit(config.quiet);
 
   // first pass tries file extensions, if those don't match, try parsing
