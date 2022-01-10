@@ -1,5 +1,6 @@
 // @ts-check
-const yaml = require("js-yaml");
+const YAML = require("yaml");
+
 const bumpPlainText = require("./bump-plain-text");
 
 /**
@@ -20,24 +21,26 @@ module.exports = function (data, version, config) {
     }
 
     /** @type {object} */
-    const yamlData = yaml.load(prefixData?.data || data);
-    // TODO: Switch this to loadAll(), then iterate component documents.
-    //       If multiple results, pass strings to bumpPlainText? Does that get front-matter?
-    if (typeof yamlData !== "object") {
-      return;
+    const yamlObj = YAML.parse(prefixData.data || data);
+
+    // TODO: Does this also need to check for Arrays and Strings?
+    if (yamlObj === null) {
+      throw "YAML.parse() returned null";
     }
-    const oldVersion = yamlData.version;
+
+    const yamlData = YAML.parseDocument(prefixData?.data || data, config.yaml);
+    const oldVersion = yamlData.get("version");
 
     if (!hasVersion) {
-      yamlData.version = version;
+      yamlData.set("version", version);
     }
 
     return {
       oldVersion: oldVersion,
-      data: yaml.dump(yamlData, config.yaml),
+      data: yamlData.toString(config.yaml),
     };
   } catch (err) {
-    // console.log("bumpYAML Error:", err);
+    // console.log("bumpYAML Error:", err, data);
     throw err;
   }
 };

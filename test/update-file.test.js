@@ -1,6 +1,6 @@
 // @ts-check
 const fs = require("fs-extra");
-const yaml = require("js-yaml");
+const YAML = require("yaml");
 
 const tmpFixture = require("./lib/tmp-fixture");
 const updateFile = require("../app/update-file");
@@ -84,9 +84,9 @@ describe("Update a file", () => {
       const file = "naked-yaml";
       updateFile(file, newVersion, { quiet: true }, (err, result) => {
         expect(err).toBeFalsy();
-        fs.readFile(file, (err, data) => {
+        fs.readFile(file, "utf8", (err, data) => {
           expect(err).toBeFalsy();
-          const yamlData = yaml.load(data.toString());
+          const yamlData = YAML.parse(data);
           expect(yamlData).toHaveProperty("version", newVersion);
           done();
         });
@@ -129,7 +129,7 @@ describe("Update a file", () => {
     test("adds version to version-less yaml file", async () => {
       const file = "no-version.yml";
       const result = await updateFile(file, newVersion, { quiet: true });
-      const actual = yaml.load((await fs.readFile(file)).toString());
+      const actual = YAML.parse(await fs.readFile(file, "utf8"));
       expect(actual).toHaveProperty("version", newVersion);
       expect(result).toHaveProperty("oldVersion", undefined);
     });

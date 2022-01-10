@@ -95,6 +95,19 @@ exports[`Snapshot Tests: cdata-oneline.xml 1`] = `
 </collection>
 `;
 
+exports[`Snapshot Tests: decoy-array.md 1`] = `
+===================================== input ======================================
+- one
+- two 
+- three
+
+===================================== output =====================================
+- one
+- two 
+- three
+
+`;
+
 exports[`Snapshot Tests: decoy-version.md 1`] = `
 ===================================== input ======================================
 # Version decoy file, these are not valid SemVer versions

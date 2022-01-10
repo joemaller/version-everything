@@ -1,6 +1,6 @@
 // @ts-check
 const fs = require("fs-extra");
-const yaml = require("js-yaml");
+const YAML = require("yaml");
 
 const tmpFixture = require("./lib/tmp-fixture");
 const updateFile = require("../app/update-file");
@@ -46,13 +46,20 @@ describe("YAML files", () => {
     const file = "file.yml";
     updateFile(file, newVersion, { quiet: true }, (err) => {
       expect(err).toBeFalsy();
-      fs.readFile(file, (err, data) => {
+      fs.readFile(file, "utf8", (err, data) => {
         expect(err).toBeFalsy();
-        const yamlData = yaml.load(data.toString());
+        const yamlData = YAML.parse(data);
         expect(yamlData).toHaveProperty("version", newVersion);
         done();
       });
     });
+  });
+
+  test("should preserve comments in YAML files", async () => {
+    const file = "prefix-no-version-docker-compose.yml";
+    const result = await updateFile(file, newVersion, { quiet: true });
+    expect(result.data).toMatch(/\s*# image:/gim);
+    expect(result.data).toMatch(/\n\n/gim);
   });
 
   // TODO: specify something like {key: '_playbook_version'} to update that key with the version
@@ -60,7 +67,6 @@ describe("YAML files", () => {
 
   // TODO: specify something like {key: 'config.version'} to update that nested key with the version
   test.skip("should increment a nested custom attribute in a yaml file", () => {});
-
-  // it("should increment a plain-text comment in a yaml file");  // Is this really doable or necessary?
+  test.skip("should increment a plain-text comment in a yaml file", () => {});
   test.skip("should increment yaml frontmatter in a markdown file", () => {});
 });
