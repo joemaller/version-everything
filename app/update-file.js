@@ -15,14 +15,55 @@ const bumpJSON = require("./lib/bump-json");
 const bumpYAML = require("./lib/bump-yaml");
 const bumpXML = require("./lib/bump-xml");
 
-/**
- * Sends files to the correct bumping function, writes the result
- * @param {String} file    [description]
- * @param {String} version [description]
- * @param {Object} options Config options, quiet, json, xml and yaml
- * @return {Promise<any>}
- */
-const updateFile = async (file, version, options = {}) => {
+const writeLogResult = async (result, file, version, config) => {
+  if (result) {
+    const log = logInit(config.quiet);
+    let updateMsg;
+
+    if (result.errno && result.code) {
+      updateMsg = [
+        "⚠️ Could not update",
+        chalk.magenta(path.basename(file)),
+        "\n",
+        chalk.red.bold(result.toString()),
+      ];
+    } else {
+      updateMsg = [
+        "Updated",
+        chalk.magenta(path.basename(file)),
+        "from",
+        chalk.gray(result.oldVersion),
+        "to",
+        chalk.cyan(version),
+      ];
+
+      if (config.dryRun) {
+        updateMsg[0] = chalk.gray("[dry run]") + " Not updating";
+      }
+
+      if (!config.dryRun) {
+        try {
+          await fs.writeFile(file, result.data);
+        } catch (err) {
+          throw err;
+        }
+      }
+    }
+    log(updateMsg.join(" "));
+  }
+  return result;
+};
+
+const defaultOptions = {
+  quiet: false,
+  dryRun: false,
+  json: { space: 2, replacer: null, reviver: null },
+  xml: { compact: false, spaces: 2, indentCdata: true },
+  yaml: {},
+  prefixes: [],
+};
+
+const getConfig = (file, version, options) => {
   if (!file) {
     throw new Error("A file argument is required.");
   }
@@ -34,27 +75,30 @@ const updateFile = async (file, version, options = {}) => {
     throw new Error("Options should be an object.");
   }
 
-  const defaultOptions = {
-    quiet: false,
-    dryRun: false,
-    json: { space: 2, replacer: null, reviver: null },
-    xml: { compact: false, spaces: 2, indentCdata: true },
-    yaml: {},
-    prefixes: [],
-  };
-
   const config = { ...defaultOptions, ...options };
   config.json = { ...defaultOptions.json, ...options.json };
   config.xml = { ...defaultOptions.xml, ...options.xml };
-  const log = logInit(config.quiet);
 
-  // first pass tries file extensions, if those don't match, try parsing
-  // the file contents before falling back to plain-text regex replace
-  // console.log(path.extname(file).toLowerCase())
+  return config;
+};
+/**
+ * Sends files to the correct bumping function, writes the result
+ * @param {String} file    [description]
+ * @param {String} version [description]
+ * @param {Object} options Config options, quiet, json, xml and yaml
+ * @return {Promise<any>}
+ */
+const updateFile = async (file, version, options = {}) => {
+  let result;
+  const config = getConfig(file, version, options);
 
+  /**
+   * Try all files based on file extension
+   * Then try all files as structured data with missing extensions
+   * Then try all files as plain-text again
+   */
   const data = await fs.readFile(file, "utf8").catch((err) => err);
 
-  let result;
   if (data.errno && data.code) {
     result = data;
   } else {
@@ -100,41 +144,7 @@ const updateFile = async (file, version, options = {}) => {
     }
   }
 
-  if (result) {
-    let updateMsg;
-
-    if (result.errno && result.code) {
-      updateMsg = [
-        "⚠️ Could not update",
-        chalk.magenta(path.basename(file)),
-        "\n",
-        chalk.red.bold(result.toString()),
-      ];
-    } else {
-      updateMsg = [
-        "Updated",
-        chalk.magenta(path.basename(file)),
-        "from",
-        chalk.gray(result.oldVersion),
-        "to",
-        chalk.cyan(version),
-      ];
-
-      if (config.dryRun) {
-        updateMsg[0] = chalk.gray("[dry run]") + " Not updating";
-      }
-
-      if (!config.dryRun) {
-        try {
-          await fs.writeFile(file, result.data);
-        } catch (err) {
-          throw err;
-        }
-      }
-    }
-    log(updateMsg.join(" "));
-  }
-  return result;
+  return writeLogResult(result, file, version, config);
 };
 
 /** @type {any} */
