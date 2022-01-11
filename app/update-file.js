@@ -21,25 +21,13 @@ const writeLogResult = async (result, file, version, config) => {
     let updateMsg;
 
     if (result.errno && result.code) {
-      updateMsg = [
-        "⚠️ Could not update",
-        chalk.magenta(path.basename(file)),
-        "\n",
-        chalk.red.bold(result.toString()),
-      ];
+      updateMsg = `⚠️ Could not update ${chalk.magenta(path.basename(file))}
+      ${chalk.red.bold(result.toString())}`;
     } else {
-      updateMsg = [
-        "Updated",
-        chalk.magenta(path.basename(file)),
-        "from",
-        chalk.gray(result.oldVersion),
-        "to",
-        chalk.cyan(version),
-      ];
-
-      if (config.dryRun) {
-        updateMsg[0] = chalk.gray("[dry run]") + " Not updating";
-      }
+      updateMsg =
+        `Updated ${chalk.magenta(path.basename(file))} ` +
+        `from ${chalk.cyan(result.oldVersion)} ` +
+        `to${chalk.cyan(version)}`;
 
       if (!config.dryRun) {
         try {
@@ -47,9 +35,14 @@ const writeLogResult = async (result, file, version, config) => {
         } catch (err) {
           throw err;
         }
+      } else {
+        updateMsg = updateMsg.replace(
+          /^Updated/g,
+          chalk.gray("[dry run]") + " Not updating"
+        );
       }
     }
-    log(updateMsg.join(" "));
+    log(updateMsg);
   }
   return result;
 };
