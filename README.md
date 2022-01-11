@@ -10,7 +10,7 @@ Use npm to version all kinds of projects, not just JavaScript
 [![Maintainability](https://api.codeclimate.com/v1/badges/6b0958bcd94274198117/maintainability)](https://codeclimate.com/github/joemaller/version-everything/maintainability)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-Synchronize the version string from package.json into a set of additional text or structured data files. When called from npm's version script, all versioned files in a project will be updated and committed with a single command.
+Synchronize the package.json version string into additional text or structured data files. When called from npm's version script, all versioned files in a project will be updated and committed with a single command.
 
 ```sh
     npm install --save version-everything
@@ -50,9 +50,9 @@ Add something like the following to your project's package.json file:
 }
 ```
 
-Then run a command like `npm version minor` to bump the version in all the files. It's that easy.
+Then run a command like `npm version minor` to bump the version and update version strings in all listed files. It's that easy!
 
-Note that structured data files will be formatted using default settings.
+Some structured data files may be formatted using default settings.
 
 ### Replacing version strings
 
@@ -68,13 +68,13 @@ _Notes:_ Colons are optional. Simple v-prefixed, git-tag style version strings m
 
 #### Additional Prefixes
 
-Additional string or RegExp patterns can be added to the list of default patterns which match plain text files. When prefixes are specified, structured data files will be processed first as plain text, then again as structured data if no versions are found.
+Additional string or RegExp patterns can be added to the list of default patterns and will match against plain text files. When prefixes are specified, structured data files will be processed first as plain text, then again as structured data if no versions are found.
 
 ### version-everything config files
 
-This project uses the [cosmiconfig](https://www.npmjs.com/package/cosmiconfig) library to load config files.the file-key should be `version-everything`, so files like `.version-everythingrc` or `.version-everythingrc.js` will work.
+This project uses [cosmiconfig](https://www.npmjs.com/package/cosmiconfig) to load config files. The file-key should be `version-everything`, so files like `.version-everythingrc` or `.version-everythingrc.js` will work.
 
-The file should export a simple JS object and look something like this:
+Config files should export a simple JS object and look something like this:
 
 ```js
 module.exports = {
@@ -91,8 +91,6 @@ module.exports = {
   },
 };
 ```
-
-Calling the `version-everything` binary prefers this file over settings in package.json.
 
 ### CommonJS module requires
 
