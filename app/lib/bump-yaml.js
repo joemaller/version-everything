@@ -28,7 +28,7 @@ module.exports = function (data, version, config) {
   }
 
   const yamlData = YAML.parseDocument(prefixData?.data || data, config.yaml);
-  const oldVersion = yamlData.get("version");
+  const oldVersion = yamlData.get("version") || prefixData?.oldVersion;
 
   if (!hasVersion) {
     yamlData.set("version", version);
