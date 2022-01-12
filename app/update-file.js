@@ -52,7 +52,7 @@ const defaultOptions = {
   dryRun: false,
   json: { space: 2, replacer: null, reviver: null },
   xml: { compact: false, spaces: 2, indentCdata: true },
-  yaml: {},
+  yaml: { nullStr: "" },
   prefixes: [],
 };
 
@@ -71,6 +71,7 @@ const getConfig = (file, version, options) => {
   const config = { ...defaultOptions, ...options };
   config.json = { ...defaultOptions.json, ...options.json };
   config.xml = { ...defaultOptions.xml, ...options.xml };
+  config.yml = { ...defaultOptions.yml, ...options.yml };
 
   return config;
 };
