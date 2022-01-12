@@ -26,8 +26,8 @@ const writeLogResult = async (result, file, version, config) => {
     } else {
       updateMsg =
         `Updated ${chalk.magenta(path.basename(file))} ` +
-        `from ${chalk.cyan(result.oldVersion)} ` +
-        `to${chalk.cyan(version)}`;
+        `from ${chalk.gray(result.oldVersion)} ` +
+        `to ${chalk.cyan(version)}`;
 
       if (!config.dryRun) {
         try {
