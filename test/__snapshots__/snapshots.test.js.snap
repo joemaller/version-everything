@@ -98,12 +98,12 @@ exports[`Snapshot Tests: cdata-oneline.xml 1`] = `
 exports[`Snapshot Tests: decoy-array.md 1`] = `
 ===================================== input ======================================
 - one
-- two 
+- two
 - three
 
 ===================================== output =====================================
 - one
-- two 
+- two
 - three
 
 `;
@@ -122,6 +122,76 @@ exports[`Snapshot Tests: decoy-version.md 1`] = `
 ## Version: 0
 
 ### Version 0.0
+
+`;
+
+exports[`Snapshot Tests: null-strings.yml 1`] = `
+===================================== input ======================================
+# Null values in this file should be written as empty strings
+thing:
+  image: someother/img:1.11.111
+  environment:
+    ITEM: 25
+    EMPTY:
+    NOT_EMPTY: notempty
+
+  booleans:
+    _yes: yes
+    _no: no
+    _y: y
+    _n: n
+    _true: true
+    _false: false
+    _true_string: "true"
+    _false_string: "false"
+    _empty:
+    _null: null
+
+  boolean_list:
+    - yes
+    - no
+    - y
+    - n
+    - true
+    - false
+    - "true"
+    - "false"
+    -
+    - null
+
+===================================== output =====================================
+# Null values in this file should be written as empty strings
+thing:
+  image: someother/img:1.11.111
+  environment:
+    ITEM: 25
+    EMPTY:
+    NOT_EMPTY: notempty
+
+  booleans:
+    _yes: yes
+    _no: no
+    _y: y
+    _n: n
+    _true: true
+    _false: false
+    _true_string: "true"
+    _false_string: "false"
+    _empty:
+    _null: null
+
+  boolean_list:
+    - yes
+    - no
+    - y
+    - n
+    - true
+    - false
+    - "true"
+    - "false"
+    - 
+    - null
+version: 1.414.213
 
 `;
 

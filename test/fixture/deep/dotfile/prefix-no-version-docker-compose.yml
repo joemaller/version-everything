@@ -19,5 +19,7 @@ services:
     image: someother/img:12.33.55
     environment:
       ITEM: 25
+      EMPTY:
+      NOT_EMPTY: notempty
 
 # Trailing comment
