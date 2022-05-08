@@ -7,6 +7,7 @@ module.exports = (data, version, config) => {
   let oldVersion;
   let hasCdata = false;
   let hasVersion = false;
+  let hasKeyUpdates = false;
   let prefixData = {};
 
   try {
@@ -65,6 +66,34 @@ module.exports = (data, version, config) => {
       }
     }
 
+    if (config.xml && config.xml.keys) {
+      for (let k = 0; k < config.xml.keys.length; k++) {
+        const pieces = config.xml.keys[k].split("~").filter((piece) => piece);
+        if (pieces.length === 1) {
+          hasKeyUpdates = true;
+          if (!rootElement.attributes) {
+            rootElement.attributes = {};
+          }
+
+          oldVersion = rootElement.attributes[pieces[0]];
+          rootElement.attributes[pieces[0]] = version;
+        } else {
+          const hierarchy = pieces[0].split("/");
+          const attribute = pieces[1];
+
+          traverseElemens(
+            xmlData.elements,
+            hierarchy,
+            attribute,
+            0,
+            oldVersion,
+            version,
+            hasKeyUpdates
+          );
+        }
+      }
+    }
+
     if (!hasCdata && !hasVersion) {
       const versionElement = {
         type: "element",
@@ -79,5 +108,39 @@ module.exports = (data, version, config) => {
     return { oldVersion, data: newXml };
   } catch (err) {
     throw err;
+  }
+
+  function traverseElemens(
+    elements,
+    hierarchy,
+    attribute,
+    level,
+    oldVersion,
+    newVersion,
+    keyUpdated
+  ) {
+    for (let i = 0; i < elements.length; i++) {
+      if (elements[i].name === hierarchy[level]) {
+        if (level < hierarchy.length - 1 && elements[i].elements) {
+          traverseElemens(
+            elements[i].elements,
+            hierarchy,
+            attribute,
+            level + 1,
+            oldVersion,
+            newVersion,
+            keyUpdated
+          );
+        } else {
+          keyUpdated = true;
+          if (!elements[i].attributes) {
+            elements[i].attributes = {};
+          }
+
+          oldVersion = elements[i].attributes[attribute];
+          elements[i].attributes[attribute] = newVersion;
+        }
+      }
+    }
   }
 };

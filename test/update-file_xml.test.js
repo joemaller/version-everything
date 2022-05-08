@@ -110,16 +110,94 @@ describe("XML files", () => {
     expect(actual).toMatch(/<extra\s*\/>/);
   });
 
-  test("should update version despite an comment before root element", async () => {
+  test("should update version despite a comment existing before root element", async () => {
     const file = "root-comment.xml";
     const result = await updateFile(file, newVersion, { quiet: true });
     const actual = (await fs.readFile(file)).toString();
     expect(actual).toMatch(`<version>${newVersion}`);
   });
 
-  // TODO: specify something like {key: 'project_version'} to update that key with the version
-  test.skip("should increment a top-level custom attribute in an xml file", () => {});
+  test("should add a custom top-level attribute in an xml file when missing", async () => {
+    const file = "no-version.xml";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      xml: { keys: ["project-version"] },
+    });
+    const actual = (await fs.readFile(file)).toString();
+    expect(actual).toMatch(`project-version="${newVersion}"`);
+  });
 
-  // TODO: specify something like {key: 'config.project_version'} to update that key with the version
-  test.skip("should increment a nested custom attribute in an xml file", () => {});
+  test("should set a custom top-level attribute value in an xml file when value is emtpy", async () => {
+    const file = "top-level-attribute-empty.xml";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      xml: { keys: ["project-version"] },
+    });
+    const actual = (await fs.readFile(file)).toString();
+    expect(actual).toMatch(`project-version="${newVersion}"`);
+  });
+
+  test("should increment a custom top-level attribute value in an xml file", async () => {
+    const file = "top-level-attribute.xml";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      xml: { keys: ["project-version"] },
+    });
+    const actual = (await fs.readFile(file)).toString();
+    expect(actual).toMatch(`project-version="${newVersion}"`);
+  });
+
+  test("should increment a custom top-level attribute value in an xml file when key starts with ~", async () => {
+    const file = "top-level-attribute.xml";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      xml: { keys: ["~project-version"] },
+    });
+    const actual = (await fs.readFile(file)).toString();
+    expect(actual).toMatch(`project-version="${newVersion}"`);
+  });
+
+  test("should increment a nested custom attribute in an xml file", async () => {
+    const file = "nested-custom-attribute.xml";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      xml: { keys: ["gupdate/app/updatecheck~version"] },
+    });
+    const actual = (await fs.readFile(file)).toString();
+    expect(actual).toMatch(
+      `<updatecheck codebase="https://domain.com/extension.crx" version="${newVersion}"`
+    );
+  });
+
+  test("should set custom attribute value in an xml file when attribute has no value", async () => {
+    const file = "nested-custom-attribute-no-value.xml";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      xml: { keys: ["gupdate/app/updatecheck~version"] },
+    });
+    const actual = (await fs.readFile(file)).toString();
+    expect(actual).toMatch(
+      `<updatecheck codebase="https://domain.com/extension.crx" version="${newVersion}"`
+    );
+  });
+
+  test("should add custom attribute in an xml file when element has no attributes", async () => {
+    const file = "nested-custom-attribute-missing.xml";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      xml: { keys: ["gupdate/app/updatecheck~version"] },
+    });
+    const actual = (await fs.readFile(file)).toString();
+    expect(actual).toMatch(`<updatecheck version="${newVersion}"`);
+  });
+
+  test("should add version element when no matching keys found", async () => {
+    const file = "nested-custom-attribute.xml";
+    const result = await updateFile(file, newVersion, {
+      quiet: true,
+      xml: { keys: ["some/key~some-attribute"] },
+    });
+    const actual = (await fs.readFile(file)).toString();
+    expect(actual).toMatch(`<version>${newVersion}`);
+  });
 });

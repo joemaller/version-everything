@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- https://developer.chrome.com/docs/apps/autoupdate/ -->
+<gupdate xmlns="http://www.google.com/update2/response" protocol="2.0">
+  <app appid="bglkfipkgjbnkmoinjhdglpbbljienbc">
+    <updatecheck codebase="https://domain.com/extension.crx" version=""/>
+  </app>
+</gupdate>
