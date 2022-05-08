@@ -94,7 +94,7 @@ module.exports = (data, version, config) => {
       }
     }
 
-    if (!hasCdata && !hasVersion) {
+    if (!hasCdata && !hasVersion && !hasKeyUpdates) {
       const versionElement = {
         type: "element",
         name: "version",
