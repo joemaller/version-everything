@@ -110,6 +110,13 @@ describe("XML files", () => {
     expect(actual).toMatch(/<extra\s*\/>/);
   });
 
+  test("should update version despite an comment before root element", async () => {
+    const file = "root-comment.xml";
+    const result = await updateFile(file, newVersion, { quiet: true });
+    const actual = (await fs.readFile(file)).toString();
+    expect(actual).toMatch(`<version>${newVersion}`);
+  });
+
   // TODO: specify something like {key: 'project_version'} to update that key with the version
   test.skip("should increment a top-level custom attribute in an xml file", () => {});
 

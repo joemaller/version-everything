@@ -17,7 +17,16 @@ module.exports = (data, version, config) => {
 
     const xmlData = convert.xml2js(prefixData?.data || data, config.xml);
 
-    for (let n = 0; n < xmlData.elements[0].elements.length; n++) {
+    let elementNumber = 0;
+    let rootElement = xmlData.elements[elementNumber];
+    while (
+      rootElement.type !== "element" &&
+      elementNumber < xmlData.elements.length - 1
+    ) {
+      rootElement = xmlData.elements[++elementNumber];
+    }
+
+    for (let n = 0; n < rootElement.elements.length; n++) {
       /**
        * Note: CData and Version elements could have different existing values
        *       Whichever appears last will be the returned value. After one pass,
@@ -26,9 +35,9 @@ module.exports = (data, version, config) => {
        *       This will be processed twice if there's a prefix as the whole file
        *       would have already been processed as plain text
        */
-      if (xmlData.elements[0].elements[n].type === "cdata") {
+      if (rootElement.elements[n].type === "cdata") {
         const cdata = bumpPlainText(
-          xmlData.elements[0].elements[n].cdata,
+          rootElement.elements[n].cdata,
           version,
           config
         );
@@ -36,24 +45,22 @@ module.exports = (data, version, config) => {
         if (cdata && cdata.data) {
           hasCdata = true;
           oldVersion = cdata.oldVersion;
-          xmlData.elements[0].elements[n].cdata = cdata.data;
+          rootElement.elements[n].cdata = cdata.data;
         }
       }
 
-      if (xmlData.elements[0].elements[n].name === "version") {
+      if (rootElement.elements[n].name === "version") {
         hasVersion = true;
-        if (xmlData.elements[0].elements[n].elements) {
-          const len = xmlData.elements[0].elements[n].elements.length;
+        if (rootElement.elements[n].elements) {
+          const len = rootElement.elements[n].elements.length;
           for (let m = 0; m < len; m++) {
-            if (xmlData.elements[0].elements[n].elements[m].type === "text") {
-              oldVersion = xmlData.elements[0].elements[n].elements[m].text;
-              xmlData.elements[0].elements[n].elements[m].text = version;
+            if (rootElement.elements[n].elements[m].type === "text") {
+              oldVersion = rootElement.elements[n].elements[m].text;
+              rootElement.elements[n].elements[m].text = version;
             }
           }
         } else {
-          xmlData.elements[0].elements[n].elements = [
-            { type: "text", text: version },
-          ];
+          rootElement.elements[n].elements = [{ type: "text", text: version }];
         }
       }
     }
@@ -64,7 +71,7 @@ module.exports = (data, version, config) => {
         name: "version",
         elements: [{ type: "text", text: version }],
       };
-      xmlData.elements[0].elements.unshift(versionElement);
+      rootElement.elements.unshift(versionElement);
     }
 
     const newXml = convert.js2xml(xmlData, config.xml);
