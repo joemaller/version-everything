@@ -81,6 +81,7 @@ module.exports = (data, version, config) => {
           const hierarchy = pieces[0].split("/");
           const attribute = pieces[1];
 
+          const keyUpdated = { hasKeyUpdates: false };
           traverseElemens(
             xmlData.elements,
             hierarchy,
@@ -88,8 +89,10 @@ module.exports = (data, version, config) => {
             0,
             oldVersion,
             version,
-            hasKeyUpdates
+            keyUpdated
           );
+
+          hasKeyUpdates = keyUpdated.hasKeyUpdates;
         }
       }
     }
@@ -132,7 +135,7 @@ module.exports = (data, version, config) => {
             keyUpdated
           );
         } else {
-          keyUpdated = true;
+          keyUpdated.hasKeyUpdates = true;
           if (!elements[i].attributes) {
             elements[i].attributes = {};
           }
