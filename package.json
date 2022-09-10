@@ -1,6 +1,6 @@
 {
   "name": "version-everything",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Use npm to version all kinds of projects, not just javascript.",
   "keywords": [
     "npm",
@@ -48,7 +48,6 @@
     "chalk": "^5.0.1",
     "cosmiconfig": "^7.0.1",
     "escape-string-regexp": "^5.0.0",
-
     "fs-extra": "^10.1.0",
     "glob": "^8.0.3",
     "lodash.isplainobject": "^4.0.6",
