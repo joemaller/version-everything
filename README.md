@@ -92,14 +92,14 @@ module.exports = {
 };
 ```
 
-### CommonJS module requires
+### ES Module Imports
 
-Version-everything can also be used like any other Node module. The version string will be pulled from package.json and should be treated as a global constant or envvar.
+Version-everything can also be used like any other esm Node module. The version string will be pulled from package.json and should be treated as a global constant or envvar.
 
 ```js
-const version = require("version-everything");
+import versionEverything from "./index.js";
 
-version(["README.md", "manifest.json"], { json: { space: 4 } });
+versionEverything({ files: ["README.md", "file.json"], json: { space: 4 } });
 ```
 
 ### Command Line Interface (CLI)
@@ -114,7 +114,7 @@ $ version-everything readme.md manifest.json
 
 The following additional flags map to version-everything settings. Run `version-everything -h` for full usage info.
 
-- `-p`, `--package-json` `<path to package.json file>`<br>Loads a specific package.json file. When present, this will able be used as the starting location for Cosmiconfig.
+- `-p`, `--package-json` `<path to package.json file>`<br>Loads a specific package.json file. When present, this will also be used as the starting location for Cosmiconfig.
 
 - `n`, `--dry-run`<br> Runs the command without modifying any files.
 - `q`, `--quiet`<br> Run the command silently, without showing update messages.
@@ -122,7 +122,7 @@ The following additional flags map to version-everything settings. Run `version-
 
 #### Conflicting arguments
 
-If a package.json is specified, it will be loaded first, then any subsequent args will be applied on top. So if package.json were to contain a `version-everything.files` array, that array would be overwritten by any list of files provided to the command line.
+If a **package.json** is specified, it will be loaded first, then any subsequent args will be applied on top. So if **package.json** were to contain a `version-everything.files` array, that array would be overwritten by any list of files provided to the command line.
 
 ### Recognized File Extensions
 
@@ -134,30 +134,37 @@ Files with the following extensions will be recognized as structured text and pa
 
 ## API
 
-### versionEverything(files, [options])
+### versionEverything([options])
 
-All keys are optional. Files is _practically_ required, without a list of files there's nothing to do.
-
-#### files
-
-Type: `array`
-
-An array containing the files which will be versioned.
-
-#### prefix
-
-Type: `string|RegExp|[string|RegExp]`
-
-A string, RegExp, or a mixed array of either. Will be added to the list of standard version patterns to be replaced in plain-text files.
+All keys are optional. `options.files` is _practically_ required, without a list of files there's nothing to do.
 
 #### options
 
 Type: `object`
 All keys are optional.
 
-#### json
+##### options.files
+
+Type: `array`
+
+An array containing the files which will be versioned.
+
+##### options.version
+
+Type: `string`
+
+A valid SemVer version.
+
+##### options.prefix
+
+Type: `string|RegExp|[string|RegExp]`
+
+A string, RegExp, or a mixed array of either. Will be added to the list of standard version patterns to be replaced in plain-text files.
+
+##### options.json
 
 Type: `object`
+
 Three keys from the `json` object will be passed directly to [`JSON.parse`][jsonparse] or [`JSON.stringify`][stringify]: **`space`** which sets indentation from an integer or string, a **[`reviver`][reviver]** function and a **[`replacer`][replacer]** function/array. See the [JSON docs][stringify] for more info.
 
 Default JSON Options:
@@ -170,9 +177,10 @@ Default JSON Options:
 }
 ```
 
-#### xml
+##### options.xml
 
 Type: `object`
+
 Merged with a minimal set of defaults, then passed to the [xml-js `js2xml` converter][xml-js convert]. See [xml-js docs][] for available options.
 
 Default XML Options:
@@ -185,9 +193,10 @@ Default XML Options:
 }
 ```
 
-##### yaml
+##### options.yaml
 
 Type: `object`
+
 Passed directly to the [js-yaml safeDump method][safedump]. See [js-yaml][] docs for available options.
 
 ### Notes
@@ -195,8 +204,6 @@ Passed directly to the [js-yaml safeDump method][safedump]. See [js-yaml][] docs
 **npm** may fail to commit/tag files when `package.json` is nested below the git repository root. Ref: [npm#18795][npm18795]
 
 Enabling `push.followTags` in Git's global config is highly recommended: `git config --global push.followTags true`
-
-While this module strongly encourages the use of true SemVer versions, these are not enforced. Just about any wacky version string without a whitespace character should work.
 
 Empty CData blocks `<![CDATA[]]>` will be removed from processed XML Documents. To preserve empty blocks, add one or more spaces: `<![CDATA[ ]]>`
 

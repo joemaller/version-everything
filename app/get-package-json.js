@@ -1,8 +1,8 @@
-const path = require("path");
-const fs = require("fs-extra");
-const readPkgUp = require("read-pkg-up").sync;
-const semver = require("semver");
-const logInit = require("./lib/log-init");
+import fs from "fs-extra";
+import path from "path";
+import { readPackageUpSync } from "read-pkg-up";
+import semver from "semver";
+import logInit from "./lib/log-init.js";
 
 /**
  * Mostly just a reporting wrapper for readPkgUp
@@ -12,35 +12,37 @@ const logInit = require("./lib/log-init");
  *                         quiet - suppress console.log output
  * @return {object}        The loaded, normalized representation of package.json
  */
-module.exports = (config = {}) => {
+export default (config = {}) => {
   const log = logInit(config.quiet);
   let data;
 
-  if (config.package_json) {
+  if (config.packageJson) {
     try {
-      const packageJson = fs.readJsonSync(config.package_json);
-      data = { path: config.package_json, packageJson };
+      const packageJson = fs.readJsonSync(config.packageJson);
+      data = { path: config.packageJson, packageJson };
     } catch (err) {
-      throw new Error(`Unable to load ${config.package_json}  ${err}`);
+      throw new Error(`Unable to load ${config.packageJson}  ${err}`);
     }
   } else {
-    data = readPkgUp({ normalize: false });
+    data = readPackageUpSync({ normalize: false });
     if (!data || !Object.keys(data).length) {
       throw new Error("Unable to find a package.json file.");
     }
   }
 
-  data.packageJson.version = semver.clean(data.packageJson.version || "");
+  // data.packageJson.version = semver.clean(data.packageJson.version || "");
 
-  if (data.packageJson.version === null) {
-    let relPath = path.relative(process.cwd(), data.path);
-    throw new Error(
-      `${relPath} does not contain a valid SemVer version string.`
-    );
-  }
+  // if (data.packageJson.version === null) {
+  //   let relPath = path.relative(process.cwd(), data.path);
+  //   throw new Error(
+  //     `${relPath} does not contain a valid SemVer version string.`
+  //   );
+  // }
 
   log(`Loading ${path.relative(process.cwd(), data.path)}`);
-  log(`Current version is "${data.packageJson.version}"`);
+  // log(`Current version is "${data.packageJson.version}"`);
+
+  // console.log({ data });
 
   return data;
 };

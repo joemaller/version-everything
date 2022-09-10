@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 
-const { Console } = require("console");
-const { readFileSync } = require("fs");
-const path = require("path");
+import { fileURLToPath } from "url";
 
-const yargs = require("yargs");
+import path from "path";
+import yargs from "yargs";
 
-const versionEverything = require(".");
+import versionEverything from "./index.js";
 
-const argv = yargs
+const argv = yargs(process.argv.slice(2))
   .usage("Usage: $0 [options] [files...]")
   .option("package-json", {
     alias: "p",
@@ -48,16 +47,9 @@ const argv = yargs
 
 const getConfig = (yargsObject = { _: [] }) => {
   let config = {};
-  if (yargsObject.packageJson) {
-    const packageJsonPath = path.resolve(yargsObject.packageJson);
 
-    try {
-      const pkg = readFileSync(packageJsonPath, "utf8").toString();
-      config.version = JSON.parse(pkg).version;
-      config._searchFrom = path.dirname(packageJsonPath);
-    } catch (e) {
-      throw "Unable to read package.json file\n" + e;
-    }
+  if (yargsObject.packageJson) {
+    config.packageJson = path.resolve(yargsObject.packageJson);
   }
   if (yargsObject._.length) {
     config.files = yargsObject._;
@@ -71,12 +63,12 @@ const getConfig = (yargsObject = { _: [] }) => {
   if (yargsObject.prefix) {
     config.prefixes = yargsObject.prefix;
   }
+
   return config;
 };
-
-module.exports = getConfig;
+export default getConfig;
 
 /* istanbul ignore next */
-if (require.main === module) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   versionEverything(getConfig(argv));
 }

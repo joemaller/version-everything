@@ -1,9 +1,12 @@
 // @ts-check
 
-const convert = require("xml-js");
-const bumpPlainText = require("./bump-plain-text");
+// const convert = require("xml-js");
+import convert from "xml-js";
 
-module.exports = (data, version, config) => {
+// const bumpPlainText = require("./bump-plain-text");
+import bumpPlainText from "./bump-plain-text.js";
+
+export default (data, version, config) => {
   let oldVersion;
   let hasCdata = false;
   let hasVersion = false;

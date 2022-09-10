@@ -1,4 +1,5 @@
-const escapeStringRegexp = require("escape-string-regexp");
+// const escapeStringRegexp = require("escape-string-regexp");
+import escapeStringRegexp from "escape-string-regexp";
 
 /**
  * Regexp-escapes strings then combines them into a single pattern
@@ -6,7 +7,7 @@ const escapeStringRegexp = require("escape-string-regexp");
  * any string value.
  * @param {String|String[]} input A string or array of strings
  */
-module.exports = (input) => {
+export default (input) => {
   const patterns = typeof input === "string" ? [input] : input;
   const combined = [...new Set(patterns)]
     .filter(Boolean)

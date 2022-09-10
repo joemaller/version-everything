@@ -1,8 +1,11 @@
 // @ts-check
-const fs = require("fs-extra");
+import {jest} from '@jest/globals';
+jest.useFakeTimers();
 
-const tmpFixture = require("./lib/tmp-fixture");
-const updateFile = require("../app/update-file");
+import fs from "fs-extra";
+
+import tmpFixture from "./lib/tmp-fixture.js";
+import updateFile from "../app/update-file.js";
 
 let newVersion = "3.14.1592";
 const cwd = process.cwd();

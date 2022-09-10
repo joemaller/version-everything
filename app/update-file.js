@@ -1,19 +1,18 @@
 // @ts-check
-"use strict";
 
-const fs = require("fs-extra");
-const path = require("path");
+import fs from "fs-extra";
+import path from "path";
 
-const universalify = require("universalify");
-const chalk = require("chalk");
-const isPlainObject = require("lodash.isplainobject");
+import universalify from "universalify";
+import chalk from "chalk";
+import isPlainObject from "lodash.isplainobject";
 
-const logInit = require("./lib/log-init");
+import logInit from "./lib/log-init.js";
 
-const bumpPlainText = require("./lib/bump-plain-text");
-const bumpJSON = require("./lib/bump-json");
-const bumpYAML = require("./lib/bump-yaml");
-const bumpXML = require("./lib/bump-xml");
+import bumpPlainText from "./lib/bump-plain-text.js";
+import bumpJSON from "./lib/bump-json.js";
+import bumpYAML from "./lib/bump-yaml.js";
+import bumpXML from "./lib/bump-xml.js";
 
 const writeLogResult = async (result, file, version, config) => {
   if (result) {
@@ -56,6 +55,12 @@ const defaultOptions = {
   prefixes: [],
 };
 
+/**
+ * @param {String} file
+ * @param {String} version
+ * @param {Object} options
+ * @returns
+ */
 const getConfig = (file, version, options) => {
   if (!file) {
     throw new Error("A file argument is required.");
@@ -142,4 +147,11 @@ const updateFile = async (file, version, options = {}) => {
 };
 
 /** @type {any} */
-module.exports = universalify.fromPromise(updateFile);
+// module.exports = universalify.fromPromise(updateFile);
+
+// console.log(universalify.fromPromise(updateFile))
+
+// console.log(updateFile, universalify.fromPromise(updateFile));
+
+export default universalify.fromPromise(updateFile);
+// export default updateFile;

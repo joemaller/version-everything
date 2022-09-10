@@ -1,4 +1,7 @@
-const combineRegexp = require("../app/lib/regexp-escape-combine");
+import {jest} from '@jest/globals';
+jest.useFakeTimers();
+
+import combineRegexp from "../app/lib/regexp-escape-combine.js";
 
 describe("Combine Strings", () => {
   test("Escape an array containing one string", () => {

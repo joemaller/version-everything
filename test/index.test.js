@@ -1,100 +1,146 @@
-const readPkgUp = require("read-pkg-up");
-const { cosmiconfigSync } = require("cosmiconfig");
+import { jest } from "@jest/globals";
+jest.useFakeTimers();
 
-const tmpFixture = require("./lib/tmp-fixture");
-const versionEverything = require("../");
+import fs from "fs-extra";
+import { readPackageUpSync } from "read-pkg-up";
 
-const cwd = process.cwd();
-const fixtureDir = "./test/fixture/";
-
-// const getVersionFiles = require("../app/get-version-files");
-const updateFile = require("../app/update-file");
-
-jest.mock("cosmiconfig");
-jest.mock("read-pkg-up");
-// jest.mock("../app/get-version-files");
-jest.mock("../app/update-file");
-
-let config = null;
+/**
+ * utility vars for checking arguments sent to updateFile
+ */
 let options = null;
 let newVersion = "";
-let packageJson = {};
 
-/* @ts-ignore */
-cosmiconfigSync.mockReturnValue({ search: () => config });
+/**
+ * Mock the update-file module
+ */
+jest.unstable_mockModule("../app/update-file.js", () => ({
+  default: jest.fn((f, v, o) => {
+    newVersion = v;
+    options = { ...o };
+    // console.log("update-file mock", { f, v, o });
+  }),
+}));
 
-/* @ts-ignore */
-readPkgUp.sync.mockImplementation(() => ({ packageJson }));
+let versionEverything, updateFile;
 
-updateFile.mockImplementation((f, v, o) => {
-  // console.log({ f, v, o });
-  options = { ...o };
-});
+const quiet = true;
 
 describe("Index file tests", () => {
-  beforeEach(() => {
-    newVersion = "1.414.21";
-    packageJson = { name: "mock-package-json", version: newVersion };
-    options = null;
+  beforeEach(async () => {
+    jest.resetModules();
+    jest.resetAllMocks();
+    updateFile = (await import("../app/update-file.js")).default;
+    versionEverything = (await import("../index.js")).default;
   });
 
-  afterEach(() => {
-    readPkgUp.sync.mockClear();
-    updateFile.mockClear();
+  test("get version from package.json", async () => {
+    const { packageJson: pkg } = readPackageUpSync({ normalize: false });
+    const files = ["fake.js", "fake2.json"];
+    versionEverything({ files, quiet });
+    expect(newVersion).toEqual(pkg.version);
+    expect(updateFile).toHaveBeenCalledTimes(files.length);
   });
 
-  test("get version from package.json", () => {
-    const version = "5.7.9";
-    packageJson = { name: "getversion", version };
-    config = { config: { files: ["file"] } };
-    versionEverything();
-    expect(updateFile).toHaveBeenCalledWith("file", version, {});
+  test("can we move the mock out of the test?", async () => {
+    const files = ["another.js"];
+    versionEverything({ files, quiet });
+
+    expect(updateFile).toHaveBeenCalledTimes(files.length);
   });
 
   test("manually specify version string", () => {
     const version = "11.22.33";
-    config = { config: { files: ["file"] } };
-    versionEverything({ version, quiet: true });
-    expect(options).toHaveProperty("version", version);
+    const files = ["version.json"];
+    versionEverything({ files, version, quiet });
+    expect(newVersion).toEqual(version);
   });
 
   test("Remap Prefix to Prefixes", () => {
-    const configFiles = ["file1.js", "file2.json"];
-    config = { config: { files: configFiles, prefix: "namespace/img:" } };
-    versionEverything();
+    const files = ["README.md"];
+    const prefix = ["namespace/img:"];
+    versionEverything({ files, prefix, quiet });
     expect(options).toHaveProperty("prefixes");
   });
 
   test("convert string prefix to array", () => {
-    versionEverything({ version: newVersion, prefix: "namespace/img:" });
-    expect(options).toHaveProperty("version", newVersion);
+    const files = ["README.md"];
+    const prefix = "namespace/img:";
+    versionEverything({ files, prefix, quiet });
+    expect(options).toHaveProperty("prefixes", [prefix]);
   });
 
-  test("fallback to args when no config found", () => {
-    config = null;
-    versionEverything({ version: newVersion, files: ["file"] });
-    expect(options).toHaveProperty("version", newVersion);
+  test("convert string prefixes to array", () => {
+    const files = ["README.md"];
+    const prefixes = "namespace/img:";
+    versionEverything({ files, prefixes, quiet });
+    expect(options).toHaveProperty("prefixes", [prefixes]);
   });
 
-  test("send prefix as array", () => {
-    config = null;
-    versionEverything({
-      version: newVersion,
-      files: ["file"],
-      prefix: ["string/prefix:"],
-    });
-    expect(options).toHaveProperty("prefixes", ["string/prefix:"]);
+  test("merge prefix and prefixes (strings)", () => {
+    const files = ["README.md"];
+    const prefix = "prefix1:";
+    const prefixes = "prefix2:";
+    versionEverything({ files, prefix, prefixes, quiet });
+    expect(options.prefixes.sort()).toEqual([prefix, prefixes].sort());
+  });
+
+  test("merge prefix and prefixes (arrays)", () => {
+    const files = ["README.md"];
+    const prefix = ["prefix1:"];
+    const prefixes = ["prefix2:"];
+    versionEverything({ files, prefix, prefixes, quiet });
+    expect(options.prefixes.sort()).toEqual([...prefix, ...prefixes].sort());
+  });
+
+  test("merge prefix and prefixes (mixed)", () => {
+    const files = ["README.md"];
+    const prefix = "prefix1:";
+    const prefixes = ["prefix2:"];
+    versionEverything({ files, prefix, prefixes, quiet });
+    expect(options.prefixes.sort()).toEqual([prefix, ...prefixes].sort());
   });
 
   test("no files", () => {
-    config = null;
-    versionEverything({ version: newVersion });
+    versionEverything();
     expect(updateFile).not.toHaveBeenCalled();
   });
 
-  test("should throw error if no version can be found", () => {
-    packageJson = {};
-    const files = ["a.txt", "b.txt"];
-    expect(() => versionEverything({ files })).toThrowError(/No version found/);
+  test("specify package.json file", () => {
+    const files = ["README.md"];
+    const packageJson = "./test/fixture/package-empty/package.json";
+    const pkg = fs.readJsonSync(packageJson);
+    versionEverything({ packageJson, files, quiet });
+    expect(newVersion).toEqual(pkg.version);
+    expect(pkg).toHaveProperty("version");
+  });
+
+  test("Missing Version", () => {
+    const files = ["README.md"];
+    const packageJson = "./test/fixture/package-missing/not-package.json";
+    expect(() => versionEverything({ packageJson, files })).toThrow();
+  });
+
+  test("Invalid SemVer version string (null)", () => {
+    const files = ["README.md"];
+    const version = "1.2.3.4.5.6";
+    const packageJson = "./test/fixture/package-empty/package.json";
+    expect(() =>
+      versionEverything({ packageJson, files, version, quiet })
+    ).toThrow();
+  });
+
+  test("Invalid SemVer version string (args)", () => {
+    const files = ["README.md"];
+    const version = "1.2.3.4.5.6";
+    const packageJson = "./test/fixture/package-empty/package.json";
+    expect(() =>
+      versionEverything({ packageJson, files, version, quiet })
+    ).toThrow();
+  });
+
+  test("Invalid SemVer version string (package)", () => {
+    const files = ["README.md"];
+    const packageJson = "./test/fixture/package-invalid-version/package.json";
+    expect(() => versionEverything({ packageJson, files, quiet })).toThrow();
   });
 });

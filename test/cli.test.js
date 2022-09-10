@@ -1,6 +1,11 @@
 // @ts-check
-const tmpFixture = require("./lib/tmp-fixture");
-const cli = require("../cli.js");
+import { jest } from "@jest/globals";
+jest.useFakeTimers();
+
+import { resolve } from "path";
+
+import tmpFixture from "./lib/tmp-fixture.js";
+import cli from "../cli.js";
 
 const cwd = process.cwd();
 const fixtureDir = "./test/fixture/";
@@ -27,19 +32,6 @@ describe("Test the CLI", () => {
     expect(config.files).toHaveLength(2);
   });
 
-  test("Specify a package.json file", () => {
-    process.chdir("./package");
-    const args = { ...fakeYargs, packageJson: "package.json" };
-    const config = cli(args);
-    expect(config).toHaveProperty("_searchFrom");
-  });
-
-  test("Fail unreadable package.json file", () => {
-    process.chdir("./package-syntax-error");
-    const args = { ...fakeYargs, packageJson: "not-package.json" };
-    expect(() => cli(args)).toThrow(/Unable to read package.json file/);
-  });
-
   test("no arguments, pass empty object", () => {
     const args = { ...fakeYargs, "version-everything": {} };
     const config = cli(args);
@@ -63,5 +55,13 @@ describe("Test the CLI", () => {
     const args = { ...fakeYargs, prefix };
     const config = cli(args);
     expect(config).toHaveProperty("prefixes", prefix);
+  });
+
+  test("resolve packageJson path", () => {
+    const packageJson = "somefile.json";
+    const args = { ...fakeYargs, packageJson };
+    const config = cli(args);
+    const actual = resolve(packageJson);
+    expect(config).toHaveProperty("packageJson", actual);
   });
 });

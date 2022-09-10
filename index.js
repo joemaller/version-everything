@@ -1,12 +1,11 @@
 // @ts-check
-"use strict";
+import { readPackageUpSync } from "read-pkg-up";
+import { cosmiconfigSync } from "cosmiconfig";
+import semver from "semver";
 
-const readPkgUp = require("read-pkg-up");
-
-const { cosmiconfigSync } = require("cosmiconfig");
-
-// const getVersionFiles = require("./app/get-version-files");
-const updateFile = require("./app/update-file");
+import updateFile from "./app/update-file.js";
+import getPackageJson from "./app/get-package-json.js";
+import logInit from "./app/lib/log-init.js";
 
 /**
  * The args object should contain a files array any other documented options
@@ -17,38 +16,63 @@ const updateFile = require("./app/update-file");
  *   quiet: false,
  *   json: {space: 4}
  * }
- *
  */
 
 /**
  * Updates the version number in specified files
- * @param  {string[] | string | object} args An array of files, a single filename or an
+ * @param  {object} args An array of files, a single filename or an
  *                                        object representation of a package.json file.
  */
-module.exports = function (args = {}) {
-  const { packageJson } = readPkgUp.sync({ normalize: false });
-  const version = args.version || packageJson.version;
-  if (!version) {
-    throw "No version found in args or package.json";
+export default function (args = {}) {
+  /**
+   * If packageJson is specified in args, use that or fail if it can't be loaded
+   * Otherwise find the closest package.json file as always
+   */
+  let data;
+  if (args.packageJson) {
+    data = getPackageJson(args);
+  } else {
+    data = readPackageUpSync({ normalize: false });
   }
 
-  const searchFrom = args._searchFrom || process.cwd();
-  const explorerSync = cosmiconfigSync("version-everything");
-  const configFile = explorerSync.search(searchFrom) || { config: {} };
+  const { path, packageJson } = data;
 
+  const explorerSync = cosmiconfigSync("version-everything");
+  const configFile = explorerSync.search(path) || { config: {} };
   const options = { ...configFile.config, ...args };
+  const log = logInit(options.quiet);
+
+  const version = semver.clean(args.version || packageJson.version || "");
+  if (!version) {
+    throw "No valid SemVer version string found.";
+  }
+  log(`Current version is "${data.packageJson.version}"`);
+
+  // TODO: Default empty array could be provided by a default-config file
+  options.prefixes = options?.prefixes || [];
+  if (typeof options.prefixes === "string") {
+    options.prefixes = [options.prefixes];
+  }
 
   if (options.prefix) {
     if (typeof options.prefix === "string") {
       options.prefix = [options.prefix];
     }
-    options.prefixes = options.prefixes || [];
     options.prefixes = [...options.prefix, ...options.prefixes];
     delete options.prefix;
-    delete options.config;
   }
+
+  /**
+   * @type {string[]}
+   * TODO: Default empty array could be provided by a default-config file
+   */
   const versionFiles = options?.files || [];
   delete options.files;
 
-  versionFiles.forEach((f) => updateFile(f, version, options));
-};
+  // Remove unneeded properties
+  delete options.version;
+  delete options.config;
+
+  versionFiles.map((f) => updateFile(f, version, options));
+  Promise.all(versionFiles);
+}

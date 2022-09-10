@@ -1,7 +1,9 @@
 // @ts-check
-const YAML = require("yaml");
+// const YAML = require("yaml");
+import YAML from "yaml";
 
-const bumpPlainText = require("./bump-plain-text");
+// const bumpPlainText = require("./bump-plain-text");
+import bumpPlainText from "./bump-plain-text.js";
 
 /**
  *
@@ -10,7 +12,7 @@ const bumpPlainText = require("./bump-plain-text");
  * @param {{yaml: object, prefixes: [] }} config
  * @returns
  */
-module.exports = function (data, version, config) {
+export default function (data, version, config) {
   let prefixData = {};
   let hasVersion = false;
 
@@ -38,4 +40,4 @@ module.exports = function (data, version, config) {
     oldVersion: oldVersion,
     data: yamlData.toString(config.yaml),
   };
-};
+}
