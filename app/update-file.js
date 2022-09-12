@@ -15,34 +15,38 @@ import bumpYAML from "./lib/bump-yaml.js";
 import bumpXML from "./lib/bump-xml.js";
 
 const writeLogResult = async (result, file, version, config) => {
-  if (result) {
-    const log = logInit(config.quiet);
-    let updateMsg;
-
-    if (result.errno && result.code) {
-      updateMsg = `⚠️ Could not update ${chalk.magenta(path.basename(file))}
-      ${chalk.red.bold(result.toString())}`;
-    } else {
-      updateMsg =
-        `Updated ${chalk.magenta(path.basename(file))} ` +
-        `from ${chalk.gray(result.oldVersion)} ` +
-        `to ${chalk.cyan(version)}`;
-
-      if (!config.dryRun) {
-        try {
-          await fs.writeFile(file, result.data);
-        } catch (err) {
-          throw err;
-        }
-      } else {
-        updateMsg = updateMsg.replace(
-          /^Updated/g,
-          chalk.gray("[dry run]") + " Not updating"
-        );
-      }
-    }
-    log(updateMsg);
+  if (!result) {
+    return;
   }
+
+  const log = logInit(config.quiet);
+
+  if (result.errno && result.code) {
+    log(`⚠️ Could not update ${chalk.magenta(path.basename(file))}
+      ${chalk.red.bold(result.toString())}`);
+    return;
+  }
+
+  let updateMsg =
+    `Updated ${chalk.magenta(path.basename(file))} ` +
+    `from ${chalk.gray(result.oldVersion)} ` +
+    `to ${chalk.cyan(version)}`;
+
+  if (!config.dryRun) {
+    try {
+      await fs.writeFile(file, result.data);
+    } catch (err) {
+      throw err;
+    }
+  } else {
+    updateMsg = updateMsg.replace(
+      /^Updated/g,
+      chalk.gray("[dry run]") + " Not updating"
+    );
+  }
+
+  log(updateMsg);
+
   return result;
 };
 
@@ -99,59 +103,51 @@ const updateFile = async (file, version, options = {}) => {
   const data = await fs.readFile(file, "utf8").catch((err) => err);
 
   if (data.errno && data.code) {
-    result = data;
-  } else {
-    switch (path.extname(file).toLowerCase()) {
-      case ".json":
+    return writeLogResult(data, file, version, config);
+  }
+
+  switch (path.extname(file).toLowerCase()) {
+    case ".json":
+      result = bumpJSON(data, version, config);
+      break;
+
+    case ".xml":
+      result = bumpXML(data, version, config);
+      break;
+
+    // TODO: Handle PLIST files separately from XML
+    // case ".plist":
+
+    case ".yml":
+    case ".yaml":
+      result = bumpYAML(data, version, config);
+      break;
+
+    default:
+      // no extension match
+      // trying file as unmarked JSON
+      try {
         result = bumpJSON(data, version, config);
-        break;
-
-      case ".xml":
-        result = bumpXML(data, version, config);
-        break;
-
-      // TODO: Handle PLIST files separately from XML
-      // case ".plist":
-
-      case ".yml":
-      case ".yaml":
-        result = bumpYAML(data, version, config);
-        break;
-
-      default:
-        // no extension match
-        // trying file as unmarked JSON
+      } catch (err) {}
+      if (!result) {
+        // No result, trying file as XML
         try {
-          result = bumpJSON(data, version, config);
-        } catch (err) {}
-        if (!result) {
-          // No result, trying file as XML
-          try {
-            result = bumpXML(data, version, config);
-          } catch (error) {}
-        }
-        if (!result) {
-          // No result, trying file as YAML
-          try {
-            result = bumpYAML(data, version, config);
-          } catch (error) {}
-        }
-        if (!result) {
-          // No result, trying file as plain text (RegExp)
-          result = bumpPlainText(data, version, config);
-        }
-    }
+          result = bumpXML(data, version, config);
+        } catch (error) {}
+      }
+      if (!result) {
+        // No result, trying file as YAML
+        try {
+          result = bumpYAML(data, version, config);
+        } catch (error) {}
+      }
+      if (!result) {
+        // No result, trying file as plain text (RegExp)
+        result = bumpPlainText(data, version, config);
+      }
   }
 
   return writeLogResult(result, file, version, config);
 };
 
-/** @type {any} */
-// module.exports = universalify.fromPromise(updateFile);
-
-// console.log(universalify.fromPromise(updateFile))
-
-// console.log(updateFile, universalify.fromPromise(updateFile));
-
 export default universalify.fromPromise(updateFile);
-// export default updateFile;
