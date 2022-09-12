@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
-import { fileURLToPath } from "url";
-
-import path from "path";
+// @ts-check
 import yargs from "yargs";
 
+import getConfig from "./app/get-config.js";
 import versionEverything from "./index.js";
 
+/**
+ * @type {object}
+ */
 const argv = yargs(process.argv.slice(2))
   .usage("Usage: $0 [options] [files...]")
   .option("package-json", {
@@ -45,30 +47,4 @@ const argv = yargs(process.argv.slice(2))
   .alias({ help: "h" })
   .version().argv;
 
-const getConfig = (yargsObject = { _: [] }) => {
-  let config = {};
-
-  if (yargsObject.packageJson) {
-    config.packageJson = path.resolve(yargsObject.packageJson);
-  }
-  if (yargsObject._.length) {
-    config.files = yargsObject._;
-  }
-  if (yargsObject.quiet) {
-    config.quiet = yargsObject.quiet;
-  }
-  if (yargsObject["dry-run"]) {
-    config.dryRun = yargsObject["dry-run"];
-  }
-  if (yargsObject.prefix) {
-    config.prefixes = yargsObject.prefix;
-  }
-
-  return config;
-};
-export default getConfig;
-
-/* istanbul ignore next */
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  versionEverything(getConfig(argv));
-}
+versionEverything(getConfig(argv));
