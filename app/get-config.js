@@ -2,6 +2,10 @@
 import path from "path";
 
 const getConfig = (yargsObject = { _: [] }) => {
+  if (yargsObject.v) {
+    return false;
+  }
+
   let config = {};
 
   if (yargsObject.packageJson) {
@@ -20,7 +24,6 @@ const getConfig = (yargsObject = { _: [] }) => {
     config.prefixes = yargsObject.prefix;
   }
 
-  console.log({yargsObject, config});
   return config;
 };
 export default getConfig;

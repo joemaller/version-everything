@@ -20,10 +20,14 @@ import logInit from "./app/lib/log-init.js";
 
 /**
  * Updates the version number in specified files
- * @param  {object} args An array of files, a single filename or an
- *                                        object representation of a package.json file.
+ * @param  {object | false} args An array of files, a single filename or an
+ * object representation of a package.json file. May also be `false`, in which
+ * case the function should return silently.
  */
 export default function (args = {}) {
+  if (args === false) {
+    return;
+  }
   /**
    * If packageJson is specified in args, use that or fail if it can't be loaded
    * Otherwise find the closest package.json file as always

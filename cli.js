@@ -45,6 +45,7 @@ const argv = yargs(process.argv.slice(2))
   )
   .help("help")
   .alias({ help: "h" })
+  .strictOptions()
   .version().argv;
 
 versionEverything(getConfig(argv));

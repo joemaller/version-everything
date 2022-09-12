@@ -21,58 +21,62 @@ jest.unstable_mockModule("../app/update-file.js", () => ({
   }),
 }));
 
-let versionEverything, updateFile;
+const consoleMock = jest.fn();
+jest.unstable_mockModule("../app/lib/log-init.js", () => ({
+  default: jest.fn(() => consoleMock),
+}));
 
-const quiet = true;
+let versionEverything, updateFile, log;
 
 describe("Index file tests", () => {
   beforeEach(async () => {
     jest.resetModules();
     jest.resetAllMocks();
+
+    newVersion = "";
+    options = {};
     updateFile = (await import("../app/update-file.js")).default;
+    log = (await import("../app/lib/log-init.js")).default;
     versionEverything = (await import("../index.js")).default;
   });
 
   test("get version from package.json", async () => {
     const { packageJson: pkg } = readPackageUpSync({ normalize: false });
     const files = ["fake.js", "fake2.json"];
-    versionEverything({ files, quiet });
+    versionEverything({ files });
     expect(newVersion).toEqual(pkg.version);
     expect(updateFile).toHaveBeenCalledTimes(files.length);
-  });
-
-  test("can we move the mock out of the test?", async () => {
-    const files = ["another.js"];
-    versionEverything({ files, quiet });
-
-    expect(updateFile).toHaveBeenCalledTimes(files.length);
+    expect(log).toHaveBeenCalled();
+    expect(consoleMock).toHaveBeenCalledWith(
+      `Current version is "${pkg.version}"`
+    );
   });
 
   test("manually specify version string", () => {
     const version = "11.22.33";
     const files = ["version.json"];
-    versionEverything({ files, version, quiet });
+    versionEverything({ files, version });
     expect(newVersion).toEqual(version);
   });
 
   test("Remap Prefix to Prefixes", () => {
     const files = ["README.md"];
     const prefix = ["namespace/img:"];
-    versionEverything({ files, prefix, quiet });
+    versionEverything({ files, prefix });
     expect(options).toHaveProperty("prefixes");
   });
 
   test("convert string prefix to array", () => {
     const files = ["README.md"];
     const prefix = "namespace/img:";
-    versionEverything({ files, prefix, quiet });
+    versionEverything({ files, prefix });
     expect(options).toHaveProperty("prefixes", [prefix]);
   });
 
   test("convert string prefixes to array", () => {
     const files = ["README.md"];
     const prefixes = "namespace/img:";
-    versionEverything({ files, prefixes, quiet });
+    versionEverything({ files, prefixes });
     expect(options).toHaveProperty("prefixes", [prefixes]);
   });
 
@@ -80,7 +84,7 @@ describe("Index file tests", () => {
     const files = ["README.md"];
     const prefix = "prefix1:";
     const prefixes = "prefix2:";
-    versionEverything({ files, prefix, prefixes, quiet });
+    versionEverything({ files, prefix, prefixes });
     expect(options.prefixes.sort()).toEqual([prefix, prefixes].sort());
   });
 
@@ -88,7 +92,7 @@ describe("Index file tests", () => {
     const files = ["README.md"];
     const prefix = ["prefix1:"];
     const prefixes = ["prefix2:"];
-    versionEverything({ files, prefix, prefixes, quiet });
+    versionEverything({ files, prefix, prefixes });
     expect(options.prefixes.sort()).toEqual([...prefix, ...prefixes].sort());
   });
 
@@ -96,7 +100,7 @@ describe("Index file tests", () => {
     const files = ["README.md"];
     const prefix = "prefix1:";
     const prefixes = ["prefix2:"];
-    versionEverything({ files, prefix, prefixes, quiet });
+    versionEverything({ files, prefix, prefixes });
     expect(options.prefixes.sort()).toEqual([prefix, ...prefixes].sort());
   });
 
@@ -109,7 +113,7 @@ describe("Index file tests", () => {
     const files = ["README.md"];
     const packageJson = "./test/fixture/package-empty/package.json";
     const pkg = fs.readJsonSync(packageJson);
-    versionEverything({ packageJson, files, quiet });
+    versionEverything({ packageJson, files });
     expect(newVersion).toEqual(pkg.version);
     expect(pkg).toHaveProperty("version");
   });
@@ -124,23 +128,29 @@ describe("Index file tests", () => {
     const files = ["README.md"];
     const version = "1.2.3.4.5.6";
     const packageJson = "./test/fixture/package-empty/package.json";
-    expect(() =>
-      versionEverything({ packageJson, files, version, quiet })
-    ).toThrow();
+    expect(() => versionEverything({ packageJson, files, version })).toThrow();
   });
 
   test("Invalid SemVer version string (args)", () => {
     const files = ["README.md"];
     const version = "1.2.3.4.5.6";
     const packageJson = "./test/fixture/package-empty/package.json";
-    expect(() =>
-      versionEverything({ packageJson, files, version, quiet })
-    ).toThrow();
+    expect(() => versionEverything({ packageJson, files, version })).toThrow();
   });
 
   test("Invalid SemVer version string (package)", () => {
     const files = ["README.md"];
     const packageJson = "./test/fixture/package-invalid-version/package.json";
-    expect(() => versionEverything({ packageJson, files, quiet })).toThrow();
+    expect(() => versionEverything({ packageJson, files })).toThrow();
+  });
+
+  test("Do nothing when args is false", () => {
+    versionEverything(false);
+    expect(log).not.toHaveBeenCalled();
+  });
+
+  test("Run normally when args is true", () => {
+    versionEverything(true);
+    expect(log).toHaveBeenCalled();
   });
 });

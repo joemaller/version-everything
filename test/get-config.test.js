@@ -64,4 +64,14 @@ describe("Test the CLI", () => {
     const actual = resolve(packageJson);
     expect(config).toHaveProperty("packageJson", actual);
   });
+
+  test("unknown options should fail", () => {
+    const args = { ...fakeYargs, v: true };
+    expect(getConfig(args)).toThrow;
+  });
+
+  test("mixed unknown options should fail", () => {
+    const args = { ...fakeYargs, dryRun: true, v: true };
+    expect(getConfig(args)).toThrow;
+  });
 });
