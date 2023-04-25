@@ -4,7 +4,7 @@ jest.useFakeTimers();
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs-extra";
-import glob from "glob";
+import { glob } from "glob";
 import { wrap as raw } from "jest-snapshot-serializer-raw";
 import updateFile from "../app/update-file.js";
 
