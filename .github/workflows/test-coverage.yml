@@ -4,10 +4,17 @@ on: push
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
+    runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v2
+      # https://github.com/marketplace/actions/checkout
+      - uses: actions/checkout@v3
+
+      # https://github.com/actions/setup-node
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
 
       - name: Install dependencies
         run: npm ci
@@ -33,7 +40,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        # https://github.com/codecov/codecov-action
+        uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: false
           files: coverage/clover.xml
@@ -43,7 +51,8 @@ jobs:
       # Repo Settings pane, click Test Coverage in the left sidebar. Find the ID in the
       # second section.
       - name: Code Climate coverage
-        uses: paambaati/codeclimate-action@v3.0.0
+        # https://github.com/paambaati/codeclimate-action
+        uses: paambaati/codeclimate-action@v5.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
