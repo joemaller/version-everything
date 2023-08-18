@@ -2,17 +2,15 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs-extra";
 import { glob } from "glob";
-import { wrap as raw } from "jest-snapshot-serializer-raw";
 import updateFile from "../app/update-file.js";
 
 /**
- * This file builds a snapshot test for every file in the **test-files**
- * directory. Snapshots are stored in `test/__snapshots__`.
+ * Run a snapshot test for every file in .test/snapshots.
+ * Corresponding result snapshots are in ./test/__snapshots__
  */
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -33,34 +31,11 @@ describe("Snapshot Tests:", () => {
         (result) => {
           result = result || {};
           result.data = result.data || src;
-          expect(raw(createSnapshot(src, result.data))).toMatchSnapshot();
-          // done();
+          expect(result.data).toMatchFileSnapshot(
+            `./__snapshots__/${path.basename(file)}`
+          );
         }
       );
-
-      // updateFile(file, newVersion, { dryRun: true }, (err, result) => {
-      //   result = result || {};
-      //   result.data = result.data || src;
-      //   expect(raw(createSnapshot(src, result.data))).toMatchSnapshot();
-      //   done();
-      // });
     });
   });
 });
-
-function separator(width, title) {
-  title = title || "";
-  const leftLen = Math.floor((width - title.length) / 2);
-  const rightLen = width - leftLen - title.length;
-  return `${"=".repeat(leftLen)} ${title} ${"=".repeat(rightLen)}`;
-}
-
-function createSnapshot(input, output, options) {
-  const width = 80;
-  return [
-    separator(width, "input"),
-    input,
-    separator(width, "output"),
-    output,
-  ].join("\n");
-}

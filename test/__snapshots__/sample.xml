@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<catalog>
+  <version>1.414.213</version>
+  <!-- From https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ms762271(v=vs.85) -->
+  <book id="bk101">
+    <author>Joe</author>
+    <title>XML Test File</title>
+  </book>
+</catalog>
