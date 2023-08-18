@@ -1,6 +1,6 @@
 // @ts-check
-import {jest} from '@jest/globals';
-jest.useFakeTimers();
+
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import fs from "fs-extra";
 
@@ -48,45 +48,49 @@ describe("plain text files", () => {
     expect(newFile).toMatch(regex);
   });
 
-  it("should increment a v0.0.0 style version at the end of a line in a plain text file (css block comment)", (done) => {
-    const file = "file.css";
-    const regex = new RegExp(
-      "v" + newVersion.replace(/\./g, "\\.") + "$",
-      "gim"
-    );
+  test("should increment a v0.0.0 style version at the end of a line in a plain text file (css block comment)", () =>
+    new Promise((done) => {
+      const file = "file.css";
+      const regex = new RegExp(
+        "v" + newVersion.replace(/\./g, "\\.") + "$",
+        "gim"
+      );
 
-    updateFile(file, newVersion, { quiet: true }, (err) => {
-      expect(err).toBeFalsy();
-      fs.readFile(file, "utf8", (err, data) => {
-        expect(data.toString()).toMatch(`v${newVersion}`);
+      updateFile(file, newVersion, { quiet: true }, (err) => {
+        expect(err).toBeFalsy();
+        fs.readFile(file, "utf8", (err, data) => {
+          expect(data.toString()).toMatch(`v${newVersion}`);
+          done();
+        });
+      });
+    }));
+
+  test("should report the previous version (php docblock comment)", () =>
+    new Promise((done) => {
+      const file = "file.php";
+      updateFile(file, newVersion, { quiet: true }, (err, result) => {
+        expect(err).toBeFalsy();
+        expect(result).toHaveProperty("oldVersion");
         done();
       });
-    });
-  });
+    }));
 
-  test("should report the previous version (php docblock comment)", (done) => {
-    const file = "file.php";
-    updateFile(file, newVersion, { quiet: true }, (err, result) => {
-      expect(err).toBeFalsy();
-      expect(result).toHaveProperty("oldVersion");
-      done();
-    });
-  });
-
-  test("should increment a plain text file (php docblock comment)", (done) => {
-    const file = "file.php";
-    const regex = new RegExp(
-      "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " + newVersion.replace(/\./g, "\\."),
-      "im"
-    );
-    updateFile(file, newVersion, { quiet: true }, (err) => {
-      expect(err).toBeFalsy();
-      fs.readFile(file, (err, data) => {
-        expect(data.toString()).toMatch(regex);
-        done();
+  test("should increment a plain text file (php docblock comment)", () =>
+    new Promise((done) => {
+      const file = "file.php";
+      const regex = new RegExp(
+        "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " +
+          newVersion.replace(/\./g, "\\."),
+        "im"
+      );
+      updateFile(file, newVersion, { quiet: true }, (err) => {
+        expect(err).toBeFalsy();
+        fs.readFile(file, (err, data) => {
+          expect(data.toString()).toMatch(regex);
+          done();
+        });
       });
-    });
-  });
+    }));
 
   test("should update php docblock version tag, preserving prefixes and comments", async () => {
     const file = "php-docblock-version-tag.php";
@@ -98,29 +102,32 @@ describe("plain text files", () => {
     expect(actual).toMatch("Version tag description with Git prefix");
   });
 
-  test("should report the previous version (markdown heading)", (done) => {
-    const file = "file.md";
-    updateFile(file, newVersion, { quiet: true }, (err, result) => {
-      expect(err).toBeFalsy();
-      expect(result).toHaveProperty("oldVersion");
-      done();
-    });
-  });
-
-  test("should increment a plain text file (markdown heading)", (done) => {
-    const file = "file.md";
-    const regex = new RegExp(
-      "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " + newVersion.replace(/\./g, "\\."),
-      "im"
-    );
-    updateFile(file, newVersion, { quiet: true }, (err) => {
-      expect(err).toBeFalsy();
-      fs.readFile(file, (err, data) => {
-        expect(data.toString()).toMatch(regex);
+  test("should report the previous version (markdown heading)", () =>
+    new Promise((done) => {
+      const file = "file.md";
+      updateFile(file, newVersion, { quiet: true }, (err, result) => {
+        expect(err).toBeFalsy();
+        expect(result).toHaveProperty("oldVersion");
         done();
       });
-    });
-  });
+    }));
+
+  test("should increment a plain text file (markdown heading)", () =>
+    new Promise((done) => {
+      const file = "file.md";
+      const regex = new RegExp(
+        "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " +
+          newVersion.replace(/\./g, "\\."),
+        "im"
+      );
+      updateFile(file, newVersion, { quiet: true }, (err) => {
+        expect(err).toBeFalsy();
+        fs.readFile(file, (err, data) => {
+          expect(data.toString()).toMatch(regex);
+          done();
+        });
+      });
+    }));
 
   test("should increment a plain text version with trailing spaces (markdown)", async () => {
     const file = "file-trailing-space.md";

@@ -1,21 +1,23 @@
-import { jest } from "@jest/globals";
-jest.useFakeTimers();
+// @ts-check
 
-jest.unstable_mockModule("../index.js", () => ({
-  default: jest.fn(),
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+
+import versionEverything from "../index.js";
+import getConfig from "../app/get-config.js";
+
+const args = "getConfig args";
+vi.mock("../index.js");
+vi.mock("../app/get-config.js", () => ({
+  default: vi.fn().mockImplementation(() => args),
 }));
 
-let versionEverything, cli;
-
 describe("CLI tests", () => {
-  beforeEach(async () => {
-    jest.resetModules();
-    jest.resetAllMocks();
-    versionEverything = (await import("../index.js")).default;
-  });
-
   test("Call VersionEverything", async () => {
-    cli = (await import("../cli.js")).default;
-    expect(versionEverything).toHaveBeenCalledTimes(1);
+    await import("../cli.js");
+    expect(versionEverything).toHaveBeenCalledOnce();
+    expect(versionEverything).toHaveBeenCalledWith(args);
+
+    expect(getConfig).toHaveBeenCalledOnce();
+    expect(getConfig).toHaveBeenCalledWith(expect.any(Object));
   });
 });

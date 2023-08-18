@@ -1,6 +1,7 @@
 // @ts-check
-import {jest} from '@jest/globals';
-jest.useFakeTimers();
+
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+
 
 import fs from "fs-extra";
 

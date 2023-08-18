@@ -1,8 +1,13 @@
-import { jest } from "@jest/globals";
-jest.useFakeTimers();
+// @ts-check
+
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import fs from "fs-extra";
-import { readPackageUpSync } from "read-pkg-up";
+import { readPackageUp } from "read-pkg-up";
+
+import versionEverything from "../index.js";
+import updateFile from "../app/update-file.js";
+import log from "../app/lib/log-init.js";
 
 /**
  * utility vars for checking arguments sent to updateFile
@@ -11,37 +16,32 @@ let options = null;
 let newVersion = "";
 
 /**
- * Mock the update-file module
+ * Set up mocks for  updateFile, logInit (console.log)
  */
-jest.unstable_mockModule("../app/update-file.js", () => ({
-  default: jest.fn((f, v, o) => {
+vi.mock("../app/update-file.js", () => ({
+  default: vi.fn((f, v, o) => {
     newVersion = v;
     options = { ...o };
     // console.log("update-file mock", { f, v, o });
   }),
 }));
-
-const consoleMock = jest.fn();
-jest.unstable_mockModule("../app/lib/log-init.js", () => ({
-  default: jest.fn(() => consoleMock),
+const consoleMock = vi.fn();
+vi.mock("../app/lib/log-init.js", () => ({
+  default: vi.fn(() => consoleMock),
 }));
-
-let versionEverything, updateFile, log;
 
 describe("Index file tests", () => {
   beforeEach(async () => {
-    jest.resetModules();
-    jest.resetAllMocks();
-
     newVersion = "";
     options = {};
-    updateFile = (await import("../app/update-file.js")).default;
-    log = (await import("../app/lib/log-init.js")).default;
-    versionEverything = (await import("../index.js")).default;
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   test("get version from package.json", async () => {
-    const { packageJson: pkg } = readPackageUpSync({ normalize: false });
+    const { packageJson: pkg } = await readPackageUp({ normalize: false });
     const files = ["fake.js", "fake2.json"];
     versionEverything({ files });
     expect(newVersion).toEqual(pkg.version);

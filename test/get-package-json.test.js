@@ -1,5 +1,4 @@
-import { jest } from "@jest/globals";
-jest.useFakeTimers();
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import getPackageJson from "../app/get-package-json.js";
 import tmpFixture from "./lib/tmp-fixture.js";

@@ -1,5 +1,6 @@
-import {jest} from '@jest/globals';
-jest.useFakeTimers();
+// @ts-check
+
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import combineRegexp from "../app/lib/regexp-escape-combine.js";
 
