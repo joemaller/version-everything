@@ -24,6 +24,7 @@ describe("Snapshot Tests:", () => {
   const newVersion = "1.414.213";
 
   testFiles.forEach((file) => {
+    // console.log(file);
     test(path.basename(file), () => {
       const src = fs.readFileSync(file).toString();
 
@@ -37,5 +38,21 @@ describe("Snapshot Tests:", () => {
         }
       );
     });
+  });
+});
+
+describe("Shell script re-wrapping with prefix", () => {
+  const newVersion = "1.6.18";
+
+  /**
+   * This is testing a problem discovered with https://github.com/ideasonpurpose/docker-phpunit-watch
+   * where the bump-phpunit.sh script was being re-wrapped when the version was updated.
+   */
+  test("re-wrapped shell script", async () => {
+    const result = await updateFile("./test/snapshots/prefix/bump-phpunit.sh", newVersion, {dryRun: true, prefixes: ['hello']});
+    console.log(result);
+    expect(result?.data).toMatchFileSnapshot(
+      "./__snapshots__/prefix/bump-phpunit.sh"
+    );
   });
 });
