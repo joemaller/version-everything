@@ -12,6 +12,7 @@ import logInit from "./lib/log-init.js";
 import bumpPlainText from "./lib/bump-plain-text.js";
 import bumpJSON from "./lib/bump-json.js";
 import bumpYAML from "./lib/bump-yaml.js";
+import bumpPlist from "./lib/bump-plist.js";
 import bumpXML from "./lib/bump-xml.js";
 
 import extensions from "./extension-map.js";
@@ -118,8 +119,9 @@ const updateFile = async (file, version, options = {}) => {
       result = bumpXML(data, version, config);
       break;
 
-    // TODO: Handle PLIST files separately from XML
-    // case ".plist":
+    case extensions.plist.includes(ext):
+      result = bumpPlist(data, version, config);
+      break;
 
     case extensions.yaml.includes(ext):
       result = bumpYAML(data, version, config);
@@ -143,6 +145,8 @@ const updateFile = async (file, version, options = {}) => {
       }
       if (!result) {
         // No result, trying file as YAML
+        // TODO: Based on #40 and how permissive YAML is, is this a bad idea?
+        // @link https://github.com/joemaller/version-everything/issues/40
         try {
           result = bumpYAML(data, version, config);
         } catch (error) {}
