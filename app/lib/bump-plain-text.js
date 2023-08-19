@@ -2,14 +2,13 @@
 const semverRegex =
   /(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/gi;
 
-const combineRegexp = require("./regexp-escape-combine");
-
+// const combineRegexp = require("./regexp-escape-combine");
+import combineRegexp from "./regexp-escape-combine.js";
 /**
  * The set of semver-containing patterns which will be updated to the new version
  * the `<SEMVER>` token will be replaced with the current version string
  */
-
-module.exports = function (data, version, config) {
+export default function (data, version, config) {
   const oldVersions = data.match(semverRegex);
   if (!oldVersions) {
     return;
@@ -52,4 +51,4 @@ module.exports = function (data, version, config) {
 
     return { data: newData, oldVersion: matches[0].match[2] };
   }
-};
+}

@@ -1,9 +1,14 @@
 // @ts-check
-const fs = require("fs-extra");
-const YAML = require("yaml");
+// import { jest } from "@jest/globals";
+// jest.useFakeTimers();
 
-const tmpFixture = require("./lib/tmp-fixture");
-const updateFile = require("../app/update-file");
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+
+import fs from "fs-extra";
+import YAML from "yaml";
+
+import tmpFixture from "./lib/tmp-fixture.js";
+import updateFile from "../app/update-file.js";
 
 let newVersion = "3.14.1592";
 const cwd = process.cwd();
@@ -21,6 +26,7 @@ const cleanup = () => {
 beforeEach(async () => {
   const tmpFix = await tmpFixture(fixtureDir);
   process.chdir(tmpFix);
+  vi.useFakeTimers();
 });
 
 afterEach(() => {
@@ -61,16 +67,17 @@ describe("Update a file", () => {
   });
 
   describe("Files without extensions", () => {
-    test("should increment a json file without a file extension", (done) => {
-      const file = "naked-json";
-      updateFile(file, newVersion, { quiet: true }, (err) => {
-        expect(err).toBeFalsy();
-        fs.readJson(file, (err, json) => {
-          expect(json).toHaveProperty("version", newVersion);
-          done();
+    test("should increment a json file without a file extension", () =>
+      new Promise((done) => {
+        const file = "naked-json";
+        updateFile(file, newVersion, { quiet: true }, (err) => {
+          expect(err).toBeFalsy();
+          fs.readJson(file, (err, json) => {
+            expect(json).toHaveProperty("version", newVersion);
+            done();
+          });
         });
-      });
-    });
+      }));
 
     test("should increment an xml file without a file extension", async () => {
       const file = "naked-xml";
@@ -80,43 +87,46 @@ describe("Update a file", () => {
       expect(result.oldVersion).not.toMatch(newVersion);
     });
 
-    test("should increment a yaml file without a file extension", (done) => {
-      const file = "naked-yaml";
-      updateFile(file, newVersion, { quiet: true }, (err, result) => {
-        expect(err).toBeFalsy();
-        fs.readFile(file, "utf8", (err, data) => {
+    test("should increment a yaml file without a file extension", () =>
+      new Promise((done) => {
+        const file = "naked-yaml";
+        updateFile(file, newVersion, { quiet: true }, (err, result) => {
           expect(err).toBeFalsy();
-          const yamlData = YAML.parse(data);
-          expect(yamlData).toHaveProperty("version", newVersion);
-          done();
+          fs.readFile(file, "utf8", (err, data) => {
+            expect(err).toBeFalsy();
+            const yamlData = YAML.parse(data);
+            expect(yamlData).toHaveProperty("version", newVersion);
+            done();
+          });
         });
-      });
-    });
+      }));
   });
 
   describe("Files without versions", () => {
-    test("should report the file was un-versioned", (done) => {
-      const file = "no-version.json";
-      try {
-        updateFile(file, newVersion, { quiet: true }, (err, result) => {
-          expect(result).toHaveProperty("oldVersion", undefined);
-          done();
-        });
-      } catch (err) {
-        expect(err).toBeFalsy();
-      }
-    });
+    test("should report the file was un-versioned", () =>
+      new Promise((done) => {
+        const file = "no-version.json";
+        try {
+          updateFile(file, newVersion, { quiet: true }, (err, result) => {
+            expect(result).toHaveProperty("oldVersion", undefined);
+            done();
+          });
+        } catch (err) {
+          expect(err).toBeFalsy();
+        }
+      }));
 
-    test("adds version to version-less json file", (done) => {
-      const file = "no-version.json";
-      updateFile(file, newVersion, { quiet: true }, (err) => {
-        expect(err).toBeFalsy();
-        fs.readJson(file, (err, json) => {
-          expect(json).toHaveProperty("version", newVersion);
-          done();
+    test("adds version to version-less json file", () =>
+      new Promise((done) => {
+        const file = "no-version.json";
+        updateFile(file, newVersion, { quiet: true }, (err) => {
+          expect(err).toBeFalsy();
+          fs.readJson(file, (err, json) => {
+            expect(json).toHaveProperty("version", newVersion);
+            done();
+          });
         });
-      });
-    });
+      }));
 
     test("adds version to version-less xml file", async () => {
       const file = "no-version.xml";
@@ -134,24 +144,25 @@ describe("Update a file", () => {
       expect(result).toHaveProperty("oldVersion", undefined);
     });
 
-    test("passes version-less plain files through unchanged", (done) => {
-      const file = "not-really-data.txt";
-      const stats = fs.statSync(file);
-      const content = fs.readFileSync(file, { encoding: "utf8" });
-      updateFile(file, newVersion, { quiet: true }, (err) => {
-        expect(err).toBeFalsy();
-        fs.readFile(file, (err, data) => {
-          const newStats = fs.statSync(file);
-          delete stats.atime;
-          delete newStats.atime;
-          delete stats.atimeMs;
-          delete newStats.atimeMs;
-          expect(newStats).toStrictEqual(stats);
-          expect(data.toString()).toEqual(content);
-          done();
+    test("passes version-less plain files through unchanged", () =>
+      new Promise((done) => {
+        const file = "not-really-data.txt";
+        const stats = fs.statSync(file);
+        const content = fs.readFileSync(file, { encoding: "utf8" });
+        updateFile(file, newVersion, { quiet: true }, (err) => {
+          expect(err).toBeFalsy();
+          fs.readFile(file, (err, data) => {
+            const newStats = fs.statSync(file);
+            delete stats.atime;
+            delete newStats.atime;
+            delete stats.atimeMs;
+            delete newStats.atimeMs;
+            expect(newStats).toStrictEqual(stats);
+            expect(data.toString()).toEqual(content);
+            done();
+          });
         });
-      });
-    });
+      }));
 
     test("Don't update this file", async () => {
       const file = "do-not-update.txt";
@@ -171,13 +182,14 @@ describe("Update a file", () => {
     test.skip("Calls a callback", () => {});
     test.skip("Returns a promise", () => {});
 
-    test("Throws an error on missing files (Callback)", (done) => {
-      const file = "not-a-file.txt";
-      updateFile(file, newVersion, {}, (err, result) => {
-        expect(output).toMatch(/ENOENT/);
-        done();
-      });
-    });
+    test("Throws an error on missing files (Callback)", () =>
+      new Promise((done) => {
+        const file = "not-a-file.txt";
+        updateFile(file, newVersion, {}, (err, result) => {
+          expect(output).toMatch(/ENOENT/);
+          done();
+        });
+      }));
 
     test("Throws an error on missing files (Promise)", async () => {
       const file = "not-a-file.txt";
@@ -185,14 +197,15 @@ describe("Update a file", () => {
       expect(output).toMatch(/ENOENT/);
     });
 
-    test("Throws an error when unable to read files (permissions, callback)", (done) => {
-      const file = "file.json";
-      fs.chmodSync(file, "0377");
-      updateFile(file, newVersion, { quiet: false }, (err, result) => {
-        expect(output).toMatch(/EACCES/);
-        done();
-      });
-    });
+    test("Throws an error when unable to read files (permissions, callback)", () =>
+      new Promise((done) => {
+        const file = "file.json";
+        fs.chmodSync(file, "0377");
+        updateFile(file, newVersion, { quiet: false }, (err, result) => {
+          expect(output).toMatch(/EACCES/);
+          done();
+        });
+      }));
 
     test("Throws an error when unable to read files (permissions, Promise)", async () => {
       const file = "file.json";
@@ -201,10 +214,11 @@ describe("Update a file", () => {
       expect(output).toMatch(/EACCES/);
     });
 
-    test("Calls the callback when nothing happens", (done) => {
-      const file = "not-really-data.txt";
-      updateFile(file, newVersion, { quiet: false }, done);
-    });
+    test("Calls the callback when nothing happens", () =>
+      new Promise((done) => {
+        const file = "not-really-data.txt";
+        updateFile(file, newVersion, { quiet: false }, done);
+      }));
 
     test("Stupid test for coverage (callback is not a function)", () => {
       updateFile("file", newVersion, { quiet: true }, null).catch((err) =>
@@ -236,31 +250,33 @@ describe("Update a file", () => {
       expect(result.oldVersion).not.toBe(undefined);
     });
 
-    test("should be loud", (done) => {
-      const file = "file.json";
-      try {
-        updateFile(file, newVersion, {}, (err) => {
+    test("should be loud", () =>
+      new Promise((done) => {
+        const file = "file.json";
+        try {
+          updateFile(file, newVersion, {}, (err) => {
+            expect(err).toBeFalsy();
+            expect(output).not.toBe("");
+            done();
+          });
+        } catch (err) {
           expect(err).toBeFalsy();
-          expect(output).not.toBe("");
-          done();
-        });
-      } catch (err) {
-        expect(err).toBeFalsy();
-      }
-    });
+        }
+      }));
 
-    test("should be quiet, even if dryRun is true", (done) => {
-      const file = "file.json";
-      try {
-        updateFile(file, newVersion, { quiet: true, dryRun: true }, (err) => {
+    test("should be quiet, even if dryRun is true", () =>
+      new Promise((done) => {
+        const file = "file.json";
+        try {
+          updateFile(file, newVersion, { quiet: true, dryRun: true }, (err) => {
+            expect(err).toBeFalsy();
+            expect(output).toBe("");
+            done();
+          });
+        } catch (err) {
           expect(err).toBeFalsy();
-          expect(output).toBe("");
-          done();
-        });
-      } catch (err) {
-        expect(err).toBeFalsy();
-      }
-    });
+        }
+      }));
 
     test("shows the file, current version and updated version", () => {
       const file = "file.json";

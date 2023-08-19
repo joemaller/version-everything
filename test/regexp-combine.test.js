@@ -1,4 +1,8 @@
-const combineRegexp = require("../app/lib/regexp-escape-combine");
+// @ts-check
+
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+
+import combineRegexp from "../app/lib/regexp-escape-combine.js";
 
 describe("Combine Strings", () => {
   test("Escape an array containing one string", () => {

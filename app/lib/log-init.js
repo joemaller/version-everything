@@ -1,5 +1,4 @@
 /* eslint no-console: false */
-"use strict";
 
 /**
  * Simple conditional wrapper for console.log
@@ -7,6 +6,6 @@
  * @param  {boolean} quiet  switch to enable logging
  * @return {function}       console.log or a noop
  */
-module.exports = function(quiet) {
+export default function (quiet) {
   return quiet ? () => {} : console.log;
-};
+}

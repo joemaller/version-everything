@@ -1,5 +1,5 @@
-const fs = require("fs-extra");
-const tmp = require("tmp");
+import fs from "fs-extra";
+import tmp from "tmp";
 
 /**
  * Copies a directory (fixture) to a temp directory and returns
@@ -7,7 +7,7 @@ const tmp = require("tmp");
  * @param  {string} fixtureDir path to directory to copy
  * @return {string}            path of the temp directory
  */
-module.exports = (fixtureDir) => {
+export default (fixtureDir) => {
   const tmpDir = tmp.dirSync({ keep: true }).name;
   fs.copySync(fixtureDir, tmpDir);
   return tmpDir;

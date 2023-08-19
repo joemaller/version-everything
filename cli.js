@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 
-const { Console } = require("console");
-const { readFileSync } = require("fs");
-const path = require("path");
+// @ts-check
+import yargs from "yargs";
 
-const yargs = require("yargs");
+import getConfig from "./app/get-config.js";
+import versionEverything from "./index.js";
 
-const versionEverything = require(".");
-
-const argv = yargs
+/**
+ * @type {object}
+ */
+const argv = yargs(process.argv.slice(2))
   .usage("Usage: $0 [options] [files...]")
   .option("package-json", {
     alias: "p",
@@ -44,39 +45,7 @@ const argv = yargs
   )
   .help("help")
   .alias({ help: "h" })
+  .strictOptions()
   .version().argv;
 
-const getConfig = (yargsObject = { _: [] }) => {
-  let config = {};
-  if (yargsObject.packageJson) {
-    const packageJsonPath = path.resolve(yargsObject.packageJson);
-
-    try {
-      const pkg = readFileSync(packageJsonPath, "utf8").toString();
-      config.version = JSON.parse(pkg).version;
-      config._searchFrom = path.dirname(packageJsonPath);
-    } catch (e) {
-      throw "Unable to read package.json file\n" + e;
-    }
-  }
-  if (yargsObject._.length) {
-    config.files = yargsObject._;
-  }
-  if (yargsObject.quiet) {
-    config.quiet = yargsObject.quiet;
-  }
-  if (yargsObject["dry-run"]) {
-    config.dryRun = yargsObject["dry-run"];
-  }
-  if (yargsObject.prefix) {
-    config.prefixes = yargsObject.prefix;
-  }
-  return config;
-};
-
-module.exports = getConfig;
-
-/* istanbul ignore next */
-if (require.main === module) {
-  versionEverything(getConfig(argv));
-}
+versionEverything(getConfig(argv));

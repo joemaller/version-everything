@@ -1,8 +1,8 @@
 // @ts-check
-const sortPackageJson = require("sort-package-json");
-const bumpPlainText = require("./bump-plain-text");
+import sortPackageJson from "sort-package-json";
+import bumpPlainText from "./bump-plain-text.js";
 
-module.exports = function (data, version, config) {
+export default function (data, version, config) {
   let prefixData = {};
   let hasVersion = false;
 
@@ -31,4 +31,4 @@ module.exports = function (data, version, config) {
     // console.log('bumpJSON Error:', err);
     throw err;
   }
-};
+}
