@@ -92,6 +92,28 @@ module.exports = {
 };
 ```
 
+### Replacing xml attribute values
+
+Version-everything can increment custom attributes in xml files when a keys array is set in the xml config object:
+
+```js
+{
+	"xml": {
+		"keys": [
+			"~project-version",
+			"root~project-version",
+			"element/hierarchy/relative/to/root~attribute-name"
+		]
+	}
+}
+```
+
+This option will add the attribute when missing, set the value when attribute is present but has no value and modify the value when attribute exists and has value.
+
+The `/` character is used to specify nesting of elements (based on element names). When using this syntax the first element is **always the root element**.
+
+The `~` character is used to specify the end of the hierarchy and beginning of attribute name. When the `~` character is missing or is the first character the operation will be applied to the root element (regardless of its name). To perform the operation only on a specific root element specify its name before the `~` character.
+
 ### ES Module Imports
 
 Version-everything can also be used like any other esm Node module. The version string will be pulled from package.json and should be treated as a global constant or envvar.
