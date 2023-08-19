@@ -3,7 +3,7 @@
 // @ts-check
 import yargs from "yargs";
 
-import getConfig from "./app/get-config.js";
+import parseArgs from "./app/parse-args.js";
 import versionEverything from "./index.js";
 
 /**
@@ -48,4 +48,4 @@ const argv = yargs(process.argv.slice(2))
   .strictOptions()
   .version().argv;
 
-versionEverything(getConfig(argv));
+versionEverything(parseArgs(argv));

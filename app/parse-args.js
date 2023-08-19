@@ -1,7 +1,7 @@
 // @ts-check
 import path from "path";
 
-const getConfig = (yargsObject = { _: [] }) => {
+const parseArgs = (yargsObject = { _: [] }) => {
   if (yargsObject.v) {
     return false;
   }
@@ -26,4 +26,4 @@ const getConfig = (yargsObject = { _: [] }) => {
 
   return config;
 };
-export default getConfig;
+export default parseArgs;
