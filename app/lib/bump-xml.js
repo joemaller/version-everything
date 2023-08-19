@@ -1,9 +1,7 @@
 // @ts-check
 
-// const convert = require("xml-js");
 import convert from "xml-js";
 
-// const bumpPlainText = require("./bump-plain-text");
 import bumpPlainText from "./bump-plain-text.js";
 
 export default (data, version, config) => {
@@ -70,8 +68,8 @@ export default (data, version, config) => {
     }
 
     if (config.xml && config.xml.keys) {
-      for (let k = 0; k < config.xml.keys.length; k++) {
-        const pieces = config.xml.keys[k].split("~").filter((piece) => piece);
+      config.xml.keys.forEach((key) => {
+        const pieces = key.split("~").filter((piece) => piece);
         if (pieces.length === 1) {
           hasKeyUpdates = true;
           if (!rootElement.attributes) {
@@ -85,7 +83,7 @@ export default (data, version, config) => {
           const attribute = pieces[1];
 
           const keyUpdated = { hasKeyUpdates: false };
-          traverseElemens(
+          traverseElements(
             xmlData.elements,
             hierarchy,
             attribute,
@@ -97,7 +95,7 @@ export default (data, version, config) => {
 
           hasKeyUpdates = keyUpdated.hasKeyUpdates;
         }
-      }
+      });
     }
 
     if (!hasCdata && !hasVersion && !hasKeyUpdates) {
@@ -116,7 +114,7 @@ export default (data, version, config) => {
     throw err;
   }
 
-  function traverseElemens(
+  function traverseElements(
     elements,
     hierarchy,
     attribute,
@@ -128,7 +126,7 @@ export default (data, version, config) => {
     for (let i = 0; i < elements.length; i++) {
       if (elements[i].name === hierarchy[level]) {
         if (level < hierarchy.length - 1 && elements[i].elements) {
-          traverseElemens(
+          traverseElements(
             elements[i].elements,
             hierarchy,
             attribute,
