@@ -14,6 +14,8 @@ import bumpJSON from "./lib/bump-json.js";
 import bumpYAML from "./lib/bump-yaml.js";
 import bumpXML from "./lib/bump-xml.js";
 
+import extensions from "./extension-map.js";
+
 const writeLogResult = async (result, file, version, config) => {
   if (!result) {
     return;
@@ -105,22 +107,26 @@ const updateFile = async (file, version, options = {}) => {
   if (data.errno && data.code) {
     return writeLogResult(data, file, version, config);
   }
+  const ext = path.extname(file).toLowerCase().slice(1);
 
-  switch (path.extname(file).toLowerCase()) {
-    case ".json":
+  switch (true) {
+    case extensions.json.includes(ext):
       result = bumpJSON(data, version, config);
       break;
 
-    case ".xml":
+    case extensions.xml.includes(ext):
       result = bumpXML(data, version, config);
       break;
 
     // TODO: Handle PLIST files separately from XML
     // case ".plist":
 
-    case ".yml":
-    case ".yaml":
+    case extensions.yaml.includes(ext):
       result = bumpYAML(data, version, config);
+      break;
+
+    case extensions.text.includes(ext):
+      result = bumpPlainText(data, version, config);
       break;
 
     default:
