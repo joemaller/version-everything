@@ -2,7 +2,6 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-
 import fs from "fs-extra";
 
 import tmpFixture from "./lib/tmp-fixture.js";
@@ -10,7 +9,7 @@ import updateFile from "../app/update-file.js";
 
 let newVersion = "3.14.1592";
 const cwd = process.cwd();
-const fixtureDir = "./test/fixture/deep/dotfile";
+const fixtureDir = "./test/fixtures";
 
 const consoleLog = console.log;
 
@@ -203,5 +202,18 @@ describe("XML files", () => {
     });
     const actual = (await fs.readFile(file)).toString();
     expect(actual).toMatch(`<version>${newVersion}`);
+  });
+
+  test("should update version key in plist files when no keys provided", async () => {
+    const file = "sample.plist";
+    const result = await updateFile(file, newVersion, { quiet: true });
+    const actual = (await fs.readFile(file)).toString();
+    console.log(actual);
+    expect(actual).not.toMatch(
+      `<version>3.14.1592</version>`
+    );
+    expect(actual).toMatch(
+      `<key>Version</key>\n\t<string>${newVersion}</string>`
+    );
   });
 });

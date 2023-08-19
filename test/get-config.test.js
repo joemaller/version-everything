@@ -8,7 +8,7 @@ import tmpFixture from "./lib/tmp-fixture.js";
 import getConfig from "../app/get-config.js";
 
 const cwd = process.cwd();
-const fixtureDir = "./test/fixture/";
+const fixtureDir = "./test/fixtures";
 
 const fakeYargs = { _: [], $0: "cli.js" };
 

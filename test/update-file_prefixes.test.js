@@ -9,7 +9,7 @@ import updateFile from "../app/update-file.js";
 
 let newVersion = "3.14.1592";
 const cwd = process.cwd();
-const fixtureDir = "./test/fixture/deep/dotfile";
+const fixtureDir = "./test/fixtures";
 
 const consoleLog = console.log;
 

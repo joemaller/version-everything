@@ -111,7 +111,7 @@ describe("Index file tests", () => {
 
   test("specify package.json file", () => {
     const files = ["README.md"];
-    const packageJson = "./test/fixture/package-empty/package.json";
+    const packageJson = "./test/fixtures/package-empty/package.json";
     const pkg = fs.readJsonSync(packageJson);
     versionEverything({ packageJson, files });
     expect(newVersion).toEqual(pkg.version);
@@ -120,27 +120,27 @@ describe("Index file tests", () => {
 
   test("Missing Version", () => {
     const files = ["README.md"];
-    const packageJson = "./test/fixture/package-missing/not-package.json";
+    const packageJson = "./test/fixtures/package-missing/not-package.json";
     expect(() => versionEverything({ packageJson, files })).toThrow();
   });
 
   test("Invalid SemVer version string (null)", () => {
     const files = ["README.md"];
     const version = "1.2.3.4.5.6";
-    const packageJson = "./test/fixture/package-empty/package.json";
+    const packageJson = "./test/fixtures/package-empty/package.json";
     expect(() => versionEverything({ packageJson, files, version })).toThrow();
   });
 
   test("Invalid SemVer version string (args)", () => {
     const files = ["README.md"];
     const version = "1.2.3.4.5.6";
-    const packageJson = "./test/fixture/package-empty/package.json";
+    const packageJson = "./test/fixtures/package-empty/package.json";
     expect(() => versionEverything({ packageJson, files, version })).toThrow();
   });
 
   test("Invalid SemVer version string (package)", () => {
     const files = ["README.md"];
-    const packageJson = "./test/fixture/package-invalid-version/package.json";
+    const packageJson = "./test/fixtures/package-invalid-version/package.json";
     expect(() => versionEverything({ packageJson, files })).toThrow();
   });
 
