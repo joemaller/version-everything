@@ -82,4 +82,26 @@ describe("YAML files", () => {
       updateFile(file, newVersion, { quiet: true })
     ).rejects.toThrowError('Missing closing "quote');
   });
+
+  test("don't update version comment in yaml without prefix", async () => {
+    const file = "comment-and-attribute.yml";
+    await updateFile(file, newVersion, { quiet: true });
+    const data = await readFile(file, "utf8");
+    const yamlData = YAML.parse(data);
+    expect(yamlData).toHaveProperty("version", newVersion);
+  });
+
+  /**
+   * ANY prefix will cause the file to be pre-parsed as plaintext, so the comment
+   * will be updated prior to the data attribute.
+   * Not loving this, it seems like a filthy hack.
+   */
+  test("update attribute and version comment in yaml with prefix", async () => {
+    const file = "comment-and-attribute.yml";
+    await updateFile(file, newVersion, { quiet: true, prefixes: ['anything'] });
+    const data = await readFile(file, "utf8");
+    const yamlData = YAML.parse(data);
+    expect(yamlData).toHaveProperty("version", newVersion);
+    expect(data).toMatch(`Version: ${newVersion}`);
+  });
 });

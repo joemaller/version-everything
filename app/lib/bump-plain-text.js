@@ -17,7 +17,7 @@ export default function (data, version, config) {
   const patterns = [
     /^(\s*(?:\/\/|#|\*)*\s*Version:?\s*)(<SEMVER>)(\s*)$/gim,
     /(v)(<SEMVER>)(\s*)$/gim, // simple "v1.2.34" string at the end of a line
-    /^(\s+\*\s+@version\s+(?:[^:]+:)?\s*)(<SEMVER>)/gim, // phpdoc @version tag
+    /^(\s*(?:\*|\/\*{1,2})\s+@version\s*(?:[^:]*:)?\s*)(<SEMVER>)/gim, // phpdoc @version tag
     /^(\s*LABEL\s+(?:version|"version")=")(<SEMVER>)(")/gim,
   ];
 
