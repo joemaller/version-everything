@@ -4,7 +4,7 @@ import { describe, expect, test } from "vitest";
 
 import { fileURLToPath } from "url";
 import path from "path";
-import { readFile } from "fs-extra";
+import { readFile } from "fs/promises";
 import { glob } from "glob";
 import updateFile from "../app/update-file.js";
 

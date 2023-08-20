@@ -1,6 +1,6 @@
 // @ts-check
 
-import { readFile, writeFile } from "fs-extra";
+import fs from "fs-extra";
 import path from "path";
 
 import chalk from "chalk";
@@ -36,7 +36,7 @@ const writeLogResult = async (result, file, version, config) => {
 
   if (!config.dryRun) {
     try {
-      await writeFile(file, result.data);
+      await fs.writeFile(file, result.data);
     } catch (err) {
       throw err;
     }
@@ -102,7 +102,7 @@ const updateFile = async (file, version, options = {}) => {
    * Then try all files as structured data with missing extensions
    * Then try all files as plain-text again
    */
-  const data = await readFile(file, "utf8").catch((err) => err);
+  const data = await fs.readFile(file, "utf8").catch((err) => err);
 
   if (data.errno && data.code) {
     return writeLogResult(data, file, version, config);

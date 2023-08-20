@@ -2,7 +2,7 @@
 
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 
-import { readFile, readJson } from "fs-extra";
+import fs from "fs-extra";
 
 import tmpFixture from "./lib/tmp-fixture.js";
 import updateFile from "../app/update-file.js";
@@ -45,7 +45,7 @@ describe("JSON files", () => {
     await updateFile(file, newVersion, { quiet: true }).catch((err) =>
       expect(err).toBeFalsy()
     );
-    const json = await readJson(file);
+    const json = await fs.readJson(file);
     expect(json).toHaveProperty("version", newVersion);
   });
 
@@ -59,7 +59,7 @@ describe("JSON files", () => {
       json: { replacer: replacer },
       quiet: true,
     }).catch((err) => expect(err).toBeFalsy());
-    const json = await readJson(file);
+    const json = await fs.readJson(file);
     expect(json).toHaveProperty("version", newVersion);
     expect(json).toHaveProperty("title");
     expect(json).not.toHaveProperty("double_me");
@@ -73,7 +73,7 @@ describe("JSON files", () => {
       quiet: true,
     }).catch((err) => expect(err).toBeFalsy());
 
-    const json = await readJson(file);
+    const json = await fs.readJson(file);
     expect(json).toHaveProperty("version", newVersion);
     expect(json).toHaveProperty("title");
     expect(json).toHaveProperty("double_me", 10);
@@ -86,7 +86,7 @@ describe("JSON files", () => {
       json: { reviver: reviver },
       quiet: true,
     }).catch((err) => expect(err).toBeFalsy());
-    const json = await readJson(file);
+    const json = await fs.readJson(file);
     expect(json).toHaveProperty("version", newVersion);
     expect(json).toHaveProperty("title");
     expect(json).toHaveProperty("double_me", 10);
@@ -101,14 +101,14 @@ describe("JSON files", () => {
       quiet: true,
     }).catch((err) => expect(err).toBeFalsy());
 
-    const data = await readFile(file);
+    const data = await fs.readFile(file);
     expect(data.toString()).toMatch(regex);
   });
 
   test("should parse csscomb file and add version (issue #6)", async () => {
     const file = "csscomb-issue-6.json";
     const result = await updateFile(file, newVersion, { quiet: true });
-    const actual = JSON.parse((await readFile(file)).toString());
+    const actual = JSON.parse((await fs.readFile(file)).toString());
     expect(result).toHaveProperty("oldVersion", undefined);
     expect(actual).toHaveProperty("version", newVersion);
   });

@@ -2,7 +2,7 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import { readFile, readJson, stat, chmod } from "fs-extra";
+import fs from "fs-extra";
 
 import tmpFixture from "./lib/tmp-fixture.js";
 import updateFile from "../app/update-file.js";
@@ -43,7 +43,7 @@ describe("plain text files", () => {
       "im"
     );
     await updateFile(file, newVersion, { quiet: true });
-    const newFile = await readFile(file, "utf8");
+    const newFile = await fs.readFile(file, "utf8");
     // console.log({ newFile });
     expect(newFile).toMatch(regex);
   });
@@ -58,7 +58,7 @@ describe("plain text files", () => {
     await updateFile(file, newVersion, { quiet: true }).catch((err) =>
       expect(err).toBeFalsy()
     );
-    const data = await readFile(file, "utf8");
+    const data = await fs.readFile(file, "utf8");
     expect(data.toString()).toMatch(`v${newVersion}`);
   });
 
@@ -81,14 +81,14 @@ describe("plain text files", () => {
       expect(err).toBeFalsy()
     );
 
-    const data = await readFile(file);
+    const data = await fs.readFile(file);
     expect(data.toString()).toMatch(regex);
   });
 
   test("should update php docblock version tag, preserving prefixes and comments", async () => {
     const file = "php-docblock-version-tag.php";
     const result = await updateFile(file, newVersion, { quiet: true });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
     expect(result.data).not.toMatch(result.oldVersion);
     expect(actual).toMatch(new RegExp(`GIT:\\s+${newVersion}`, "gim"));
     expect(actual).toMatch(new RegExp(`@version\\s+${newVersion}`, "gim"));
@@ -113,7 +113,7 @@ describe("plain text files", () => {
     await updateFile(file, newVersion, { quiet: true }).catch((err) =>
       expect(err).toBeFalsy()
     );
-    const data = await readFile(file);
+    const data = await fs.readFile(file);
     expect(data.toString()).toMatch(regex);
   });
 

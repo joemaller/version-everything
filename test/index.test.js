@@ -2,7 +2,8 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import { readJSON } from "fs-extra";
+import fs from "fs-extra";
+
 import { readPackageUp } from "read-pkg-up";
 
 import versionEverything from "../index.js";
@@ -112,7 +113,7 @@ describe("Index file tests", () => {
   test("specify package.json file", async () => {
     const files = ["README.md"];
     const packageJson = "./test/fixtures/package-empty/package.json";
-    const pkg = await readJSON(packageJson);
+    const pkg = await fs.readJson(packageJson);
     versionEverything({ packageJson, files });
     expect(newVersion).toEqual(pkg.version);
     expect(pkg).toHaveProperty("version");

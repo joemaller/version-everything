@@ -8,5 +8,11 @@ export default defineConfig({
       reportOnFailure: true,
       reporter: ["lcov", "clover", "json", "text"],
     },
+    // This project doesn't use a bundler, so disable
+    // deps.interopDefault. See note at the end of docs:
+    // @link https://vitest.dev/config/#deps-interopdefault
+    deps: {
+      interopDefault: false,
+    },
   },
 });

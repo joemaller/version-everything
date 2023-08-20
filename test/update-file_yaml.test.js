@@ -2,7 +2,7 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import { readFile } from "fs-extra";
+import fs from "fs-extra";
 import YAML from "yaml";
 
 import tmpFixture from "./lib/tmp-fixture.js";
@@ -49,7 +49,7 @@ describe("YAML files", () => {
     await updateFile(file, newVersion, { quiet: true }).catch((err) =>
       expect(err).toBeFalsy()
     );
-    const data = await readFile(file, "utf8");
+    const data = await fs.readFile(file, "utf8");
     const yamlData = YAML.parse(data);
     expect(yamlData).toHaveProperty("version", newVersion);
   });
@@ -86,7 +86,7 @@ describe("YAML files", () => {
   test("don't update version comment in yaml without prefix", async () => {
     const file = "comment-and-attribute.yml";
     await updateFile(file, newVersion, { quiet: true });
-    const data = await readFile(file, "utf8");
+    const data = await fs.readFile(file, "utf8");
     const yamlData = YAML.parse(data);
     expect(yamlData).toHaveProperty("version", newVersion);
   });
@@ -98,8 +98,8 @@ describe("YAML files", () => {
    */
   test("update attribute and version comment in yaml with prefix", async () => {
     const file = "comment-and-attribute.yml";
-    await updateFile(file, newVersion, { quiet: true, prefixes: ['anything'] });
-    const data = await readFile(file, "utf8");
+    await updateFile(file, newVersion, { quiet: true, prefixes: ["anything"] });
+    const data = await fs.readFile(file, "utf8");
     const yamlData = YAML.parse(data);
     expect(yamlData).toHaveProperty("version", newVersion);
     expect(data).toMatch(`Version: ${newVersion}`);

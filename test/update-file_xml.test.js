@@ -2,7 +2,7 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import { readFile } from "fs-extra";
+import fs from "fs-extra";
 
 import tmpFixture from "./lib/tmp-fixture.js";
 import updateFile from "../app/update-file.js";
@@ -42,7 +42,7 @@ describe("XML files", () => {
   test("should increment the root-level version attribute in an xml file", async () => {
     const file = "file.xml";
     const result = await updateFile(file, newVersion, { quiet: true });
-    const actual = await readFile(file);
+    const actual = await fs.readFile(file);
 
     expect(actual.toString()).toMatch(`<version>${newVersion}</version>`);
   });
@@ -50,7 +50,7 @@ describe("XML files", () => {
   test("should add root-level version attribute in an xml files without versions", async () => {
     const file = "no-version.xml";
     const result = await updateFile(file, newVersion, { quiet: true });
-    const actual = await readFile(file);
+    const actual = await fs.readFile(file);
 
     expect(actual.toString()).toMatch(`<version>${newVersion}</version>`);
     expect(result.oldVersion).toBeUndefined;
@@ -66,7 +66,7 @@ describe("XML files", () => {
   test("Should not add a top-level version element if CData contains a version", async () => {
     const file = "comments.xml";
     const result = await updateFile(file, newVersion, { quiet: true });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
 
     expect(actual).not.toMatch(`<version>${result.oldVersion}</version>`);
     expect(actual).not.toMatch(`<version>${newVersion}</version>`);
@@ -75,7 +75,7 @@ describe("XML files", () => {
   test("Should check empty CData (will be removed)", async () => {
     const file = "empty-cdata.xml";
     const result = await updateFile(file, newVersion, { quiet: true });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
     expect(actual).not.toMatch(`<version>${result.oldVersion}</version>`);
     expect(actual).not.toMatch("<![CDATA[]]>");
   });
@@ -83,7 +83,7 @@ describe("XML files", () => {
   test("Should check empty CData (whitespace is not empty)", async () => {
     const file = "empty-cdata-whitespace.xml";
     const result = await updateFile(file, newVersion, { quiet: true });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
     expect(actual).not.toMatch(`<version>${result.oldVersion}</version>`);
     expect(actual).toMatch("<![CDATA[ ");
     expect(actual).toMatch(" ]]>");
@@ -92,7 +92,7 @@ describe("XML files", () => {
   test("should add a version to an empty Version element", async () => {
     const file = "empty-version.xml";
     const result = await updateFile(file, newVersion, { quiet: true });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
     expect(actual).toMatch(`<version>${newVersion}</version>`);
     expect(result.oldVersion).toBeUndefined();
   });
@@ -100,7 +100,7 @@ describe("XML files", () => {
   test("should add a version to an empty Version element", async () => {
     const file = "empty-version-self-closing.xml";
     const result = await updateFile(file, newVersion, { quiet: true });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
     expect(actual).toMatch(`<version>${newVersion}</version>`);
     expect(result.oldVersion).toBeUndefined();
   });
@@ -108,7 +108,7 @@ describe("XML files", () => {
   test("should update a version despite an extra element", async () => {
     const file = "version-with-extra-element.xml";
     const result = await updateFile(file, newVersion, { quiet: true });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
     expect(actual).toMatch(`<version>${newVersion}`);
     expect(actual).toMatch(/<extra\s*\/>/);
   });
@@ -116,7 +116,7 @@ describe("XML files", () => {
   test("should update version despite a comment existing before root element", async () => {
     const file = "root-comment.xml";
     const result = await updateFile(file, newVersion, { quiet: true });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
     expect(actual).toMatch(`<version>${newVersion}`);
   });
 
@@ -126,7 +126,7 @@ describe("XML files", () => {
       quiet: true,
       xml: { keys: ["project-version"] },
     });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
     expect(actual).toMatch(`project-version="${newVersion}"`);
   });
 
@@ -136,7 +136,7 @@ describe("XML files", () => {
       quiet: true,
       xml: { keys: ["project-version"] },
     });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
     expect(actual).toMatch(`project-version="${newVersion}"`);
   });
 
@@ -146,7 +146,7 @@ describe("XML files", () => {
       quiet: true,
       xml: { keys: ["project-version"] },
     });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
     expect(actual).toMatch(`project-version="${newVersion}"`);
   });
 
@@ -156,7 +156,7 @@ describe("XML files", () => {
       quiet: true,
       xml: { keys: ["~project-version"] },
     });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
     expect(actual).toMatch(`project-version="${newVersion}"`);
   });
 
@@ -166,7 +166,7 @@ describe("XML files", () => {
       quiet: true,
       xml: { keys: ["gupdate/app/updatecheck~version"] },
     });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
     expect(actual).toMatch(
       `<updatecheck codebase="https://domain.com/extension.crx" version="${newVersion}"`
     );
@@ -178,7 +178,7 @@ describe("XML files", () => {
       quiet: true,
       xml: { keys: ["gupdate/app/updatecheck~version"] },
     });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
     expect(actual).toMatch(
       `<updatecheck codebase="https://domain.com/extension.crx" version="${newVersion}"`
     );
@@ -190,7 +190,7 @@ describe("XML files", () => {
       quiet: true,
       xml: { keys: ["gupdate/app/updatecheck~version"] },
     });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
     expect(actual).toMatch(`<updatecheck version="${newVersion}"`);
   });
 
@@ -200,7 +200,7 @@ describe("XML files", () => {
       quiet: true,
       xml: { keys: ["some/key~some-attribute"] },
     });
-    const actual = (await readFile(file)).toString();
+    const actual = (await fs.readFile(file)).toString();
     expect(actual).toMatch(`<version>${newVersion}`);
   });
 });

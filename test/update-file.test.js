@@ -2,7 +2,7 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import { readFile, readJson, stat, chmod } from "fs-extra";
+import fs from "fs-extra";
 import YAML from "yaml";
 
 import tmpFixture from "./lib/tmp-fixture.js";
@@ -71,14 +71,14 @@ describe("Update a file", () => {
         expect(err).toBeFalsy()
       );
 
-      const json = await readJson(file);
+      const json = await fs.readJson(file);
       expect(json).toHaveProperty("version", newVersion);
     });
 
     test("should increment an xml file without a file extension", async () => {
       const file = "naked-xml";
       const result = await updateFile(file, newVersion, { quiet: true });
-      const actual = (await readFile(file)).toString();
+      const actual = (await fs.readFile(file)).toString();
       expect(result).toHaveProperty("oldVersion");
       expect(result.oldVersion).not.toMatch(newVersion);
       expect(actual).toMatch(newVersion);
@@ -89,7 +89,7 @@ describe("Update a file", () => {
       await updateFile(file, newVersion, { quiet: true }).catch(async (err) =>
         expect(err).toBeFalsy()
       );
-      const yamlData = YAML.parse(await readFile(file, "utf8"));
+      const yamlData = YAML.parse(await fs.readFile(file, "utf8"));
       expect(yamlData).toHaveProperty("version", newVersion);
     });
   });
@@ -108,14 +108,14 @@ describe("Update a file", () => {
       await updateFile(file, newVersion, { quiet: true }).catch((err) =>
         expect(err).toBeFalsy()
       );
-      const json = await readJson(file);
+      const json = await fs.readJson(file);
       expect(json).toHaveProperty("version", newVersion);
     });
 
     test("adds version to version-less xml file", async () => {
       const file = "no-version.xml";
       const result = await updateFile(file, newVersion, { quiet: true });
-      const actual = await readFile(file);
+      const actual = await fs.readFile(file);
       expect(actual.toString()).toMatch(`<version>${newVersion}</version>`);
       expect(result).toHaveProperty("oldVersion", undefined);
     });
@@ -123,20 +123,20 @@ describe("Update a file", () => {
     test("adds version to version-less yaml file", async () => {
       const file = "no-version.yml";
       const result = await updateFile(file, newVersion, { quiet: true });
-      const actual = YAML.parse(await readFile(file, "utf8"));
+      const actual = YAML.parse(await fs.readFile(file, "utf8"));
       expect(actual).toHaveProperty("version", newVersion);
       expect(result).toHaveProperty("oldVersion", undefined);
     });
 
     test("passes version-less plain files through unchanged", async () => {
       const file = "not-really-data.txt";
-      const stats = await stat(file);
-      const content = await readFile(file, { encoding: "utf8" });
+      const stats = await fs.stat(file);
+      const content = await fs.readFile(file, { encoding: "utf8" });
       await updateFile(file, newVersion, { quiet: true }).catch((err) =>
         expect(err).toBeFalsy()
       );
-      const data = await readFile(file);
-      const newStats = await stat(file);
+      const data = await fs.readFile(file);
+      const newStats = await fs.stat(file);
       delete stats.atime;
       delete newStats.atime;
       delete stats.atimeMs;
@@ -179,7 +179,7 @@ describe("Update a file", () => {
     // test("Throws an error when unable to read files (permissions, callback)", () =>
     //   new Promise((done) => {
     //     const file = "file.json";
-    //     fs.chmodSync(file, "0377");
+    //     fs.fs.chmodSync(file, "0377");
     //     updateFile(file, newVersion, { quiet: false }, (err, result) => {
     //       expect(output).toMatch(/EACCES/);
     //       done();
@@ -188,7 +188,7 @@ describe("Update a file", () => {
 
     test("Throws an error when unable to read files (permissions, Promise)", async () => {
       const file = "file.json";
-      await chmod(file, "0377");
+      await fs.chmod(file, "0377");
       await updateFile(file, newVersion, { quiet: false });
       expect(output).toMatch(/EACCES/);
     });
@@ -206,7 +206,7 @@ describe("Update a file", () => {
 
     test("Fail to update read-only file", async () => {
       const file = "file.json";
-      await chmod(file, 0o444);
+      await fs.chmod(file, 0o444);
       await updateFile(file, newVersion, { quiet: true }).catch((err) =>
         expect(err.toString()).toMatch("EACCES")
       );
@@ -267,16 +267,16 @@ describe("Update a file", () => {
 
     test("dry-run should not change source file", async () => {
       const file = "file.json";
-      const rawData = await readFile(file, "utf8");
-      const newData = await readFile(file, "utf8");
+      const rawData = await fs.readFile(file, "utf8");
+      const newData = await fs.readFile(file, "utf8");
       expect(newData).toEqual(rawData);
     });
 
     test("dry-run should not change the source file", async () => {
       const file = "file.json";
-      const before = (await readFile(file)).toString();
+      const before = (await fs.readFile(file)).toString();
       await updateFile(file, newVersion, { dryRun: true });
-      const after = (await readFile(file)).toString();
+      const after = (await fs.readFile(file)).toString();
       expect(before).toEqual(after);
     });
 
