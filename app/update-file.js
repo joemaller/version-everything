@@ -1,9 +1,8 @@
 // @ts-check
 
-import fs from "fs-extra";
+import { readFile, writeFile } from "fs-extra";
 import path from "path";
 
-import universalify from "universalify";
 import chalk from "chalk";
 import isPlainObject from "lodash.isplainobject";
 
@@ -37,7 +36,7 @@ const writeLogResult = async (result, file, version, config) => {
 
   if (!config.dryRun) {
     try {
-      await fs.writeFile(file, result.data);
+      await writeFile(file, result.data);
     } catch (err) {
       throw err;
     }
@@ -103,7 +102,7 @@ const updateFile = async (file, version, options = {}) => {
    * Then try all files as structured data with missing extensions
    * Then try all files as plain-text again
    */
-  const data = await fs.readFile(file, "utf8").catch((err) => err);
+  const data = await readFile(file, "utf8").catch((err) => err);
 
   if (data.errno && data.code) {
     return writeLogResult(data, file, version, config);
@@ -160,4 +159,4 @@ const updateFile = async (file, version, options = {}) => {
   return writeLogResult(result, file, version, config);
 };
 
-export default universalify.fromPromise(updateFile);
+export default updateFile;
