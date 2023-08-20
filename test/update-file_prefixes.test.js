@@ -7,6 +7,8 @@ import { readFile } from "fs-extra";
 import tmpFixture from "./lib/tmp-fixture.js";
 import updateFile from "../app/update-file.js";
 
+import plist from "plist";
+
 let newVersion = "3.14.1592";
 const cwd = process.cwd();
 const fixtureDir = "./test/fixtures";
@@ -169,5 +171,16 @@ describe("Update prefixed versions", () => {
     expect(result.data).not.toMatch(
       new RegExp(`\\s*version:\\s+${newVersion}`)
     );
+  });
+
+  test("Update prefixed version in plist files as plain text", async () => {
+    const file = "prefix.plist";
+    const {data, oldVersion} = await updateFile(file, newVersion, {
+      quiet: true,
+      prefixes: ["namespace/img:"],
+    });
+
+    expect(data).not.toMatch(`namespace/img:${oldVersion}`);
+    expect(data).toMatch(`namespace/img:${newVersion}`);
   });
 });

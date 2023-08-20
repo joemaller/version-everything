@@ -114,6 +114,10 @@ The `/` character is used to specify nesting of elements (based on element names
 
 The `~` character is used to specify the end of the hierarchy and beginning of attribute name. When the `~` character is missing or is the first character the operation will be applied to the root element (regardless of its name). To perform the operation only on a specific root element specify its name before the `~` character.
 
+### Plist files
+
+Apple's plist files are parsed independently from standard XML. A `Version` key will be added to the root `<dict>` element. Following convention, all plist keys are title-case. 
+
 ### ES Module Imports
 
 Version-everything can also be used like any other esm Node module. The version string will be pulled from package.json and should be treated as a global constant or envvar.

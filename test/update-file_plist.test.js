@@ -46,4 +46,13 @@ describe("plist files", () => {
     );
     expect(actual).toMatch(pattern);
   });
+
+  test("bad plist file", async () => {
+    const file = "invalid.plist";
+
+    // await updateFile(file, newVersion, { quiet: true })
+    await expect(() =>
+      updateFile(file, newVersion, { quiet: true })
+    ).rejects.toThrowError("Unable to parse plist");
+  });
 });

@@ -13,6 +13,11 @@ export default function (data, version, config) {
     }
 
     let plistData = plist.parse(prefixData.data || data);
+
+    if (plistData.length == 0) {
+      throw "Unable to parse plist";
+    }
+
     const oldVersion = plistData.Version;
 
     if (!hasVersion) {
