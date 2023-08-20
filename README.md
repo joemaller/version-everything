@@ -8,17 +8,17 @@ Use npm to version all kinds of projects, not just JavaScript
 [![codecov](https://codecov.io/gh/joemaller/version-everything/branch/master/graph/badge.svg)](https://codecov.io/gh/joemaller/version-everything)
 [![Coverage Status](https://coveralls.io/repos/github/joemaller/version-everything/badge.svg)](https://coveralls.io/github/joemaller/version-everything)
 [![Maintainability](https://api.codeclimate.com/v1/badges/6b0958bcd94274198117/maintainability)](https://codeclimate.com/github/joemaller/version-everything/maintainability)
-[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://prettier.io)
 
-Synchronize the package.json version string into additional text or structured data files. When called from npm's version script, all versioned files in a project will be updated and committed with a single command.
+Synchronize versions from package.json into additional text or structured data files. When called from npm's **version** script, all versioned files in a project will be updated and committed with a single command.
 
 ```sh
-    npm install --save version-everything
+    npm install --save-dev version-everything
 ```
 
 ## How to version everything
 
-There are several ways version-everything can be used, the only requirement is an array of files to synchronize versions into. The files can be text (php, css, markdown, whatever) or structured data (JSON or yaml<!-- or xml, eventually -->).
+There are several ways version-everything can be used, the only requirement is an array of files to synchronize versions into. The files can be text (php, css, markdown, whatever) or structured data (JSON, YAML, XML or plists).
 
 The file list is an array specified in one of the following forms, in order of precedence:
 
@@ -50,7 +50,7 @@ Add something like the following to your project's package.json file:
 }
 ```
 
-Then run a command like `npm version minor` to bump the version and update version strings in all listed files. It's that easy!
+Now running a command like `npm version minor` will bump the project version and update version strings in all listed files. It's that easy!
 
 Some structured data files may be formatted using default settings.
 
@@ -60,15 +60,17 @@ In text files, the following version strings will be updated.
 
 - `Version: 1.2.34`
 - `### Version: 2.34.5` (Markdown headings)
-- `* @version 4.5.67`
+- `* @version 4.5.67` and `/** @version 4.5.67 */` ([PHPDoc tags](https://docs.phpdoc.org/guide/references/phpdoc/tags/version.html#version))
 - `v0.6.0` (At end-of-line)
 - `LABEL version="1.2.34"` (Dockerfiles)
 
-_Notes:_ Colons are optional. Simple v-prefixed, git-tag style version strings must appear at the end of a line.
+_Notes:_ Colons are optional. Simple v-prefixed, [git-tag](https://git-scm.com/book/en/v2/Git-Basics-Tagging) style version strings must appear at the end of a line.
 
 #### Additional Prefixes
 
 Additional string or RegExp patterns can be added to the list of default patterns and will match against plain text files. When prefixes are specified, structured data files will be processed first as plain text, then again as structured data if no versions are found.
+
+If a stuctured data file contains a comment and a version atttirbute, including an empty prefix will update both. (ref: [#15](https://github.com/joemaller/version-everything/issues/15#issuecomment-1685039468))
 
 ### version-everything config files
 
@@ -116,17 +118,19 @@ The `~` character is used to specify the end of the hierarchy and beginning of a
 
 ### Plist files
 
-Apple's plist files are parsed independently from standard XML. A `Version` key will be added to the root `<dict>` element. Following convention, all plist keys are title-case. 
+Apple's plist files are parsed independently from standard XML. A `Version` key will be added to the root `<dict>` element. Following convention, all plist keys are title-case.
 
 ### ES Module Imports
 
-Version-everything can also be used like any other esm Node module. The version string will be pulled from package.json and should be treated as a global constant or envvar.
+Version-everything can be used like any other esm Node module. The version string will be pulled from package.json and should be treated as a global constant or envvar.
 
 ```js
 import versionEverything from "./index.js";
 
 versionEverything({ files: ["README.md", "file.json"], json: { space: 4 } });
 ```
+
+This project is [pure ESM](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c).
 
 ### Command Line Interface (CLI)
 
@@ -155,8 +159,10 @@ If a **package.json** is specified, it will be loaded first, then any subsequent
 Files with the following extensions will be recognized as structured text and parsed accordingly.
 
 - **JSON** - `.json`
-- **XML** - `.xml` <!--, `.plist`-->
+- **XML** - `.xml`
 - **YAML** - `.yml`, `.yaml`
+- **PLIST** - `.plist`
+- **TEXT** - `.markdown`, `.md`, `.mdown`, `.sh`, `.text`, `.txt`
 
 ## API
 
@@ -232,8 +238,6 @@ Passed directly to the [js-yaml safeDump method][safedump]. See [js-yaml][] docs
 Enabling `push.followTags` in Git's global config is highly recommended: `git config --global push.followTags true`
 
 Empty CData blocks `<![CDATA[]]>` will be removed from processed XML Documents. To preserve empty blocks, add one or more spaces: `<![CDATA[ ]]>`
-
-For some reason I can't remember, most test fixtures are in **test/fixture/deep/dotfile**. Ref [#28](https://github.com/joemaller/version-everything/issues/28)
 
 [webpack]: https://webpack.github.io/docs/configuration.html
 [eslint]: http://eslint.org/docs/user-guide/configuring#configuration-file-formats
