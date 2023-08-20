@@ -2,7 +2,7 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import fs from "fs-extra";
+import { readFile } from "fs-extra";
 
 import tmpFixture from "./lib/tmp-fixture.js";
 import updateFile from "../app/update-file.js";
@@ -35,7 +35,7 @@ describe("Update prefixed versions", () => {
       quiet: true,
       prefixes: ["namespace/image-name:"],
     });
-    const actual = (await fs.readFile(file)).toString();
+    const actual = (await readFile(file)).toString();
     expect(result.data).not.toMatch(result.oldVersion);
     expect(actual).toMatch(newVersion);
   });

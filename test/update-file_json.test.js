@@ -1,8 +1,8 @@
 // @ts-check
 
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
 
-import fs from "fs-extra";
+import { readFile, readJson } from "fs-extra";
 
 import tmpFixture from "./lib/tmp-fixture.js";
 import updateFile from "../app/update-file.js";
@@ -40,107 +40,75 @@ describe("JSON files", () => {
     expect(output).toMatch(result.oldVersion);
   });
 
-  test("should increment a json file", () =>
-    new Promise((done) => {
-      const file = "file.json";
-      updateFile(file, newVersion, { quiet: true }, (err) => {
-        expect(err).toBeFalsy();
-        fs.readJson(file, (err, json) => {
-          expect(err).toBeFalsy();
-          expect(json).toHaveProperty("version", newVersion);
-          done();
-        });
-      });
-    }));
+  test("should increment a json file", async () => {
+    const file = "file.json";
+    await updateFile(file, newVersion, { quiet: true }).catch((err) =>
+      expect(err).toBeFalsy()
+    );
+    const json = await readJson(file);
+    expect(json).toHaveProperty("version", newVersion);
+  });
 
   test.skip("should increment a top-level custom attribute in a json file", () => {});
   test.skip("should increment a nested custom attribute in a json file", () => {});
 
-  test("should increment a json file, also using a replacer array", () =>
-    new Promise((done) => {
-      const file = "file.json";
-      const replacer = ["title", "version"];
-      updateFile(
-        file,
-        newVersion,
-        { json: { replacer: replacer }, quiet: true },
-        (err) => {
-          expect(err).toBeFalsy();
-          fs.readJson(file, (err, json) => {
-            expect(err).toBeFalsy();
-            expect(json).toHaveProperty("version", newVersion);
-            expect(json).toHaveProperty("title");
-            expect(json).not.toHaveProperty("double_me");
-            done();
-          });
-        }
-      );
-    }));
+  test("should increment a json file, also using a replacer array", async () => {
+    const file = "file.json";
+    const replacer = ["title", "version"];
+    await updateFile(file, newVersion, {
+      json: { replacer: replacer },
+      quiet: true,
+    }).catch((err) => expect(err).toBeFalsy());
+    const json = await readJson(file);
+    expect(json).toHaveProperty("version", newVersion);
+    expect(json).toHaveProperty("title");
+    expect(json).not.toHaveProperty("double_me");
+  });
 
-  test("should increment a json file, also using a replacer function", () =>
-    new Promise((done) => {
-      const file = "file.json";
-      const replacer = (key, value) =>
-        key === "double_me" ? value * 2 : value;
-      updateFile(
-        file,
-        newVersion,
-        { json: { replacer: replacer }, quiet: true },
-        (err) => {
-          expect(err).toBeFalsy();
-          fs.readJson(file, (err, json) => {
-            expect(json).toHaveProperty("version", newVersion);
-            expect(json).toHaveProperty("title");
-            expect(json).toHaveProperty("double_me", 10);
-            done();
-          });
-        }
-      );
-    }));
+  test("should increment a json file, also using a replacer function", async () => {
+    const file = "file.json";
+    const replacer = (key, value) => (key === "double_me" ? value * 2 : value);
+    await updateFile(file, newVersion, {
+      json: { replacer: replacer },
+      quiet: true,
+    }).catch((err) => expect(err).toBeFalsy());
 
-  test("should increment a json file, also using a reviver function", () =>
-    new Promise((done) => {
-      const file = "file.json";
-      const reviver = (key, value) => (key === "double_me" ? value * 2 : value);
-      updateFile(
-        file,
-        newVersion,
-        { json: { reviver: reviver }, quiet: true },
-        (err) => {
-          expect(err).toBeFalsy();
-          fs.readJson(file, (err, json) => {
-            expect(json).toHaveProperty("version", newVersion);
-            expect(json).toHaveProperty("title");
-            expect(json).toHaveProperty("double_me", 10);
-            done();
-          });
-        }
-      );
-    }));
+    const json = await readJson(file);
+    expect(json).toHaveProperty("version", newVersion);
+    expect(json).toHaveProperty("title");
+    expect(json).toHaveProperty("double_me", 10);
+  });
 
-  test("should increment a json file and set a specific indentation", () =>
-    new Promise((done) => {
-      const file = "file.json";
-      const spaces = 4;
-      const regex = new RegExp("^ {" + spaces + '}"version":', "m");
-      updateFile(
-        file,
-        newVersion,
-        { json: { space: spaces }, quiet: true },
-        (err) => {
-          expect(err).toBeFalsy();
-          fs.readFile(file, (err, data) => {
-            expect(data.toString()).toMatch(regex);
-            done();
-          });
-        }
-      );
-    }));
+  test("should increment a json file, also using a reviver function", async () => {
+    const file = "file.json";
+    const reviver = (key, value) => (key === "double_me" ? value * 2 : value);
+    await updateFile(file, newVersion, {
+      json: { reviver: reviver },
+      quiet: true,
+    }).catch((err) => expect(err).toBeFalsy());
+    const json = await readJson(file);
+    expect(json).toHaveProperty("version", newVersion);
+    expect(json).toHaveProperty("title");
+    expect(json).toHaveProperty("double_me", 10);
+  });
+
+  test("should increment a json file and set a specific indentation", async () => {
+    const file = "file.json";
+    const spaces = 4;
+    const regex = new RegExp("^ {" + spaces + '}"version":', "m");
+    await updateFile(file, newVersion, {
+      json: { space: spaces },
+      quiet: true,
+    }).catch((err) => expect(err).toBeFalsy());
+
+    const data = await readFile(file);
+    expect(data.toString()).toMatch(regex);
+  });
 
   test("should parse csscomb file and add version (issue #6)", async () => {
     const file = "csscomb-issue-6.json";
     const result = await updateFile(file, newVersion, { quiet: true });
-    const actual = JSON.parse((await fs.readFile(file)).toString());
+    const actual = JSON.parse((await readFile(file)).toString());
     expect(result).toHaveProperty("oldVersion", undefined);
     expect(actual).toHaveProperty("version", newVersion);
   });

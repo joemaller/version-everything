@@ -2,7 +2,7 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import fs from "fs-extra";
+import { readFile, readJson, stat, chmod } from "fs-extra";
 
 import tmpFixture from "./lib/tmp-fixture.js";
 import updateFile from "../app/update-file.js";
@@ -43,91 +43,79 @@ describe("plain text files", () => {
       "im"
     );
     await updateFile(file, newVersion, { quiet: true });
-    const newFile = await fs.readFile(file, "utf8");
+    const newFile = await readFile(file, "utf8");
     // console.log({ newFile });
     expect(newFile).toMatch(regex);
   });
 
-  test("should increment a v0.0.0 style version at the end of a line in a plain text file (css block comment)", () =>
-    new Promise((done) => {
-      const file = "file.css";
-      const regex = new RegExp(
-        "v" + newVersion.replace(/\./g, "\\.") + "$",
-        "gim"
-      );
+  test("should increment a v0.0.0 style version at the end of a line in a plain text file (css block comment)", async () => {
+    const file = "file.css";
+    const regex = new RegExp(
+      "v" + newVersion.replace(/\./g, "\\.") + "$",
+      "gim"
+    );
 
-      updateFile(file, newVersion, { quiet: true }, (err) => {
-        expect(err).toBeFalsy();
-        fs.readFile(file, "utf8", (err, data) => {
-          expect(data.toString()).toMatch(`v${newVersion}`);
-          done();
-        });
-      });
-    }));
+    await updateFile(file, newVersion, { quiet: true }).catch((err) =>
+      expect(err).toBeFalsy()
+    );
+    const data = await readFile(file, "utf8");
+    expect(data.toString()).toMatch(`v${newVersion}`);
+  });
 
-  test("should report the previous version (php docblock comment)", () =>
-    new Promise((done) => {
-      const file = "file.php";
-      updateFile(file, newVersion, { quiet: true }, (err, result) => {
-        expect(err).toBeFalsy();
-        expect(result).toHaveProperty("oldVersion");
-        done();
-      });
-    }));
+  test("should report the previous version (php docblock comment)", async () => {
+    const file = "file.php";
+    const result = await updateFile(file, newVersion, { quiet: true }).catch(
+      (err) => expect(err).toBeFalsy()
+    );
 
-  test("should increment a plain text file (php docblock comment)", () =>
-    new Promise((done) => {
-      const file = "file.php";
-      const regex = new RegExp(
-        "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " +
-          newVersion.replace(/\./g, "\\."),
-        "im"
-      );
-      updateFile(file, newVersion, { quiet: true }, (err) => {
-        expect(err).toBeFalsy();
-        fs.readFile(file, (err, data) => {
-          expect(data.toString()).toMatch(regex);
-          done();
-        });
-      });
-    }));
+    expect(result).toHaveProperty("oldVersion");
+  });
+
+  test("should increment a plain text file (php docblock comment)", async () => {
+    const file = "file.php";
+    const regex = new RegExp(
+      "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " + newVersion.replace(/\./g, "\\."),
+      "im"
+    );
+    await updateFile(file, newVersion, { quiet: true }).catch((err) =>
+      expect(err).toBeFalsy()
+    );
+
+    const data = await readFile(file);
+    expect(data.toString()).toMatch(regex);
+  });
 
   test("should update php docblock version tag, preserving prefixes and comments", async () => {
     const file = "php-docblock-version-tag.php";
     const result = await updateFile(file, newVersion, { quiet: true });
-    const actual = (await fs.readFile(file)).toString();
+    const actual = (await readFile(file)).toString();
     expect(result.data).not.toMatch(result.oldVersion);
     expect(actual).toMatch(new RegExp(`GIT:\\s+${newVersion}`, "gim"));
     expect(actual).toMatch(new RegExp(`@version\\s+${newVersion}`, "gim"));
     expect(actual).toMatch("Version tag description with Git prefix");
   });
 
-  test("should report the previous version (markdown heading)", () =>
-    new Promise((done) => {
-      const file = "file.md";
-      updateFile(file, newVersion, { quiet: true }, (err, result) => {
-        expect(err).toBeFalsy();
-        expect(result).toHaveProperty("oldVersion");
-        done();
-      });
-    }));
+  test("should report the previous version (markdown heading)", async () => {
+    const file = "file.md";
+    const result = await updateFile(file, newVersion, { quiet: true }).catch(
+      (err) => expect(err).toBeFalsy()
+    );
 
-  test("should increment a plain text file (markdown heading)", () =>
-    new Promise((done) => {
-      const file = "file.md";
-      const regex = new RegExp(
-        "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " +
-          newVersion.replace(/\./g, "\\."),
-        "im"
-      );
-      updateFile(file, newVersion, { quiet: true }, (err) => {
-        expect(err).toBeFalsy();
-        fs.readFile(file, (err, data) => {
-          expect(data.toString()).toMatch(regex);
-          done();
-        });
-      });
-    }));
+    expect(result).toHaveProperty("oldVersion");
+  });
+
+  test("should increment a plain text file (markdown heading)", async () => {
+    const file = "file.md";
+    const regex = new RegExp(
+      "^\\s*(?:\\/\\/|#|\\*)*\\s*Version: " + newVersion.replace(/\./g, "\\."),
+      "im"
+    );
+    await updateFile(file, newVersion, { quiet: true }).catch((err) =>
+      expect(err).toBeFalsy()
+    );
+    const data = await readFile(file);
+    expect(data.toString()).toMatch(regex);
+  });
 
   test("should increment a plain text version with trailing spaces (markdown)", async () => {
     const file = "file-trailing-space.md";

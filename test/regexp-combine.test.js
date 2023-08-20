@@ -1,6 +1,6 @@
 // @ts-check
 
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import combineRegexp from "../app/lib/regexp-escape-combine.js";
 

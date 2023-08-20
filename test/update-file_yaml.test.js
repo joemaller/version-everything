@@ -2,7 +2,7 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import fs from "fs-extra";
+import { readFile } from "fs-extra";
 import YAML from "yaml";
 
 import tmpFixture from "./lib/tmp-fixture.js";
@@ -30,15 +30,13 @@ afterEach(() => {
 });
 
 describe("YAML files", () => {
-  test("should report the previous version (yaml file)", () =>
-    new Promise((done) => {
-      const file = "file.yml";
-      updateFile(file, newVersion, { quiet: true }, (err, result) => {
-        expect(err).toBeFalsy();
-        expect(result).toHaveProperty("oldVersion");
-        done();
-      });
-    }));
+  test("should report the previous version (yaml file)", async () => {
+    const file = "file.yml";
+    const result = await updateFile(file, newVersion, { quiet: true }).catch(
+      (err) => expect(err).toBeFalsy()
+    );
+    expect(result).toHaveProperty("oldVersion");
+  });
 
   test("should report missing previous versions as undefined (yaml file)", async () => {
     const file = "no-version.yml";
@@ -46,19 +44,15 @@ describe("YAML files", () => {
     expect(result).toHaveProperty("oldVersion", undefined);
   });
 
-  test("should increment a top-level attribute in a yaml file", () =>
-    new Promise((done) => {
-      const file = "file.yml";
-      updateFile(file, newVersion, { quiet: true }, (err) => {
-        expect(err).toBeFalsy();
-        fs.readFile(file, "utf8", (err, data) => {
-          expect(err).toBeFalsy();
-          const yamlData = YAML.parse(data);
-          expect(yamlData).toHaveProperty("version", newVersion);
-          done();
-        });
-      });
-    }));
+  test("should increment a top-level attribute in a yaml file", async () => {
+    const file = "file.yml";
+    await updateFile(file, newVersion, { quiet: true }).catch((err) =>
+      expect(err).toBeFalsy()
+    );
+    const data = await readFile(file, "utf8");
+    const yamlData = YAML.parse(data);
+    expect(yamlData).toHaveProperty("version", newVersion);
+  });
 
   test("should preserve comments in YAML files", async () => {
     const file = "prefix-no-version-docker-compose.yml";

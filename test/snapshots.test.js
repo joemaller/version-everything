@@ -1,10 +1,10 @@
 // @ts-check
 
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import { fileURLToPath } from "url";
 import path from "path";
-import fs from "fs-extra";
+import { readFile } from "fs-extra";
 import { glob } from "glob";
 import updateFile from "../app/update-file.js";
 
@@ -24,17 +24,17 @@ describe("Snapshot Tests:", () => {
   const newVersion = "1.414.213";
 
   testFiles.forEach((file) => {
-    test(path.basename(file), () => {
-      const src = fs.readFileSync(file).toString();
+    test(path.basename(file), async () => {
+      const src = (await readFile(file)).toString();
 
-      return updateFile(file, newVersion, { dryRun: true, quiet: true }).then(
-        (result) => {
-          result = result || {};
-          result.data = result.data || src;
-          expect(result.data).toMatchFileSnapshot(
-            `./__snapshots__/${path.basename(file)}`
-          );
-        }
+      let result = await updateFile(file, newVersion, {
+        dryRun: true,
+        quiet: true,
+      });
+      result = result || {};
+      result.data = result.data || src;
+      expect(result.data).toMatchFileSnapshot(
+        `./__snapshots__/${path.basename(file)}`
       );
     });
   });
