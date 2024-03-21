@@ -29,23 +29,23 @@
   "dependencies": {
     "auto-changelog": "^2.4.0",
     "chalk": "^5.3.0",
-    "cosmiconfig": "^8.2.0",
+    "cosmiconfig": "^9.0.0",
     "escape-string-regexp": "^5.0.0",
-    "fs-extra": "^11.1.1",
-    "glob": "^10.3.3",
+    "fs-extra": "^11.2.0",
+    "glob": "^10.3.10",
     "lodash.isplainobject": "^4.0.6",
     "plist": "^3.1.0",
-    "read-pkg-up": "^10.0.0",
-    "semver": "^7.5.0",
-    "sort-package-json": "^2.5.1",
+    "read-pkg-up": "^11.0.0",
+    "semver": "^7.6.0",
+    "sort-package-json": "^2.8.0",
     "xml-js": "^1.6.11",
-    "yaml": "^2.3.1",
+    "yaml": "^2.4.1",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@types/semver": "^7.5.0",
+    "@types/semver": "^7.5.8",
     "@vitest/coverage-v8": "^1.4.0",
-    "tmp": "0.2.1",
+    "tmp": "^0.2.3",
     "vitest": "^1.4.0"
   },
   "engines": {
