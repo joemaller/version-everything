@@ -41,7 +41,9 @@ export default function (args = {}) {
 
   const { path, packageJson } = data;
 
-  const explorerSync = cosmiconfigSync("version-everything");
+  const explorerSync = cosmiconfigSync("version-everything", {
+    searchStrategy: "project",
+  });
   const configFile = explorerSync.search(path) || { config: {} };
   const options = { ...configFile.config, ...args };
   const log = logInit(options.quiet);
