@@ -70,7 +70,7 @@ _Notes:_ Colons are optional. Simple v-prefixed, [git-tag](https://git-scm.com/b
 
 Additional string or RegExp patterns can be added to the list of default patterns and will match against plain text files. When prefixes are specified, structured data files will be processed first as plain text, then again as structured data if no versions are found.
 
-If a stuctured data file contains a comment and a version atttirbute, including an empty prefix will update both. (ref: [#15](https://github.com/joemaller/version-everything/issues/15#issuecomment-1685039468))
+If a stuctured data file contains a comment and a version attribute, including an empty prefix will update both. (ref: [#15](https://github.com/joemaller/version-everything/issues/15#issuecomment-1685039468))
 
 ### version-everything config files
 
