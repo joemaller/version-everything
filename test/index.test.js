@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import fs from "fs-extra";
 
-import { readPackageUp } from "read-pkg-up";
+import { readPackageUp } from "read-package-up";
 
 import versionEverything from "../index.js";
 import updateFile from "../app/update-file.js";

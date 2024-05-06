@@ -1,6 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
-import { readPackageUpSync } from "read-pkg-up";
+import { readPackageUpSync } from "read-package-up";
 import semver from "semver";
 import logInit from "./lib/log-init.js";
 

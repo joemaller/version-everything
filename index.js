@@ -1,5 +1,5 @@
 // @ts-check
-import { readPackageUpSync } from "read-pkg-up";
+import { readPackageUpSync } from "read-package-up";
 import { cosmiconfigSync } from "cosmiconfig";
 import semver from "semver";
 
