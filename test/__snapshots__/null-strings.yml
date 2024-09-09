@@ -27,6 +27,5 @@ thing:
     - false
     - "true"
     - "false"
-    - 
     - null
 version: 1.414.213
