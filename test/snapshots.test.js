@@ -33,7 +33,7 @@ describe("Snapshot Tests:", () => {
       });
       result = result || {};
       result.data = result.data || src;
-      expect(result.data).toMatchFileSnapshot(
+      await expect(result.data).toMatchFileSnapshot(
         `./__snapshots__/${path.basename(file)}`
       );
     });
