@@ -4,20 +4,24 @@ on:
   push:
     tags: ["v*"]
 
+permissions:
+  id-token: write # Required for OIDC (OpenID Connect)
+  contents: read
+
 jobs:
   publish:
     name: Build and publish to npm
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       # https://github.com/marketplace/actions/checkout
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+
       # https://github.com/actions/setup-node
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v46
         with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      # - run: npm ci
+      - run: npm publish --provenance --access public
