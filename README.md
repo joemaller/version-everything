@@ -26,6 +26,8 @@ The file list is an array specified in one of the following forms, in order of p
 2. `files` key in a **version-everything.config.js** file
 3. `version-everything.files` key in the parent project's **package.json** file
 
+File lists may include glob patterns like `src/**/block.json`. Patterns are matched relative to the current working directory.
+
 ### npm lifecycle script in package.json
 
 The simplest way to use _version-everything_ is to hook into npm's version event. Once set up, a single `npm` command will update, commit and tag all versioned files in a project.
@@ -63,6 +65,7 @@ In text files, the following version strings will be updated.
 - `* @version 4.5.67` and `/** @version 4.5.67 */` ([PHPDoc tags](https://docs.phpdoc.org/guide/references/phpdoc/tags/version.html#version))
 - `v0.6.0` (At end-of-line)
 - `LABEL version="1.2.34"` (Dockerfiles)
+- `"Project-Id-Version: My Plugin 1.2.34\n"` (gettext `.pot` and `.po` translation files)
 
 _Notes:_ Colons are optional. Simple v-prefixed, [git-tag](https://git-scm.com/book/en/v2/Git-Basics-Tagging) style version strings must appear at the end of a line.
 
@@ -76,7 +79,7 @@ If a stuctured data file contains a comment and a version attribute, including a
 
 This project uses [cosmiconfig](https://www.npmjs.com/package/cosmiconfig) to load config files. The file-key should be `version-everything`, so files like `.version-everythingrc` or `.version-everythingrc.js` will work.
 
-Config files should export a simple JS object and look something like this:
+Config files should export a simple JS object and look something like this (a config file which only exports an array will be treated as the list of files):
 
 ```js
 module.exports = {
@@ -162,7 +165,7 @@ Files with the following extensions will be recognized as structured text and pa
 - **XML** - `.xml`
 - **YAML** - `.yml`, `.yaml`
 - **PLIST** - `.plist`
-- **TEXT** - `.markdown`, `.md`, `.mdown`, `.sh`, `.text`, `.txt`
+- **TEXT** - `.markdown`, `.md`, `.mdown`, `.po`, `.pot`, `.sh`, `.text`, `.txt`
 
 ## API
 

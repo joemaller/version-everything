@@ -2,6 +2,7 @@
 import { readPackageUpSync } from "read-package-up";
 import { cosmiconfigSync } from "cosmiconfig";
 import semver from "semver";
+import { glob, hasMagic } from "glob";
 
 import updateFile from "./app/update-file.js";
 import getPackageJson from "./app/get-package-json.js";
@@ -45,6 +46,15 @@ export default function (args = {}) {
     searchStrategy: "project",
   });
   const configFile = explorerSync.search(path) || { config: {} };
+
+  /**
+   * A config file which exports a bare array is treated as a list of files.
+   * @link https://github.com/joemaller/version-everything/issues/3
+   */
+  if (Array.isArray(configFile.config)) {
+    configFile.config = { files: configFile.config };
+  }
+
   const options = { ...configFile.config, ...args };
   const log = logInit(options.quiet);
 
@@ -69,16 +79,34 @@ export default function (args = {}) {
   }
 
   /**
+   * Expand any glob patterns in the files list. Plain filenames pass through
+   * unchanged so missing files still report an error from updateFile.
+   * @link https://github.com/joemaller/version-everything/issues/34
    * @type {string[]}
-   * TODO: Default empty array could be provided by a default-config file
    */
-  const versionFiles = options?.files || [];
+  const fileList = [options?.files || []].flat();
+  const versionFiles = fileList.flatMap((f) => {
+    if (typeof f !== "string" || !hasMagic(f)) {
+      return f;
+    }
+    const matches = glob.sync(f, { nodir: true }).sort();
+    if (!matches.length) {
+      log(`⚠️ No files matched "${f}"`);
+    }
+    return matches;
+  });
   delete options.files;
+
+  if (!versionFiles.length) {
+    const source = configFile.filepath ? ` in ${configFile.filepath}` : "";
+    log(
+      `⚠️ No files to version. Expected a "files" array${source}, or files passed as arguments.`
+    );
+  }
 
   // Remove unneeded properties
   delete options.version;
   delete options.config;
 
-  versionFiles.map((f) => updateFile(f, version, options));
-  Promise.all(versionFiles);
+  return Promise.all(versionFiles.map((f) => updateFile(f, version, options)));
 }
