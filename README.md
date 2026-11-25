@@ -89,10 +89,10 @@ module.exports = {
     /* optional json config object, keys pass directly to JSON.stringify */
   },
   yaml: {
-    /* optional yaml config object, passes directly to js-yaml */
+    /* optional yaml config object, passed to the yaml library */
   },
   xml: {
-    /* optional xml config object, passes directly to xml2js */
+    /* optional xml config object, passed to xml-js */
   },
 };
 ```
@@ -216,7 +216,7 @@ Default JSON Options:
 
 Type: `object`
 
-Merged with a minimal set of defaults, then passed to the [xml-js `js2xml` converter][xml-js convert]. See [xml-js docs][] for available options.
+Merged with a minimal set of defaults, then passed to the [xml-js `js2xml` converter][xml-js convert]. See the [xml-js docs][xml-js] for available options.
 
 Default XML Options:
 
@@ -232,7 +232,15 @@ Default XML Options:
 
 Type: `object`
 
-Passed directly to the [js-yaml safeDump method][safedump]. See [js-yaml][] docs for available options.
+Merged with a minimal set of defaults, then passed to the [yaml][] library when parsing and writing the document. See the [yaml options docs][yaml options] for available options.
+
+Default YAML Options:
+
+```js
+{
+  nullStr: "",
+}
+```
 
 ### Notes
 
@@ -251,6 +259,6 @@ Empty CData blocks `<![CDATA[]]>` will be removed from processed XML Documents. 
 [stringify]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
 [reviver]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse#Using_the_reviver_parameter
 [replacer]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter
-[js-yaml]: https://www.npmjs.com/package/js-yaml
-[safedump]: https://www.npmjs.com/package/js-yaml#safedump-object---options-
+[yaml]: https://www.npmjs.com/package/yaml
+[yaml options]: https://eemeli.org/yaml/#options
 [npm18795]: https://github.com/npm/npm/issues/18795

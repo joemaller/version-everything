@@ -82,7 +82,7 @@ const getConfig = (file, version, options) => {
   const config = { ...defaultOptions, ...options };
   config.json = { ...defaultOptions.json, ...options.json };
   config.xml = { ...defaultOptions.xml, ...options.xml };
-  config.yml = { ...defaultOptions.yml, ...options.yml };
+  config.yaml = { ...defaultOptions.yaml, ...options.yaml };
 
   return config;
 };
