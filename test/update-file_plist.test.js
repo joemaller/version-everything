@@ -1,22 +1,13 @@
 // @ts-check
 
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-
 import fs from "fs-extra";
-
-import tmpFixture from "./lib/tmp-fixture.js";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import updateFile from "../app/update-file.js";
+import tmpFixture from "./lib/tmp-fixture.js";
 
-let newVersion = "3.14.1592";
+const newVersion = "3.14.1592";
 const cwd = process.cwd();
 const fixtureDir = "./test/fixtures";
-
-// const consoleLog = console.log;
-
-// ref https://github.com/mochajs/mocha/wiki/Mess-with-globals
-// const cleanup = () => {
-//   console.log = consoleLog;
-// };
 
 beforeEach(() => {
   const tmpFix = tmpFixture(fixtureDir);
@@ -37,12 +28,12 @@ describe("plist files", () => {
 
   test("should update version key in plist files when no keys provided", async () => {
     const file = "sample.plist";
-    const result = await updateFile(file, newVersion, { quiet: true });
+    await updateFile(file, newVersion, { quiet: true });
     const actual = (await fs.readFile(file)).toString();
     expect(actual).not.toMatch(`<version>`);
     expect(actual).not.toMatch(`<version>3.14.1592</version>`);
     const pattern = new RegExp(
-      `<key>Version</key>\\s*<string>${newVersion}</string>`
+      `<key>Version</key>\\s*<string>${newVersion}</string>`,
     );
     expect(actual).toMatch(pattern);
   });
@@ -50,9 +41,16 @@ describe("plist files", () => {
   test("bad plist file", async () => {
     const file = "invalid.plist";
 
-    // await updateFile(file, newVersion, { quiet: true })
-    await expect(() =>
-      updateFile(file, newVersion, { quiet: true })
-    ).rejects.toThrowError("Unable to parse plist");
+    await expect(updateFile(file, newVersion, { quiet: true })).rejects.toThrow(
+      "Unable to parse plist",
+    );
+  });
+
+  test("plist with a non-dictionary root", async () => {
+    const file = "array-root.plist";
+
+    await expect(updateFile(file, newVersion, { quiet: true })).rejects.toThrow(
+      "Unable to parse plist",
+    );
   });
 });
