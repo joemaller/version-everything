@@ -27,29 +27,29 @@
     "version": "node cli.js README.md && auto-changelog && git add -u"
   },
   "dependencies": {
-    "auto-changelog": "^2.5.0",
-    "chalk": "^5.6.2",
-    "cosmiconfig": "^9.0.1",
+    "auto-changelog": "^2.7.0",
+    "chalk": "^6.0.1",
+    "cosmiconfig": "^10.0.1",
     "escape-string-regexp": "^5.0.0",
-    "fs-extra": "^11.3.4",
-    "glob": "^13.0.6",
+    "fs-extra": "^11.4.1",
+    "glob": "^14.0.6",
     "lodash.isplainobject": "^4.0.6",
-    "plist": "^3.1.0",
+    "plist": "^5.1.2",
     "read-package-up": "^12.0.0",
-    "semver": "^7.7.4",
-    "sort-package-json": "^3.6.1",
+    "semver": "^7.8.6",
+    "sort-package-json": "^4.1.0",
     "xml-js": "^1.6.11",
-    "yaml": "^2.8.3",
-    "yargs": "^18.0.0"
+    "yaml": "^2.9.1",
+    "yargs": "^18.2.0"
   },
   "devDependencies": {
-    "@types/semver": "^7.7.1",
-    "@vitest/coverage-v8": "^4.1.2",
-    "tmp": "^0.2.5",
-    "vitest": "^4.1.2"
+    "@types/semver": "^7.8.0",
+    "@vitest/coverage-v8": "^5.1.2",
+    "tmp": "^0.2.7",
+    "vitest": "^5.1.2"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "auto-changelog": {
     "package": true,
