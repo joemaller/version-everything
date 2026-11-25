@@ -1,15 +1,11 @@
 // @ts-check
 
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-
 import fs from "fs-extra";
-
-import tmpFixture from "./lib/tmp-fixture.js";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import updateFile from "../app/update-file.js";
+import tmpFixture from "./lib/tmp-fixture.js";
 
-import plist from "plist";
-
-let newVersion = "3.14.1592";
+const newVersion = "3.14.1592";
 const cwd = process.cwd();
 const fixtureDir = "./test/fixtures";
 
@@ -169,7 +165,7 @@ describe("Update prefixed versions", () => {
     expect(result.data).toMatch("namespace/img:dev");
     expect(result.data).toMatch("namespace/img:" + newVersion);
     expect(result.data).not.toMatch(
-      new RegExp(`\\s*version:\\s+${newVersion}`)
+      new RegExp(`\\s*version:\\s+${newVersion}`),
     );
   });
 

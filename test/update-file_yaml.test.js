@@ -1,14 +1,12 @@
 // @ts-check
 
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-
 import fs from "fs-extra";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import YAML from "yaml";
-
-import tmpFixture from "./lib/tmp-fixture.js";
 import updateFile from "../app/update-file.js";
+import tmpFixture from "./lib/tmp-fixture.js";
 
-let newVersion = "3.14.1592";
+const newVersion = "3.14.1592";
 const cwd = process.cwd();
 const fixtureDir = "./test/fixtures";
 
@@ -33,7 +31,7 @@ describe("YAML files", () => {
   test("should report the previous version (yaml file)", async () => {
     const file = "file.yml";
     const result = await updateFile(file, newVersion, { quiet: true }).catch(
-      (err) => expect(err).toBeFalsy()
+      (err) => expect(err).toBeFalsy(),
     );
     expect(result).toHaveProperty("oldVersion");
   });
@@ -47,7 +45,7 @@ describe("YAML files", () => {
   test("should increment a top-level attribute in a yaml file", async () => {
     const file = "file.yml";
     await updateFile(file, newVersion, { quiet: true }).catch((err) =>
-      expect(err).toBeFalsy()
+      expect(err).toBeFalsy(),
     );
     const data = await fs.readFile(file, "utf8");
     const yamlData = YAML.parse(data);
@@ -69,18 +67,18 @@ describe("YAML files", () => {
   test.skip("should increment a plain-text comment in a yaml file", () => {});
   test.skip("should increment yaml frontmatter in a markdown file", () => {});
 
-  test("empty yaml file show throw", () => {
+  test("empty yaml file show throw", async () => {
     const file = "empty.yml";
-    expect(() =>
-      updateFile(file, newVersion, { quiet: true })
-    ).rejects.toThrowError("YAML.parse() returned null");
+    await expect(updateFile(file, newVersion, { quiet: true })).rejects.toThrow(
+      "YAML.parse() returned null",
+    );
   });
 
-  test("invalid yaml should throw", () => {
+  test("invalid yaml should throw", async () => {
     const file = "invalid.yml";
-    expect(() =>
-      updateFile(file, newVersion, { quiet: true })
-    ).rejects.toThrowError('Missing closing "quote');
+    await expect(updateFile(file, newVersion, { quiet: true })).rejects.toThrow(
+      'Missing closing "quote',
+    );
   });
 
   test("don't update version comment in yaml without prefix", async () => {

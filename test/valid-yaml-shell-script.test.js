@@ -1,6 +1,6 @@
 // @ts-check
 
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import updateFile from "../app/update-file.js";
 
@@ -15,11 +15,10 @@ describe("Shell script re-wrapping with prefix", () => {
     const result = await updateFile(
       "./test/snapshots/valid-yaml-shell-script.sh",
       newVersion,
-      { dryRun: true, quiet: true, prefixes: [] }
+      { dryRun: true, quiet: true, prefixes: [] },
     );
-    // console.log(result);
-    expect(result?.data).toMatchFileSnapshot(
-      "./__snapshots__/valid-yaml-shell-script__no-prefix.sh"
+    await expect(result?.data).toMatchFileSnapshot(
+      "./__snapshots__/valid-yaml-shell-script__no-prefix.sh",
     );
   });
 
@@ -27,11 +26,10 @@ describe("Shell script re-wrapping with prefix", () => {
     const result = await updateFile(
       "./test/snapshots/valid-yaml-shell-script.sh",
       newVersion,
-      { dryRun: true, quiet: true, prefixes: ["prefix"] }
+      { dryRun: true, quiet: true, prefixes: ["prefix"] },
     );
-    // console.log(result);
-    expect(result?.data).toMatchFileSnapshot(
-      "./__snapshots__/valid-yaml-shell-script__prefix.sh"
+    await expect(result?.data).toMatchFileSnapshot(
+      "./__snapshots__/valid-yaml-shell-script__prefix.sh",
     );
   });
 });
