@@ -19,6 +19,7 @@ export default function (data, version, config) {
     /(v)(<SEMVER>)(\s*)$/gim, // simple "v1.2.34" string at the end of a line
     /^(\s*(?:\*|\/\*{1,2})\s+@version\s*(?:[^:]*:)?\s*)(<SEMVER>)/gim, // phpdoc @version tag
     /^(\s*LABEL\s+(?:version|"version")=")(<SEMVER>)(")/gim,
+    /^(\s*"Project-Id-Version:[^"\n]*?\s)(<SEMVER>)/gim, // gettext PO/POT header
   ];
 
   config.prefixes.forEach((prefix) => {

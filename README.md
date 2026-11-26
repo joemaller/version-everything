@@ -26,6 +26,8 @@ The file list is an array specified in one of the following forms, in order of p
 2. `files` key in a **version-everything.config.js** file
 3. `version-everything.files` key in the parent project's **package.json** file
 
+File lists may include glob patterns like `src/**/block.json`. Patterns are matched relative to the current working directory.
+
 ### npm lifecycle script in package.json
 
 The simplest way to use _version-everything_ is to hook into npm's version event. Once set up, a single `npm` command will update, commit and tag all versioned files in a project.
@@ -63,6 +65,7 @@ In text files, the following version strings will be updated.
 - `* @version 4.5.67` and `/** @version 4.5.67 */` ([PHPDoc tags](https://docs.phpdoc.org/guide/references/phpdoc/tags/version.html#version))
 - `v0.6.0` (At end-of-line)
 - `LABEL version="1.2.34"` (Dockerfiles)
+- `"Project-Id-Version: My Plugin 1.2.34\n"` (gettext `.pot` and `.po` translation files)
 
 _Notes:_ Colons are optional. Simple v-prefixed, [git-tag](https://git-scm.com/book/en/v2/Git-Basics-Tagging) style version strings must appear at the end of a line.
 
@@ -76,7 +79,7 @@ If a stuctured data file contains a comment and a version attribute, including a
 
 This project uses [cosmiconfig](https://www.npmjs.com/package/cosmiconfig) to load config files. The file-key should be `version-everything`, so files like `.version-everythingrc` or `.version-everythingrc.js` will work.
 
-Config files should export a simple JS object and look something like this:
+Config files should export a simple JS object and look something like this (a config file which only exports an array will be treated as the list of files):
 
 ```js
 module.exports = {
@@ -86,10 +89,10 @@ module.exports = {
     /* optional json config object, keys pass directly to JSON.stringify */
   },
   yaml: {
-    /* optional yaml config object, passes directly to js-yaml */
+    /* optional yaml config object, passed to the yaml library */
   },
   xml: {
-    /* optional xml config object, passes directly to xml2js */
+    /* optional xml config object, passed to xml-js */
   },
 };
 ```
@@ -162,7 +165,7 @@ Files with the following extensions will be recognized as structured text and pa
 - **XML** - `.xml`
 - **YAML** - `.yml`, `.yaml`
 - **PLIST** - `.plist`
-- **TEXT** - `.markdown`, `.md`, `.mdown`, `.sh`, `.text`, `.txt`
+- **TEXT** - `.markdown`, `.md`, `.mdown`, `.po`, `.pot`, `.sh`, `.text`, `.txt`
 
 ## API
 
@@ -213,7 +216,7 @@ Default JSON Options:
 
 Type: `object`
 
-Merged with a minimal set of defaults, then passed to the [xml-js `js2xml` converter][xml-js convert]. See [xml-js docs][] for available options.
+Merged with a minimal set of defaults, then passed to the [xml-js `js2xml` converter][xml-js convert]. See the [xml-js docs][xml-js] for available options.
 
 Default XML Options:
 
@@ -229,7 +232,15 @@ Default XML Options:
 
 Type: `object`
 
-Passed directly to the [js-yaml safeDump method][safedump]. See [js-yaml][] docs for available options.
+Merged with a minimal set of defaults, then passed to the [yaml][] library when parsing and writing the document. See the [yaml options docs][yaml options] for available options.
+
+Default YAML Options:
+
+```js
+{
+  nullStr: "",
+}
+```
 
 ### Notes
 
@@ -248,6 +259,6 @@ Empty CData blocks `<![CDATA[]]>` will be removed from processed XML Documents. 
 [stringify]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
 [reviver]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse#Using_the_reviver_parameter
 [replacer]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter
-[js-yaml]: https://www.npmjs.com/package/js-yaml
-[safedump]: https://www.npmjs.com/package/js-yaml#safedump-object---options-
+[yaml]: https://www.npmjs.com/package/yaml
+[yaml options]: https://eemeli.org/yaml/#options
 [npm18795]: https://github.com/npm/npm/issues/18795

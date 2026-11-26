@@ -150,6 +150,48 @@ describe("Index file tests", () => {
     expect(log).not.toHaveBeenCalled();
   });
 
+  test("Config file exporting a bare array is used as files (#3)", () => {
+    const packageJson = "./test/fixtures/cosmiconfig-array/package.json";
+    versionEverything({ packageJson });
+    expect(updateFile).toHaveBeenCalledTimes(2);
+    expect(updateFile).toHaveBeenCalledWith(
+      "testfile.php",
+      "4.5.6",
+      expect.anything()
+    );
+  });
+
+  test("Warn when there are no files to version (#3)", () => {
+    versionEverything({});
+    expect(updateFile).not.toHaveBeenCalled();
+    expect(consoleMock).toHaveBeenCalledWith(
+      expect.stringContaining("No files to version")
+    );
+  });
+
+  test("Expand globs in files (#34)", () => {
+    const cwd = process.cwd();
+    process.chdir("./test/fixtures/glob");
+    try {
+      versionEverything({
+        version: "1.0.0",
+        files: ["**/block.json", "readme.txt"],
+      });
+    } finally {
+      process.chdir(cwd);
+    }
+    const calledWith = vi.mocked(updateFile).mock.calls.map((c) => c[0]);
+    expect(calledWith).toEqual(["a/block.json", "b/block.json", "readme.txt"]);
+  });
+
+  test("Warn when a glob matches nothing (#34)", () => {
+    versionEverything({ files: ["no-such-dir/**/*.json"] });
+    expect(updateFile).not.toHaveBeenCalled();
+    expect(consoleMock).toHaveBeenCalledWith(
+      expect.stringContaining('No files matched "no-such-dir/**/*.json"')
+    );
+  });
+
   test("Run normally when args is true", () => {
     versionEverything(true);
     expect(log).toHaveBeenCalled();
