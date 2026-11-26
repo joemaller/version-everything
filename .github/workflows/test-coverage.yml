@@ -1,20 +1,26 @@
 name: Test Coverage
 
-on: push
+on:
+  push:
+    branches: [main, master]
 
 jobs:
-  build:
+  test:
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
-    runs-on: ubuntu-22.04
+    # https://github.com/actions/runner-images
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
 
     steps:
       # https://github.com/marketplace/actions/checkout
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # https://github.com/actions/setup-node
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: "24"
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -22,26 +28,15 @@ jobs:
       - name: Run test suite
         run: npm run test
 
-      # # The Coveralls repo token is found  on the project's Settings page
-      # - name: Upload to Coveralls
-      #   env:
-      #     COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-      #     COVERALLS_RUN_LOCALLY: yes
-      #   run: |
-      #     composer require 'php-coveralls/php-coveralls:2.5.2'
-      #     vendor/bin/php-coveralls \
-      #       --coverage_clover coverage/clover.xml \
-      #       --json_path ./coveralls-upload.json \
-      #       --verbose
-
+      # https://github.com/marketplace/actions/coveralls-github-action
       - name: Coveralls
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      # https://github.com/codecov/codecov-action
       - name: Upload coverage to Codecov
-        # https://github.com/codecov/codecov-action
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: false
           files: coverage/clover.xml
@@ -50,9 +45,9 @@ jobs:
       # The Code Climate Test Coverage Reporter ID can be found by visiting the project's
       # Repo Settings pane, click Test Coverage in the left sidebar. Find the ID in the
       # second section.
+      # https://github.com/paambaati/codeclimate-action
       - name: Code Climate coverage
-        # https://github.com/paambaati/codeclimate-action
-        uses: paambaati/codeclimate-action@v5
+        uses: paambaati/codeclimate-action@v9.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
