@@ -169,6 +169,15 @@ describe("Index file tests", () => {
     );
   });
 
+  test("Warn with the config file path when it specifies no files", () => {
+    const packageJson = "./test/fixtures/cosmiconfig-no-files/package.json";
+    versionEverything({ packageJson });
+    expect(updateFile).not.toHaveBeenCalled();
+    expect(consoleMock).toHaveBeenCalledWith(
+      expect.stringContaining("version-everything.config.js, or files")
+    );
+  });
+
   test("Expand globs in files (#34)", () => {
     const cwd = process.cwd();
     process.chdir("./test/fixtures/glob");
