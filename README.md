@@ -92,7 +92,7 @@ module.exports = {
     /* optional yaml config object, passed to the yaml library */
   },
   xml: {
-    /* optional xml config object, passed to xml-js */
+    /* optional xml config object, see options.xml below */
   },
 };
 ```
@@ -216,17 +216,49 @@ Default JSON Options:
 
 Type: `object`
 
-Merged with a minimal set of defaults, then passed to the [xml-js `js2xml` converter][xml-js convert]. See the [xml-js docs][xml-js] for available options.
+XML files are read and written with [fast-xml-parser][]. The `xml` object accepts these keys:
+
+- **`keys`** – Attributes to update, see [Replacing xml attribute values](#replacing-xml-attribute-values).
+- **`spaces`** – Indentation, either a number of spaces or a string such as `"\t"`. Default: `2`.
+- **`parser`** – Options passed to fast-xml-parser's [`XMLParser`][fxp parser options].
+- **`builder`** – Options passed to fast-xml-parser's [`XMLBuilder`][fxp builder options].
 
 Default XML Options:
 
 ```js
 {
-  compact: false,
   spaces: 2,
-  indentCdata: true,
 }
 ```
+
+Some fast-xml-parser options are required for version-everything to work, and always override `parser` and `builder` settings: `preserveOrder`, `ignoreAttributes`, `attributeNamePrefix`, `textNodeName`, `cdataPropName`, `commentPropName` and `processEntities`.
+
+Entities like `&amp;` are copied through unchanged and values are kept as strings, so numbers like `007` are not rewritten. Comments, CDATA, processing instructions and `<!DOCTYPE>` declarations are kept. Elements containing both text and child elements (mixed content) may be re-indented.
+
+##### Migrating XML options
+
+Before version 1.0, XML files were processed with [xml-js][], and the `xml` object was passed straight to it. Most projects only used `spaces` or `keys`, which work as before. Other xml-js options are ignored, and version-everything logs a warning listing them.
+
+| xml-js option               | Replacement                                                                                                                               |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `spaces`                    | Unchanged.                                                                                                                                |
+| `keys`                      | Unchanged. (Not an xml-js option.)                                                                                                        |
+| `compact`                   | Remove it. Only full documents were ever supported.                                                                                       |
+| `indentCdata`               | Remove it. CDATA sections between elements are always placed on their own indented line, which matches the old default.                   |
+| `fullTagEmptyElement: true` | `builder: { suppressEmptyNode: false }`                                                                                                   |
+| `spaces: 0` (single line)   | `builder: { format: false }`                                                                                                              |
+| Any other xml-js option     | Remove it. Check the fast-xml-parser [`XMLParser`][fxp parser options] and [`XMLBuilder`][fxp builder options] options for an equivalent. |
+
+Changes to XML output:
+
+- A trailing newline at the end of the file is kept. It used to be removed.
+- Empty CDATA blocks `<![CDATA[]]>` are kept. They used to be removed.
+- Processing instructions after the XML declaration, such as `<?xml-stylesheet ...?>`, are written on their own line.
+- Files which aren't valid XML are rejected with an error describing the problem. Files without an extension then fall through to YAML and plain-text handling as before.
+- When using `keys`:
+  - Old versions from nested keys like `a/b~version` are now reported.
+  - A `<version>` element is no longer added when an earlier key matched but a later one didn't.
+  - An attribute is no longer set on an element partway along a path that doesn't fully match.
 
 ##### options.yaml
 
@@ -248,12 +280,12 @@ Default YAML Options:
 
 Enabling `push.followTags` in Git's global config is highly recommended: `git config --global push.followTags true`
 
-Empty CData blocks `<![CDATA[]]>` will be removed from processed XML Documents. To preserve empty blocks, add one or more spaces: `<![CDATA[ ]]>`
-
 [webpack]: https://webpack.github.io/docs/configuration.html
 [eslint]: http://eslint.org/docs/user-guide/configuring#configuration-file-formats
 [xml-js]: https://www.npmjs.com/package/xml-js
-[xml-js convert]: https://www.npmjs.com/package/xml-js#convert-js-object--json-%E2%86%92-xml
+[fast-xml-parser]: https://www.npmjs.com/package/fast-xml-parser
+[fxp parser options]: https://github.com/NaturalIntelligence/fast-xml-parser/blob/master/docs/v4%2C%20v5/2.XMLparseOptions.md
+[fxp builder options]: https://github.com/NaturalIntelligence/fast-xml-parser/blob/master/docs/v4%2C%20v5/3.XMLBuilder.md
 [jsondocs]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON
 [jsonparse]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
 [stringify]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
