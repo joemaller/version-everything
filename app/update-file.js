@@ -56,7 +56,7 @@ const defaultOptions = {
   quiet: false,
   dryRun: false,
   json: { space: 2, replacer: null, reviver: null },
-  xml: { compact: false, spaces: 2, indentCdata: true },
+  xml: { spaces: 2 },
   yaml: { nullStr: "" },
   prefixes: [],
 };
