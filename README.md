@@ -5,7 +5,7 @@
 Use npm to version all kinds of projects, not just JavaScript
 
 [![npm](https://img.shields.io/npm/v/version-everything.svg)](https://www.npmjs.com/package/version-everything)
-[![codecov](https://codecov.io/gh/joemaller/version-everything/branch/main/graph/badge.svg)](https://codecov.io/gh/joemaller/version-everything)
+[![codecov](https://codecov.io/gh/joemaller/version-everything/graph/badge.svg?token=YeSK4SK8rr)](https://codecov.io/gh/joemaller/version-everything)
 [![Coverage Status](https://coveralls.io/repos/github/joemaller/version-everything/badge.svg)](https://coveralls.io/github/joemaller/version-everything)
 [![Maintainability](https://qlty.sh/gh/joemaller/projects/version-everything/maintainability.svg)](https://qlty.sh/gh/joemaller/projects/version-everything)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://prettier.io)
